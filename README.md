@@ -20,7 +20,23 @@ If this action doesn't work out for your use case, you should look at the
 
 ## Usage
 
-Coming soon
+### Minimal example
+
+The following workflow installs Nix and then just runs
+`nix-build --version`:
+
+```
+name: Examples
+on: push
+jobs:
+  minimal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nixbuild/nix-quick-install-action@v1
+      - run: nix-build --version
+```
+
+![action-minimal](examples/action-minimal.png)
 
 ## Inputs
 
