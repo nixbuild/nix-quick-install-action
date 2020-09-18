@@ -1,0 +1,47 @@
+name: Nix Quick Install
+description: Quickly installs Nix in unprivileged single-user mode
+author: Rickard Nilsson
+
+inputs:
+
+  nix_version:
+    required: true
+    default: "2.3.7"
+    description: |
+      The version of Nix that should be installed
+
+      If not specified, the latest stable Nix release is used. Note that each
+      release of nix-quick-install-action has a specific set of supported
+      Nix versions, which do not change. You can check what Nix versions are
+      supported by the version of nix-quick-install-action you're using by
+      going to https://github.com/nixbuild/nix-quick-install-action/releases
+
+  nix_conf:
+    required: false
+    description: |
+      If set, this configuration is written to a new file which is then added to
+      the NIX_USER_CONF_FILES environment variable. You can also set that
+      variable yourself to control the Nix configuration.
+
+  nix_archives_url:
+    required: false
+    description: |
+      Don't use. For bootstrapping purposes only.
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Nix in single-user mode
+      run: ${{ github.action_path }}/nix-quick-install.sh
+      shell: bash
+      env:
+        RELEASE_FILE: ${{ github.action_path }}/RELEASE
+        NIX_VERSION: ${{ inputs.nix_version }}
+        NIX_CONF: ${{ inputs.nix_conf }}
+        NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
+
+
+branding:
+  icon: zap
+  color: gray-dark

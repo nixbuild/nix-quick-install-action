@@ -1,0 +1,68 @@
+on: push
+
+name: CI/CD
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v0
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
+      - name: Build nix archives
+        id: build-nix-archives
+        run: |
+          nix build .#nix-archives
+          echo "::set-output name=result::$(readlink result)"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: nix-archives
+          path: ${{ steps.build-nix-archives.outputs.result }}/
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        nix_version:
+          - 3.0pre20200829_f156513
+          - 2.3.7
+          - 2.2.2
+          - 2.1.3
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        id: nix-archives
+        with:
+          name: nix-archives
+      - uses: ./
+        with:
+          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
+          nix_version: ${{ matrix.nix_version }}
+      - name: Test nix
+        run: nix-build --version
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        id: nix-archives
+        with:
+          name: nix-archives
+      - uses: ./
+        with:
+          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
+      - name: Build release script
+        run: nix build .#release
+      - name: Release if needed
+        run: ./result/bin/release ${{steps.nix-archives.outputs.download-path}} ./RELEASE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
