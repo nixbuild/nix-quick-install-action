@@ -1,0 +1,1 @@
+# nix-quick-install-action
