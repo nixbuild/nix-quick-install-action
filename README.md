@@ -1,13 +1,18 @@
 # Nix Quick Install Action
 
-This GitHub Action installs [Nix](https://nixos.org/nix/) in single-user mode.
+This GitHub Action installs [Nix](https://nixos.org/nix/) in single-user mode,
+and takes about two seconds to run.
+
+There are inputs for selecting which Nix version to use, and to specify
+`nix.conf` contents. The Nix installation is deterministic &ndash; for a given
+release of this action the resulting Nix setup will always be identical, no
+matter when you run the action.
 
 ## Description
 
-To make the action as quick as possible, the installation is minimal: no
+To make this action as quick as possible, the installation is minimal: no
 nix-daemon, no nix channels and no `NIX_PATH`. The nix store (`/nix/store`) is
-owned by the unprivileged runner user. The action has inputs for selecting which
-Nix version to use, and to specify `nix.conf` contents.
+owned by the unprivileged runner user.
 
 The action provides you with a fully working Nix setup, but since no `NIX_PATH`
 or channels are setup you need to handle this on your own. Nix Flakes is great
@@ -16,12 +21,13 @@ for this, and works perfectly with this action (see below).
 tested yet.
 
 If this action doesn't work out for your use case, you should look at the
-[Install Nix](https://github.com/marketplace/actions/install-nix) action.
+[Install Nix](https://github.com/marketplace/actions/install-nix) action,
+which sets up Nix in multi-user mode (daemon mode).
 
 ## Inputs
 
 See [action.yml](action.yml) for documentation of the available inputs.
-Available Nix versions are listed in the [release
+The available Nix versions are listed in the [release
 notes](https://github.com/nixbuild/nix-quick-install-action/releases/latest).
 
 ## Usage
@@ -48,8 +54,8 @@ As you can see, the Nix setup only takes about two seconds.
 
 ### Using Nix flakes
 
-To be able to use Nix flakes you need use a version of Nix that supports it,
-and also enable the flakes functionality in the nix configuration:
+To be able to use Nix flakes you need to specify a version of Nix that supports
+it, and also enable the flakes functionality in the nix configuration:
 
 ```yaml
 name: Examples
