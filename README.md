@@ -50,8 +50,6 @@ jobs:
 
 ![action-minimal](examples/action-minimal.png)
 
-As you can see, the Nix setup only takes about two seconds.
-
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
