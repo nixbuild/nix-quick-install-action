@@ -18,6 +18,12 @@ tested yet.
 If this action doesn't work out for your use case, you should look at the
 [Install Nix](https://github.com/marketplace/actions/install-nix) action.
 
+## Inputs
+
+See [action.yml](action.yml) for documentation of the available inputs.
+Available Nix versions are listed in the [release
+notes](https://github.com/nixbuild/nix-quick-install-action/releases/latest).
+
 ## Usage
 
 ### Minimal example
@@ -25,7 +31,7 @@ If this action doesn't work out for your use case, you should look at the
 The following workflow installs Nix and then just runs
 `nix-build --version`:
 
-```
+```yaml
 name: Examples
 on: push
 jobs:
@@ -38,8 +44,32 @@ jobs:
 
 ![action-minimal](examples/action-minimal.png)
 
-## Inputs
+As you can see, the Nix setup only takes about two seconds.
 
-See [action.yml](action.yml) for documentation of the available inputs.
-Available Nix versions are listed in the [release
-notes](https://github.com/nixbuild/nix-quick-install-action/releases/latest).
+### Using Nix flakes
+
+To be able to use Nix flakes you need use a version of Nix that supports it,
+and also enable the flakes functionality in the nix configuration:
+
+```yaml
+name: Examples
+on: push
+jobs:
+  flakes-simple:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: nixbuild/nix-quick-install-action@v1
+        with:
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
+      - name: nix build
+        run: nix build ./examples/flakes-simple
+      - name: hello
+        run: ./result/bin/hello
+```
+
+![action-minimal](examples/action-flakes-simple.png)
+
+You can see the flake definition for the above example in
+[examples/flakes-simple/flake.nix](examples/flakes-simple/flake.nix).
