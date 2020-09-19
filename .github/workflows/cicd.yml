@@ -43,7 +43,7 @@ jobs:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
       - name: Test nix
-        run: nix-build --version
+        run: nix-build -v --version
 
   release:
     runs-on: ubuntu-latest
