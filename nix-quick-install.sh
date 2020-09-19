@@ -16,10 +16,9 @@ curl -sL --retry 3 --retry-connrefused "$url" | zstdcat | \
 
 # Setup nix.conf
 if [ -n "$NIX_CONF" ]; then
-  NIX_CONF_FILE="$(mktemp --tmpdir XXXX_nix.conf)"
-  NIX_USER_CONF_FILES="$NIX_CONF_FILE${NIX_USER_CONF_FILES:+:}${NIX_USER_CONF_FILES:-}"
-  echo "$NIX_CONF" > "$NIX_CONF_FILE"
-  echo "::set-env name=NIX_USER_CONF_FILES::$NIX_USER_CONF_FILES"
+  NIX_CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/nix/nix.conf"
+  mkdir -p "$(dirname "$NIX_CONF_FILE")"
+  printenv NIX_CONF > "$NIX_CONF_FILE"
 fi
 
 # Set PATH
