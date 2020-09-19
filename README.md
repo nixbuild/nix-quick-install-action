@@ -1,7 +1,9 @@
 # Nix Quick Install Action
 
 This GitHub Action installs [Nix](https://nixos.org/nix/) in single-user mode,
-and takes about two seconds to run.
+and adds almost no time at all to your workflow's running time.
+
+For the moment, this action only support Linux runners.
 
 There are inputs for selecting which Nix version to use, and to specify
 `nix.conf` contents. The Nix installation is deterministic &ndash; for a given
