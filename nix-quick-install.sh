@@ -32,5 +32,6 @@ MANPATH= . "$nix/etc/profile.d/nix.sh"
 
 # Set env
 echo "::add-path::$HOME/.nix-profile/bin"
-echo "::set-env name=NIX_PROFILES::$NIX_PROFILES"
+echo "::set-env name=NIX_PROFILES::/nix/var/nix/profiles/default $HOME/.nix-profile"
+echo "::set-env name=NIX_USER_PROFILE_DIR::/nix/var/nix/profiles/per-user/$USER"
 echo "::set-env name=NIX_SSL_CERT_FILE::$NIX_SSL_CERT_FILE"
