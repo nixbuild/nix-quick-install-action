@@ -22,7 +22,7 @@ jobs:
           name: nix-archives
           path: ${{ steps.build-nix-archives.outputs.result }}/
 
-  test:
+  test-nix:
     runs-on: ubuntu-latest
     needs: build
     strategy:
@@ -45,9 +45,32 @@ jobs:
       - name: Test nix
         run: nix-build -v --version
 
+  test-cachix:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        id: nix-archives
+        with:
+          name: nix-archives
+      - uses: ./
+        with:
+          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
+      - uses: cachix/cachix-action@v6
+        with:
+          extraPullNames: cachix
+      - name: nix show-config
+        run: nix show-config
+
   release:
     runs-on: ubuntu-latest
-    needs: [build, test]
+    needs:
+      - build
+      - test-nix
+      - test-cachix
     if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
