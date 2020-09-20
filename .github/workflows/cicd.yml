@@ -48,7 +48,6 @@ jobs:
   test-cachix:
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -76,13 +75,7 @@ jobs:
         id: push-to-cachix
         run: |
           dd if=/dev/urandom of=random count=1
-          echo ::set-output "name=hash::$(nix add-to-store random | sed 's,^/nix/store/\(.*\)-random$,\1,g')"
-      - name: Query Cachix
-        run: |
-          sleep 60
-          while ! curl --fail -sLI https://nixbuild.cachix.org/${{steps.push-to-cachix.outputs.hash}}.narinfo; do
-            sleep 360
-          done
+          cachix push nixbuild "$(nix add-to-store random)"
 
 
   release:
