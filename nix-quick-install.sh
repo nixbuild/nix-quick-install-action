@@ -23,3 +23,4 @@ fi
 
 # Set PATH
 echo "::add-path::/nix/bin"
+echo "::add-path::$HOME/.nix-profile/bin"
