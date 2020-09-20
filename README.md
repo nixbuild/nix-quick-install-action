@@ -79,3 +79,9 @@ jobs:
 
 You can see the flake definition for the above example in
 [examples/flakes-simple/flake.nix](examples/flakes-simple/flake.nix).
+
+### Using Cachix
+
+You can use the [Cachix action](https://github.com/marketplace/actions/cachix)
+together with this action, just make sure you put it after this action in your
+workflow.
