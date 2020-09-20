@@ -61,16 +61,24 @@ jobs:
           nix_conf: experimental-features = nix-command flakes
       - uses: cachix/cachix-action@v6
         with:
-          name: cachix
-          skipPush: true
+          name: nixbuild
+          signingKey: ${{ secrets.cachix_signing_key }}
       - name: Verify nix config
         run: |
           nix show-config > nix.conf
           cat nix.conf
-          if ! egrep -q "^substituters = https://cache.nixos.org https://cachix.cachix.org$" nix.conf; then
+          if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" nix.conf; then
             echo "Invalid substiturers config"
             exit 1
           fi
+      - name: Push to Cachix
+        id: push-to-cachix
+        run: |
+          dd if=/dev/urandom of=random count=1
+          echo ::set-output name=hash "$(nix add-to-store random | sed 's,^/nix/store/\(.*\)-random$,\1,g')"
+      - name: Query Cachix
+          curl --fail -sL "https://nixbuild.cachix.org/${{ steps.push-to-cachix.outputs.hash }}.narinfo"
+
 
   release:
     runs-on: ubuntu-latest
