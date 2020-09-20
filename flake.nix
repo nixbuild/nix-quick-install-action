@@ -32,7 +32,7 @@
           mkdir -p "$out" root/nix/var/nix
           NIX_STATE_DIR="$(pwd)/root/nix/var/nix" nix-store --load-db \
             < $closureInfo/registration
-          ln -s $nix/bin root/nix/bin
+          ln -s $nix root/nix/.nix
           tar -cvT $closureInfo/store-paths -C root . | zstd - -o "$out/$fileName"
         '';
 

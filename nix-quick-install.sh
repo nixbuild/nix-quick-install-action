@@ -21,7 +21,12 @@ if [ -n "$NIX_CONF" ]; then
   printenv NIX_CONF > "$NIX_CONF_FILE"
 fi
 
-# Set PATH
-echo "::add-path::/nix/var/nix/profiles/per-user/$USER/profile/bin"
-echo "::add-path::/nix/var/nix/profiles/default/bin"
-echo "::add-path::/nix/bin"
+# Install nix in profile
+nix="$(realpath -m /nix/.nix)"
+. "$nix/etc/profile.d/nix.sh"
+"$nix/bin/nix-env" -i "$nix"
+
+# Set env
+echo "::add-path::$HOME/.nix-profile/bin"
+echo "::set-env name=NIX_PROFILES::$NIX_PROFILES"
+echo "::set-env name=NIX_SSL_CERT_FILE::$NIX_SSL_CERT_FILE"
