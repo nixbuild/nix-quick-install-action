@@ -48,6 +48,13 @@ jobs:
   test-cachix:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      matrix:
+        nix_version:
+          - 3.0pre20200829_f156513
+          - 2.3.7
+          - 2.2.2
+          - 2.1.3
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -57,22 +64,18 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
-          nix_version: 3.0pre20200829_f156513
-          nix_conf: experimental-features = nix-command flakes
+          nix_version: ${{ matrix.nix_version }}
       - uses: cachix/cachix-action@v6
         with:
           name: nixbuild
           signingKey: ${{ secrets.cachix_signing_key }}
       - name: Verify nix config
         run: |
-          nix show-config > nix.conf
-          cat nix.conf
-          if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" nix.conf; then
+          if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" "$HOME/.config/nix/nix.conf"; then
             echo "Invalid substiturers config"
             exit 1
           fi
       - name: Push to Cachix
-        id: push-to-cachix
         run: |
           dd if=/dev/urandom of=random count=1
           cachix push nixbuild "$(nix add-to-store random)"
