@@ -27,7 +27,7 @@ if [ -a /nix/bin ]; then
 else
   nix="$(realpath -m /nix/.nix)"
 fi
-. "$nix/etc/profile.d/nix.sh"
+MANPATH= . "$nix/etc/profile.d/nix.sh"
 "$nix/bin/nix-env" -i "$nix"
 
 # Set env
