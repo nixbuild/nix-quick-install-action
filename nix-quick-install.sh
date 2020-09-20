@@ -22,5 +22,6 @@ if [ -n "$NIX_CONF" ]; then
 fi
 
 # Set PATH
+echo "::add-path::/nix/var/nix/profiles/per-user/$USER/profile/bin"
+echo "::add-path::/nix/var/nix/profiles/default/bin"
 echo "::add-path::/nix/bin"
-echo "::add-path::$HOME/.nix-profile/bin"
