@@ -48,7 +48,7 @@ jobs:
   test-cachix:
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -79,8 +79,9 @@ jobs:
           echo ::set-output "name=hash::$(nix add-to-store random | sed 's,^/nix/store/\(.*\)-random$,\1,g')"
       - name: Query Cachix
         run: |
+          sleep 60
           while ! curl --fail -sLI https://nixbuild.cachix.org/${{steps.push-to-cachix.outputs.hash}}.narinfo; do
-            sleep 10
+            sleep 360
           done
 
 
