@@ -77,7 +77,7 @@ jobs:
           dd if=/dev/urandom of=random count=1
           echo ::set-output name=hash "$(nix add-to-store random | sed 's,^/nix/store/\(.*\)-random$,\1,g')"
       - name: Query Cachix
-        run: curl --fail -sL "https://nixbuild.cachix.org/${{ steps.push-to-cachix.outputs.hash }}.narinfo"
+        run: curl --fail -sL https://nixbuild.cachix.org/${{steps.push-to-cachix.outputs.hash}}.narinfo
 
 
   release:
