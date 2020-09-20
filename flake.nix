@@ -71,13 +71,23 @@
 
           nix_archives="$1"
           release_file="$2"
-          release="$(cat "$release_file")"
+          release="$(head -n1 "$release_file")"
           prev_release="$(gh release list -L 1 | cut -f 3)"
 
           if [ "$release" = "$prev_release" ]; then
             echo >&2 "Release tag not updated ($release)"
             exit
           else
+            release_notes="$(mktemp)"
+            tail -n+2 "$release_file" > "$release_notes"
+
+            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" ''
+              ## Supported Nix Versions
+              ${lib.concatStringsSep "\n" (
+                map (v: "* ${v}") (lib.reverseList (lib.attrNames nixArchives))
+              )}
+            ''}"
+
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
               lib.concatStringsSep " " (lib.mapAttrsToList (version: archive:
@@ -85,12 +95,7 @@
               ) nixArchives)
             } \
               --title "$GITHUB_REPOSITORY@$release" \
-              --notes-file "${pkgs.writeText "notes" ''
-                ## Supported Nix Versions
-                ${lib.concatStringsSep "\n" (
-                  map (v: "* ${v}") (lib.reverseList (lib.attrNames nixArchives))
-                )}
-              ''}"
+              --notes-file "$release_notes"
           fi
         '';
       };
