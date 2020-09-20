@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v0
+          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v2
           nix_version: 3.0pre20200829_f156513
           nix_conf: experimental-features = nix-command flakes
       - name: Build nix archives
