@@ -8,7 +8,7 @@ sudo install -d -o "$USER" /nix
 
 # Fetch and unpack nix
 sys="x86_64-linux" # TODO auto detect
-rel="$(cat "$RELEASE_FILE")"
+rel="$(head -n1 "$RELEASE_FILE")"
 url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
 
 curl -sL --retry 3 --retry-connrefused "$url" | zstdcat | \
