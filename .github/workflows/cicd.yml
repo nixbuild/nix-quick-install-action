@@ -51,9 +51,11 @@ jobs:
     strategy:
       matrix:
         nix_version:
-          - 3.0pre20200829_f156513
           - 2.3.7
           - 2.2.2
+        include:
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -64,6 +66,7 @@ jobs:
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
+          nix_conf: ${{ matrix.nix_conf }}
       - uses: cachix/cachix-action@v6
         with:
           name: nixbuild
