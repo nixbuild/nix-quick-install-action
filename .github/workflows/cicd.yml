@@ -63,8 +63,14 @@ jobs:
         with:
           name: cachix
           skipPush: true
-      - name: nix show-config
-        run: nix show-config
+      - name: Verify nix config
+        run: |
+          nix show-config > nix.conf
+          cat nix.conf
+          if ! egrep -q "^substituters = https://cache.nixos.org https://cachix.cachix.org$" nix.conf; then
+            echo "Invalid substiturers config"
+            exit 1
+          fi
 
   release:
     runs-on: ubuntu-latest
