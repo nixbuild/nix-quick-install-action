@@ -61,7 +61,8 @@ jobs:
           nix_conf: experimental-features = nix-command flakes
       - uses: cachix/cachix-action@v6
         with:
-          extraPullNames: cachix
+          name: cachix
+          skipPush: true
       - name: nix show-config
         run: nix show-config
 
