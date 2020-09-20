@@ -22,7 +22,11 @@ if [ -n "$NIX_CONF" ]; then
 fi
 
 # Install nix in profile
-nix="$(realpath -m /nix/.nix)"
+if [ -a /nix/bin ]; then
+  nix="$(dirname "$(realpath -m /nix/bin)")"
+else
+  nix="$(realpath -m /nix/.nix)"
+fi
 MANPATH= . "$nix/etc/profile.d/nix.sh"
 "$nix/bin/nix-env" -i "$nix"
 
