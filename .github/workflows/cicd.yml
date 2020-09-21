@@ -12,6 +12,9 @@ jobs:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v2
           nix_version: 3.0pre20200829_f156513
           nix_conf: experimental-features = nix-command flakes
+      - uses: nixbuild/nixbuild-action@v1
+        with:
+          nixbuild_ssh_key: ${{ secrets.nixbuild_ssh_key }}
       - name: Build nix archives
         id: build-nix-archives
         run: |
