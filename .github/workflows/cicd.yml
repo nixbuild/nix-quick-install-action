@@ -18,12 +18,32 @@ jobs:
       - name: Build nix archives
         id: build-nix-archives
         run: |
-          nix build .#nix-archives
+          nix build -v .#nix-archives
           echo "::set-output name=result::$(readlink result)"
       - uses: actions/upload-artifact@v2
         with:
           name: nix-archives
           path: ${{ steps.build-nix-archives.outputs.result }}/
+
+  build-with-cachix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v2
+          nix_version: 3.0pre20200829_f156513
+          nix_conf: experimental-features = nix-command flakes
+      - uses: nixbuild/nixbuild-action@v1
+        with:
+          nixbuild_ssh_key: ${{ secrets.nixbuild_ssh_key }}
+      - uses: cachix/cachix-action@v6
+        with:
+          name: nixbuild
+          signingKey: ${{ secrets.cachix_signing_key }}
+      - name: Build nix archives
+        id: build-nix-archives
+        run: nix build -v .#nix-archives
 
   test-nix:
     runs-on: ubuntu-latest
