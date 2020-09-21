@@ -10,6 +10,15 @@ There are inputs for selecting which Nix version to use, and to specify
 release of this action the resulting Nix setup will always be identical, no
 matter when you run the action.
 
+The main motivation behind this action is to install Nix as quickly as possible
+in your GitHub workflow. If that isn't important (for example, if the other
+steps in the workflow takes much longer time than the Nix installer), you
+should probably use the [Install
+Nix](https://github.com/marketplace/actions/install-nix) action instead, which
+sets up Nix in multi-user mode (daemon mode), has support for MacOS and is also
+very quick.
+
+
 ## Description
 
 To make this action as quick as possible, the installation is minimal: no
@@ -21,10 +30,6 @@ or channels are setup you need to handle this on your own. Nix Flakes is great
 for this, and works perfectly with this action (see below).
 [niv](https://github.com/nmattia/niv) should also work fine, but has not been
 tested yet.
-
-If this action doesn't work out for your use case, you should look at the
-[Install Nix](https://github.com/marketplace/actions/install-nix) action,
-which sets up Nix in multi-user mode (daemon mode).
 
 ## Inputs
 
