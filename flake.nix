@@ -20,7 +20,17 @@
 
       inherit (nixpkgs) lib;
 
-      pkgs = nixpkgs.legacyPackages.${system};
+      preferRemoteBuild = drv: drv.overrideAttrs (_: {
+        preferLocalBuild = false;
+        allowSubstitutes = true;
+      });
+
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (self: super: super.prefer-remote-fetch self super)
+        ];
+      };
 
       makeNixArchive = nix:
         pkgs.runCommand "nix-archive" {
@@ -51,11 +61,11 @@
       apps.release= flake-utils.lib.mkApp { drv = packages.release; };
 
       packages = {
-        nix-archives = pkgs.buildEnv {
+        nix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "nix-archives";
           paths = lib.attrValues nixArchives;
-        };
-        release = pkgs.writeScriptBin "release" ''
+        });
+        release = preferRemoteBuild (pkgs.writeScriptBin "release" ''
           #!${pkgs.stdenv.shell}
 
           PATH="${lib.makeBinPath (with pkgs; [
@@ -97,7 +107,7 @@
               --title "$GITHUB_REPOSITORY@$release" \
               --notes-file "$release_notes"
           fi
-        '';
+        '');
       };
     }
   );
