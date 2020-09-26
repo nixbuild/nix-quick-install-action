@@ -78,6 +78,7 @@ jobs:
             exit 1
           fi
       - name: Push to Cachix
+        if: github.repository_owner == 'nixbuild'
         run: |
           dd if=/dev/urandom of=random count=1
           cachix push nixbuild "$(nix add-to-store random)"
