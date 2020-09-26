@@ -4,15 +4,27 @@ set -eu
 set -o pipefail
 
 # Create user-writeable /nix
-sudo install -d -o "$USER" /nix
+if [[ $OSTYPE =~ darwin ]]; then
+  sys="x86_64-darwin"
+  sudo $SHELL -euo pipefail << EOF
+  echo nix >> /etc/synthetic.conf
+  echo -e "run\\tprivate/var/run" >> /etc/synthetic.conf
+  /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -B || true
+  diskutil apfs addVolume disk1 APFS nix -mountpoint /nix
+  mdutil -i off /nix
+  chown $USER /nix
+EOF
+else
+  sys="x86_64-linux"
+  sudo install -d -o "$USER" /nix
+fi
 
 # Fetch and unpack nix
-sys="x86_64-linux" # TODO auto detect
 rel="$(head -n1 "$RELEASE_FILE")"
 url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
 
 curl -sL --retry 3 --retry-connrefused "$url" | zstdcat | \
-  tar --no-overwrite-dir -xC /
+  tar --strip-components 1 -xC /nix
 
 # Setup nix.conf
 if [ -n "$NIX_CONF" ]; then
@@ -22,9 +34,14 @@ if [ -n "$NIX_CONF" ]; then
 fi
 
 # Install nix in profile
-nix="$(realpath -m /nix/.nix)"
+nix="$(readlink /nix/.nix)"
 MANPATH= . "$nix/etc/profile.d/nix.sh"
 "$nix/bin/nix-env" -i "$nix"
+
+# Certificate bundle is not detected by nix.sh on macOS.
+if [ -z "${NIX_SSL_CERT_FILE:-}" -a -e "/etc/ssl/cert.pem" ]; then
+  NIX_SSL_CERT_FILE="/etc/ssl/cert.pem"
+fi
 
 # Set env
 echo "::add-path::$HOME/.nix-profile/bin"
