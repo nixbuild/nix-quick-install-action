@@ -97,7 +97,7 @@ jobs:
       - name: Verify nix config
         run: |
           if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" "$HOME/.config/nix/nix.conf"; then
-            echo "Invalid substiturers config"
+            echo "Invalid substituters config"
             exit 1
           fi
       - name: Push to Cachix
