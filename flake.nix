@@ -14,7 +14,9 @@
   outputs = {
     self, flake-utils, nixpkgs,
     nixpkgs-nix-2_3_7, nixpkgs-nix-2_2_2, nixpkgs-nix-2_1_3
-  }: flake-utils.lib.eachSystem ["x86_64-linux"] (system:
+  }:
+  let allSystems = ["x86_64-linux" "x86_64-darwin"];
+  in flake-utils.lib.eachSystem allSystems (system:
 
     let
 
@@ -43,7 +45,7 @@
           NIX_STATE_DIR="$(pwd)/root/nix/var/nix" nix-store --load-db \
             < $closureInfo/registration
           ln -s $nix root/nix/.nix
-          tar -cvT $closureInfo/store-paths -C root . | zstd - -o "$out/$fileName"
+          tar -cvT $closureInfo/store-paths -C root nix | zstd - -o "$out/$fileName"
         '';
 
       nixArchives = lib.listToAttrs (map (nix: lib.nameValuePair
@@ -54,6 +56,11 @@
         (import nixpkgs-nix-2_2_2 { inherit system; }).nix
         (import nixpkgs-nix-2_1_3 { inherit system; }).nix
       ]);
+
+      allNixArchives = lib.crossLists (system: version: rec {
+        inherit system version;
+        fileName = "nix-${version}-${system}.tar.zstd";
+      }) [ allSystems (lib.attrNames nixArchives) ];
 
     in rec {
       defaultApp = apps.release;
@@ -100,9 +107,9 @@
 
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
-              lib.concatStringsSep " " (lib.mapAttrsToList (version: archive:
-                ''"$nix_archives/${archive.fileName}#nix-${version}-${system}"''
-              ) nixArchives)
+              lib.concatMapStringsSep " " ({ system, version, fileName }:
+                ''"$nix_archives/${fileName}#nix-${version}-${system}"''
+              ) allNixArchives
             } \
               --title "$GITHUB_REPOSITORY@$release" \
               --notes-file "$release_notes"
