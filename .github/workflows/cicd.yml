@@ -89,7 +89,7 @@ jobs:
             exit 1
           fi
       - name: Push to Cachix
-        if: github.repository_owner == 'nixbuild'
+        if: github.event_name == 'push' && github.repository_owner == 'nixbuild'
         run: |
           dd if=/dev/urandom of=random count=1
           cachix push nixbuild "$(nix add-to-store random)"
@@ -100,7 +100,7 @@ jobs:
       - build
       - test-nix
       - test-cachix
-    if: github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
