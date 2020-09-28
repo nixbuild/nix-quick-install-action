@@ -1,11 +1,5 @@
-v2
+v3
 
 ## Changes
 
-* Fix Nix configuration so that it also works for older releases of Nix.
-
-* Setup a proper Nix user profile so that tools like `nix-env` works as
-  expected.
-
-* Add CI tests verifying that the Cachix action (`cachix/cachix-action`) works
-  with this action.
+* Add support for MacOS runners

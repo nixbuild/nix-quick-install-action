@@ -3,23 +3,27 @@
 This GitHub Action installs [Nix](https://nixos.org/nix/) in single-user mode,
 and adds almost no time at all to your workflow's running time.
 
-For the moment, this action only support Linux runners.
-
-There are inputs for selecting which Nix version to use, and to specify
-`nix.conf` contents. The Nix installation is deterministic &ndash; for a given
+The Nix installation is deterministic &ndash; for a given
 release of this action the resulting Nix setup will always be identical, no
 matter when you run the action.
 
+* Supports Linux and MacOS runners
+
+* Single-user installation (no `nix-daemon`)
+
+* Installs in &asymp; 1 second on Linux, &asymp; 5 seconds on MacOS
+
+* Allows selecting Nix version via the `nix_version` input
+
+* Allows specifying `nix.conf` contents via the `nix_conf` input
+
+## Details
+
 The main motivation behind this action is to install Nix as quickly as possible
-in your GitHub workflow. If that isn't important (for example, if the other
-steps in the workflow takes much longer time than the Nix installer), you
-should probably use the [Install
-Nix](https://github.com/marketplace/actions/install-nix) action instead, which
-sets up Nix in multi-user mode (daemon mode), has support for MacOS and is also
-very quick.
-
-
-## Description
+in your GitHub workflow. If that isn't important, you should probably use the
+[Install Nix](https://github.com/marketplace/actions/install-nix) action
+instead, which sets up Nix in multi-user mode (daemon mode) using the official
+Nix installer.
 
 To make this action as quick as possible, the installation is minimal: no
 nix-daemon, no nix channels and no `NIX_PATH`. The nix store (`/nix/store`) is
