@@ -10,8 +10,8 @@ if [[ $OSTYPE =~ darwin ]]; then
   echo nix >> /etc/synthetic.conf
   echo -e "run\\tprivate/var/run" >> /etc/synthetic.conf
   /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -B || true
-  diskutil apfs addVolume disk1 APFS nix -mountpoint /nix
-  mdutil -i off /nix
+  tar -C /var/root -xzf "$(dirname "$0")/nix.sparsebundle.tgz"
+  hdiutil attach -mountpoint /nix /var/root/nix.sparsebundle
   chown $USER /nix
 EOF
 else
