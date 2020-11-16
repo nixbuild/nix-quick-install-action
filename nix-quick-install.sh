@@ -44,7 +44,7 @@ if [ -z "${NIX_SSL_CERT_FILE:-}" -a -e "/etc/ssl/cert.pem" ]; then
 fi
 
 # Set env
-echo "::add-path::$HOME/.nix-profile/bin"
-echo "::set-env name=NIX_PROFILES::/nix/var/nix/profiles/default $HOME/.nix-profile"
-echo "::set-env name=NIX_USER_PROFILE_DIR::/nix/var/nix/profiles/per-user/$USER"
-echo "::set-env name=NIX_SSL_CERT_FILE::$NIX_SSL_CERT_FILE"
+echo "$HOME/.nix-profile/bin" >> $GITHUB_PATH
+echo "NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile" >> $GITHUB_ENV
+echo "NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER" >> $GITHUB_ENV
+echo "NIX_SSL_CERT_FILE=$NIX_SSL_CERT_FILE" >> $GITHUB_ENV
