@@ -78,7 +78,7 @@ jobs:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
           nix_conf: ${{ matrix.nix_conf }}
-      - uses: cachix/cachix-action@v6
+      - uses: cachix/cachix-action@v8
         with:
           name: nixbuild
           signingKey: ${{ secrets.cachix_signing_key }}
