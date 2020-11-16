@@ -1,5 +1,5 @@
-v3
+v4
 
 ## Changes
 
-* Add support for MacOS runners
+* Replace usage of obsolete GitHub Actions API
