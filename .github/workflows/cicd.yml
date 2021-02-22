@@ -60,15 +60,14 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         nix_version:
           - 2.4pre20201205_a5d85d0
+          - 3.0pre20200829_f156513
           - 2.3.10
           - 2.3.7
           - 2.2.2
         include:
-          - os: ubuntu-latest
-            nix_version: 3.0pre20200829_f156513
+          - nix_version: 2.4pre20201205_a5d85d0
             nix_conf: experimental-features = nix-command flakes
-          - os: macos-latest
-            nix_version: 3.0pre20200829_f156513
+          - nix_version: 3.0pre20200829_f156513
             nix_conf: experimental-features = nix-command flakes
     runs-on: ${{ matrix.os }}
     steps:
