@@ -4,6 +4,8 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "nixpkgs/nixos-unstable-small";
+    nixpkgs-nix-unstable-20200829.url = "nixpkgs/eb6e2ac2c033a86afa6a606753aab0dbde8bddda";
+    nixpkgs-nix-2_3_10.url = "nixpkgs/31999436daf18dc4f98559304aa846613dd821bb";
     nixpkgs-nix-2_3_7.url = "nixpkgs/046427570ebe2726a2f21c3b51d84d29c86ebde5";
     nixpkgs-nix-2_2_2.url = "nixpkgs/5399f34ad9481849720d14605ce87b81abe202e9";
     nixpkgs-nix-2_2_2.flake = false;
@@ -12,8 +14,14 @@
   };
 
   outputs = {
-    self, flake-utils, nixpkgs,
-    nixpkgs-nix-2_3_7, nixpkgs-nix-2_2_2, nixpkgs-nix-2_1_3
+    self,
+    flake-utils,
+    nixpkgs,
+    nixpkgs-nix-unstable-20200829,
+    nixpkgs-nix-2_3_10,
+    nixpkgs-nix-2_3_7,
+    nixpkgs-nix-2_2_2,
+    nixpkgs-nix-2_1_3
   }:
   let allSystems = ["x86_64-linux" "x86_64-darwin"];
   in flake-utils.lib.eachSystem allSystems (system:
@@ -52,6 +60,8 @@
         nix.version (makeNixArchive nix)
       ) [
         pkgs.nixUnstable
+        nixpkgs-nix-unstable-20200829.legacyPackages.${system}.nixUnstable
+        nixpkgs-nix-2_3_10.legacyPackages.${system}.nix
         nixpkgs-nix-2_3_7.legacyPackages.${system}.nix
         (import nixpkgs-nix-2_2_2 { inherit system; }).nix
         (import nixpkgs-nix-2_1_3 { inherit system; }).nix
