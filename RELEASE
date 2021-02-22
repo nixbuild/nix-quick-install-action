@@ -1,5 +1,11 @@
-v4
+v5
 
 ## Changes
 
-* Replace usage of obsolete GitHub Actions API
+* Adds support for two new Nix versions: `2.3.10` and `2.4pre20201205_a5d85d0`.
+  All previously supported Nix versions are still supported.
+
+* Bumps the default Nix version from `2.3.7` to `2.3.10`.
+
+Note that (perhaps somewhat confusingly) `2.4pre20201205_a5d85d0` is a newer
+unstable version of Nix than `3.0pre20200829_f156513`.
