@@ -6,6 +6,7 @@
     nixpkgs.url = "nixpkgs/nixos-unstable-small";
     nixpkgs-nix-unstable-20201205.url = "nixpkgs/8377eef0274f7945be3b195ebb99398309a55826";
     nixpkgs-nix-unstable-20200829.url = "nixpkgs/eb6e2ac2c033a86afa6a606753aab0dbde8bddda";
+    nixpkgs-nix-2_3_12.url = "nixpkgs/edb5ff75f24e95e1ff2a05329e4c051de5eea4f2";
     nixpkgs-nix-2_3_10.url = "nixpkgs/31999436daf18dc4f98559304aa846613dd821bb";
     nixpkgs-nix-2_3_7.url = "nixpkgs/046427570ebe2726a2f21c3b51d84d29c86ebde5";
     nixpkgs-nix-2_2_2.url = "nixpkgs/5399f34ad9481849720d14605ce87b81abe202e9";
@@ -20,6 +21,7 @@
     nixpkgs,
     nixpkgs-nix-unstable-20201205,
     nixpkgs-nix-unstable-20200829,
+    nixpkgs-nix-2_3_12,
     nixpkgs-nix-2_3_10,
     nixpkgs-nix-2_3_7,
     nixpkgs-nix-2_2_2,
@@ -64,6 +66,7 @@
         pkgs.nixUnstable
         nixpkgs-nix-unstable-20201205.legacyPackages.${system}.nixUnstable
         nixpkgs-nix-unstable-20200829.legacyPackages.${system}.nixUnstable
+        nixpkgs-nix-2_3_12.legacyPackages.${system}.nix
         nixpkgs-nix-2_3_10.legacyPackages.${system}.nix
         nixpkgs-nix-2_3_7.legacyPackages.${system}.nix
         (import nixpkgs-nix-2_2_2 { inherit system; }).nix
