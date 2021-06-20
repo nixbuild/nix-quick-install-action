@@ -17,11 +17,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1613984754,
-        "narHash": "sha256-CGsiTsuRq0fWwWRzzn0a+MxO2EUJT3M3qt0/n9RUjMY=",
+        "lastModified": 1624208094,
+        "narHash": "sha256-oDG0Ma0eeRW0WFWxD3iDs+S4D5NObWQqwcZTdRkg1J8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "8377eef0274f7945be3b195ebb99398309a55826",
+        "rev": "88782d1606213f89eae97921beda5a64b763bde6",
         "type": "github"
       },
       "original": {
@@ -107,6 +107,21 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-nix-unstable-20201205": {
+      "locked": {
+        "lastModified": 1613984754,
+        "narHash": "sha256-CGsiTsuRq0fWwWRzzn0a+MxO2EUJT3M3qt0/n9RUjMY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "8377eef0274f7945be3b195ebb99398309a55826",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "rev": "8377eef0274f7945be3b195ebb99398309a55826",
+        "type": "indirect"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -115,7 +130,8 @@
         "nixpkgs-nix-2_2_2": "nixpkgs-nix-2_2_2",
         "nixpkgs-nix-2_3_10": "nixpkgs-nix-2_3_10",
         "nixpkgs-nix-2_3_7": "nixpkgs-nix-2_3_7",
-        "nixpkgs-nix-unstable-20200829": "nixpkgs-nix-unstable-20200829"
+        "nixpkgs-nix-unstable-20200829": "nixpkgs-nix-unstable-20200829",
+        "nixpkgs-nix-unstable-20201205": "nixpkgs-nix-unstable-20201205"
       }
     }
   },

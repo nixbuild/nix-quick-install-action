@@ -15,7 +15,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v0
-          nix_version: 3.0pre20200829_f156513
+          nix_version: 2.4pre20201205_a5d85d0
           nix_conf: experimental-features = nix-command flakes
       - name: Build nix archives
         id: build-nix-archives
@@ -33,6 +33,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         nix_version:
+          - 2.4pre20210601_5985b8b
           - 2.4pre20201205_a5d85d0
           - 3.0pre20200829_f156513
           - 2.3.10
@@ -59,12 +60,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         nix_version:
+          - 2.4pre20210601_5985b8b
           - 2.4pre20201205_a5d85d0
           - 3.0pre20200829_f156513
           - 2.3.10
           - 2.3.7
           - 2.2.2
         include:
+          - nix_version: 2.4pre20210601_5985b8b
+            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.4pre20201205_a5d85d0
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 3.0pre20200829_f156513
