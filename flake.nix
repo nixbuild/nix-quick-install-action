@@ -126,7 +126,9 @@
             echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" ''
               ## Supported Nix Versions
               ${lib.concatStringsSep "\n" (
-                map (v: "* ${v}") (lib.reverseList (lib.attrNames nixArchives))
+                map (v: "* ${v}") (
+                  lib.reverseList (lib.naturalSort (lib.attrNames nixArchives))
+                )
               )}
             ''}"
 
