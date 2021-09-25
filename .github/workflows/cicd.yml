@@ -33,9 +33,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         nix_version:
+          - 2.4pre20210908_3c56f62
           - 2.4pre20210601_5985b8b
           - 2.4pre20201205_a5d85d0
-          - 3.0pre20200829_f156513
+          - 2.3.15
+          - 2.3.14
           - 2.3.12
           - 2.3.10
           - 2.3.7
@@ -61,19 +63,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         nix_version:
+          - 2.4pre20210908_3c56f62
           - 2.4pre20210601_5985b8b
           - 2.4pre20201205_a5d85d0
-          - 3.0pre20200829_f156513
+          - 2.3.15
+          - 2.3.14
           - 2.3.12
           - 2.3.10
           - 2.3.7
           - 2.2.2
         include:
+          - nix_version: 2.4pre20210908_3c56f62
+            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.4pre20210601_5985b8b
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.4pre20201205_a5d85d0
-            nix_conf: experimental-features = nix-command flakes
-          - nix_version: 3.0pre20200829_f156513
             nix_conf: experimental-features = nix-command flakes
     runs-on: ${{ matrix.os }}
     steps:
@@ -123,7 +127,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.4pre20201205_a5d85d0
+          nix_version: 2.4pre20210908_3c56f62
           nix_conf: experimental-features = nix-command flakes
       - name: Build release script
         run: nix build .#release
