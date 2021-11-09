@@ -137,18 +137,18 @@
         "type": "indirect"
       }
     },
-    "nixpkgs-nix-unstable-20200829": {
+    "nixpkgs-nix-2_4": {
       "locked": {
-        "lastModified": 1600330882,
-        "narHash": "sha256-+1PjHOHXEajrMm6AzXZqQ/8ZoYGE4CGzkmGy+WUQAGs=",
+        "lastModified": 1636483627,
+        "narHash": "sha256-cdfUgplxnNpZEGodlmMvvPdN3D8T1LvWuZRY3dSwQyo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "eb6e2ac2c033a86afa6a606753aab0dbde8bddda",
+        "rev": "e912008eef096f52f28cf87492830c54ef334eb4",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "rev": "eb6e2ac2c033a86afa6a606753aab0dbde8bddda",
+        "rev": "e912008eef096f52f28cf87492830c54ef334eb4",
         "type": "indirect"
       }
     },
@@ -193,7 +193,7 @@
         "nixpkgs-nix-2_3_14": "nixpkgs-nix-2_3_14",
         "nixpkgs-nix-2_3_15": "nixpkgs-nix-2_3_15",
         "nixpkgs-nix-2_3_7": "nixpkgs-nix-2_3_7",
-        "nixpkgs-nix-unstable-20200829": "nixpkgs-nix-unstable-20200829",
+        "nixpkgs-nix-2_4": "nixpkgs-nix-2_4",
         "nixpkgs-nix-unstable-20201205": "nixpkgs-nix-unstable-20201205",
         "nixpkgs-nix-unstable-20210601": "nixpkgs-nix-unstable-20210601"
       }
