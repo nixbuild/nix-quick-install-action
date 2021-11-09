@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v7
+      - uses: nixbuild/nix-quick-install-action@v8
       - run: nix-build --version
 ```
 
@@ -64,7 +64,8 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it, and also enable the flakes functionality in the nix configuration:
+it (the default Nix version, 2.4, works fine), and enable the flakes
+functionality in the nix configuration:
 
 ```yaml
 name: Examples
@@ -74,9 +75,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v7
+      - uses: nixbuild/nix-quick-install-action@v8
         with:
-          nix_version: 2.4pre20210908_3c56f62
+          nix_version: 2.4
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
         run: nix build ./examples/flakes-simple
