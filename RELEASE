@@ -1,9 +1,7 @@
-v7
+v8
 
 ## Changes
 
-* Adds support for three new Nix versions: `2.3.15`, `2.3.14` and `2.4pre20210908_3c56f62`.
+* Adds support for Nix 2.4
 
-* Removes support for old unstable Nix version `3.0pre20200829_f156513`.
-
-* Bumps the default Nix version from `2.3.12` to `2.3.15`.
+* Bumps the default Nix version from 2.3.15 to 2.4.
