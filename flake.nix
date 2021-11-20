@@ -66,8 +66,8 @@
           tar -cvT $closureInfo/store-paths -C root nix | zstd - -o "$out/$fileName"
         '';
 
-      nixArchives = lib.listToAttrs (map (nix: lib.nameValuePair
-        nix.version (makeNixArchive nix)
+      nixVersions = lib.listToAttrs (map (nix: lib.nameValuePair
+        nix.version nix
       ) [
         pkgs.nixUnstable
         nixpkgs-nix-unstable-20210601.legacyPackages.${system}.nixUnstable
@@ -82,6 +82,12 @@
         (import nixpkgs-nix-2_1_3 { inherit system; }).nix
       ]);
 
+      nixPackages = lib.mapAttrs'
+        (v: p: lib.nameValuePair "nix-${lib.replaceStrings ["."] ["_"] v}" p)
+        nixVersions;
+
+      nixArchives = lib.mapAttrs (_: makeNixArchive) nixVersions;
+
       allNixArchives = lib.crossLists (system: version: rec {
         inherit system version;
         fileName = "nix-${version}-${system}.tar.zstd";
@@ -92,7 +98,7 @@
 
       apps.release= flake-utils.lib.mkApp { drv = packages.release; };
 
-      packages = {
+      packages = nixPackages // {
         nix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "nix-archives";
           paths = lib.attrValues nixArchives;
