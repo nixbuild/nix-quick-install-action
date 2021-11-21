@@ -95,3 +95,60 @@ You can see the flake definition for the above example in
 You can use the [Cachix action](https://github.com/marketplace/actions/cachix)
 together with this action, just make sure you put it after this action in your
 workflow.
+
+### Using specific Nix versions locally
+
+Locally, you can use this repository's Nix flake to install or run any of the
+versions of Nix that this action supports. This is very convenient if you
+quickly need to compare the behavior between different Nix versions.
+
+Simply specify the Nix version like this:
+
+```
+$ nix shell github:nixbuild/nix-quick-install-action#nix-2_2_2 -c nix --version
+nix (Nix) 2.2.2
+```
+
+You can list all available Nix versions like this:
+
+```
+$ nix flake show github:nixbuild/nix-quick-install-action
+github:nixbuild/nix-quick-install-action/ecad5f06be56c8938852cc0fd599a9ade9fea616
+├───apps
+│   ├───x86_64-darwin
+│   │   └───release: app
+│   └───x86_64-linux
+│       └───release: app
+├───defaultApp
+│   ├───x86_64-darwin: app
+│   └───x86_64-linux: app
+└───packages
+    ├───x86_64-darwin
+    │   ├───nix-2_1_3: package 'nix-2.1.3'
+    │   ├───nix-2_2_2: package 'nix-2.2.2'
+    │   ├───nix-2_3_10: package 'nix-2.3.10'
+    │   ├───nix-2_3_12: package 'nix-2.3.12'
+    │   ├───nix-2_3_14: package 'nix-2.3.14'
+    │   ├───nix-2_3_15: package 'nix-2.3.15'
+    │   ├───nix-2_3_7: package 'nix-2.3.7'
+    │   ├───nix-2_4: package 'nix-2.4'
+    │   ├───nix-2_4pre20201205_a5d85d0: package 'nix-2.4pre20201205_a5d85d0'
+    │   ├───nix-2_4pre20210601_5985b8b: package 'nix-2.4pre20210601_5985b8b'
+    │   ├───nix-2_4pre20210908_3c56f62: package 'nix-2.4pre20210908_3c56f62'
+    │   ├───nix-archives: package 'nix-archives'
+    │   └───release: package 'release'
+    └───x86_64-linux
+        ├───nix-2_1_3: package 'nix-2.1.3'
+        ├───nix-2_2_2: package 'nix-2.2.2'
+        ├───nix-2_3_10: package 'nix-2.3.10'
+        ├───nix-2_3_12: package 'nix-2.3.12'
+        ├───nix-2_3_14: package 'nix-2.3.14'
+        ├───nix-2_3_15: package 'nix-2.3.15'
+        ├───nix-2_3_7: package 'nix-2.3.7'
+        ├───nix-2_4: package 'nix-2.4'
+        ├───nix-2_4pre20201205_a5d85d0: package 'nix-2.4pre20201205_a5d85d0'
+        ├───nix-2_4pre20210601_5985b8b: package 'nix-2.4pre20210601_5985b8b'
+        ├───nix-2_4pre20210908_3c56f62: package 'nix-2.4pre20210908_3c56f62'
+        ├───nix-archives: package 'nix-archives'
+        └───release: package 'release'
+```
