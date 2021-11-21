@@ -16,6 +16,8 @@
     nixpkgs-nix-2_2_2.flake = false;
     nixpkgs-nix-2_1_3.url = "nixpkgs/2c9265c95075170ad210ed5635ecffcd36db6b84";
     nixpkgs-nix-2_1_3.flake = false;
+    nixpkgs-nix-2_0_4.url = "nixpkgs/47b85dc5ab8243a653c20d4851a3e6c966877251";
+    nixpkgs-nix-2_0_4.flake = false;
   };
 
   outputs = {
@@ -31,7 +33,8 @@
     nixpkgs-nix-2_3_10,
     nixpkgs-nix-2_3_7,
     nixpkgs-nix-2_2_2,
-    nixpkgs-nix-2_1_3
+    nixpkgs-nix-2_1_3,
+    nixpkgs-nix-2_0_4
   }:
   let allSystems = ["x86_64-linux" "x86_64-darwin"];
   in flake-utils.lib.eachSystem allSystems (system:
@@ -80,6 +83,7 @@
         nixpkgs-nix-2_3_7.legacyPackages.${system}.nix
         (import nixpkgs-nix-2_2_2 { inherit system; }).nix
         (import nixpkgs-nix-2_1_3 { inherit system; }).nix
+        (import nixpkgs-nix-2_0_4 { inherit system; }).nix
       ]);
 
       nixPackages = lib.mapAttrs'
