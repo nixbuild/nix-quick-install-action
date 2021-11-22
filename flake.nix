@@ -69,33 +69,37 @@
           tar -cvT $closureInfo/store-paths -C root nix | zstd - -o "$out/$fileName"
         '';
 
-      nixVersions = lib.listToAttrs (map (nix: lib.nameValuePair
+      nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
-      ) [
-        pkgs.nixUnstable
-        nixpkgs-nix-unstable-20210601.legacyPackages.${system}.nixUnstable
-        nixpkgs-nix-unstable-20201205.legacyPackages.${system}.nixUnstable
-        nixpkgs-nix-2_4.legacyPackages.${system}.nix
-        nixpkgs-nix-2_3_15.legacyPackages.${system}.nix
-        nixpkgs-nix-2_3_14.legacyPackages.${system}.nix
-        nixpkgs-nix-2_3_12.legacyPackages.${system}.nix
-        nixpkgs-nix-2_3_10.legacyPackages.${system}.nix
-        nixpkgs-nix-2_3_7.legacyPackages.${system}.nix
-        (import nixpkgs-nix-2_2_2 { inherit system; }).nix
-        (import nixpkgs-nix-2_1_3 { inherit system; }).nix
-        (import nixpkgs-nix-2_0_4 { inherit system; }).nix
-      ]);
+      ) (
+        [ pkgs.nixUnstable
+          nixpkgs-nix-unstable-20210601.legacyPackages.${system}.nixUnstable
+          nixpkgs-nix-unstable-20201205.legacyPackages.${system}.nixUnstable
+          nixpkgs-nix-2_4.legacyPackages.${system}.nix
+          nixpkgs-nix-2_3_15.legacyPackages.${system}.nix
+          nixpkgs-nix-2_3_14.legacyPackages.${system}.nix
+          nixpkgs-nix-2_3_12.legacyPackages.${system}.nix
+          nixpkgs-nix-2_3_10.legacyPackages.${system}.nix
+          nixpkgs-nix-2_3_7.legacyPackages.${system}.nix
+          (import nixpkgs-nix-2_2_2 { inherit system; }).nix
+          (import nixpkgs-nix-2_1_3 { inherit system; }).nix
+        ] ++ lib.optionals (system == "x86_64-linux") [
+          (import nixpkgs-nix-2_0_4 { inherit system; }).nix
+        ]
+      ));
 
       nixPackages = lib.mapAttrs'
         (v: p: lib.nameValuePair "nix-${lib.replaceStrings ["."] ["_"] v}" p)
-        nixVersions;
+        (nixVersions system);
 
-      nixArchives = lib.mapAttrs (_: makeNixArchive) nixVersions;
+      nixArchives = system: lib.mapAttrs (_: makeNixArchive) (nixVersions system);
 
-      allNixArchives = lib.crossLists (system: version: rec {
-        inherit system version;
-        fileName = "nix-${version}-${system}.tar.zstd";
-      }) [ allSystems (lib.attrNames nixArchives) ];
+      allNixArchives = lib.concatMap (system:
+        map (version: {
+          inherit system version;
+          fileName = "nix-${version}-${system}.tar.zstd";
+        }) (lib.attrNames (nixArchives system))
+      ) allSystems;
 
     in rec {
       defaultApp = apps.release;
@@ -105,7 +109,7 @@
       packages = nixPackages // {
         nix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "nix-archives";
-          paths = lib.attrValues nixArchives;
+          paths = lib.attrValues (nixArchives system);
         });
         release = preferRemoteBuild (pkgs.writeScriptBin "release" ''
           #!${pkgs.stdenv.shell}
@@ -134,10 +138,17 @@
             tail -n+2 "$release_file" > "$release_notes"
 
             echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" ''
-              ## Supported Nix Versions
+              ## Supported Nix Versions on Linux Runners
               ${lib.concatStringsSep "\n" (
                 map (v: "* ${v}") (
-                  lib.reverseList (lib.naturalSort (lib.attrNames nixArchives))
+                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-linux")))
+                )
+              )}
+
+              ## Supported Nix Versions on MacOS Runners
+              ${lib.concatStringsSep "\n" (
+                map (v: "* ${v}") (
+                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-darwin")))
                 )
               )}
             ''}"
