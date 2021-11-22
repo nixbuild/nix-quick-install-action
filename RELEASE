@@ -1,7 +1,10 @@
-v8
+v9
 
 ## Changes
 
-* Adds support for Nix 2.4
+* Removes support for the unstable Nix versions, since they have been superseded by the stable 2.4 release.
 
-* Bumps the default Nix version from 2.3.15 to 2.4.
+* Adds support for Nix 2.0.4 (released in 2018).
+
+* Added convenience flake outputs to allow users to build or run any version of Nix locally:
+  https://github.com/nixbuild/nix-quick-install-action/tree/v9#using-specific-nix-versions-locally
