@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v8
+      - uses: nixbuild/nix-quick-install-action@v9
       - run: nix-build --version
 ```
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v8
+      - uses: nixbuild/nix-quick-install-action@v9
         with:
           nix_version: 2.4
           nix_conf: experimental-features = nix-command flakes
@@ -98,18 +98,28 @@ workflow.
 
 ### Using specific Nix versions locally
 
-Locally, you can use this repository's Nix flake to install or run any of the
+Locally, you can use this repository's Nix flake to build or run any of the
 versions of Nix that this action supports. This is very convenient if you
 quickly need to compare the behavior between different Nix versions.
 
-Simply specify the Nix version like this:
+Build a specific version of Nix like this (requires you to use a version of Nix
+that supports flakes):
+
+```
+$ nix build github:nixbuild/nix-quick-install-action#nix-2_3_7
+
+$ ./result/bin/nix --version
+nix (Nix) 2.3.7
+```
+
+With `nix shell -c` you can also directly run Nix like this:
 
 ```
 $ nix shell github:nixbuild/nix-quick-install-action#nix-2_2_2 -c nix --version
 nix (Nix) 2.2.2
 ```
 
-You can list all available Nix versions like this:
+List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
@@ -147,3 +157,13 @@ github:nixbuild/nix-quick-install-action/a119d84a8d1b751b914a1f72192c9c31f8ecee5
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
+
+If you want to make sure that the version of Nix you're trying to build hasn't
+been removed in the latest revision of `nix-quick-install-action`, you can
+specify a specific release of `nix-quick-install-action` like this:
+
+```
+$ nix build github:nixbuild/nix-quick-install-action/v9#nix-2_3_7
+```
+
+Note that we've added `/v9` to the flake url above.
