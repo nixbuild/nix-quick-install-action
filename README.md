@@ -113,7 +113,7 @@ You can list all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/ecad5f06be56c8938852cc0fd599a9ade9fea616
+github:nixbuild/nix-quick-install-action/a119d84a8d1b751b914a1f72192c9c31f8ecee5e
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -132,12 +132,10 @@ github:nixbuild/nix-quick-install-action/ecad5f06be56c8938852cc0fd599a9ade9fea61
     │   ├───nix-2_3_15: package 'nix-2.3.15'
     │   ├───nix-2_3_7: package 'nix-2.3.7'
     │   ├───nix-2_4: package 'nix-2.4'
-    │   ├───nix-2_4pre20201205_a5d85d0: package 'nix-2.4pre20201205_a5d85d0'
-    │   ├───nix-2_4pre20210601_5985b8b: package 'nix-2.4pre20210601_5985b8b'
-    │   ├───nix-2_4pre20210908_3c56f62: package 'nix-2.4pre20210908_3c56f62'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
+        ├───nix-2_0_4: package 'nix-2.0.4'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
         ├───nix-2_3_10: package 'nix-2.3.10'
@@ -146,9 +144,6 @@ github:nixbuild/nix-quick-install-action/ecad5f06be56c8938852cc0fd599a9ade9fea61
         ├───nix-2_3_15: package 'nix-2.3.15'
         ├───nix-2_3_7: package 'nix-2.3.7'
         ├───nix-2_4: package 'nix-2.4'
-        ├───nix-2_4pre20201205_a5d85d0: package 'nix-2.4pre20201205_a5d85d0'
-        ├───nix-2_4pre20210601_5985b8b: package 'nix-2.4pre20210601_5985b8b'
-        ├───nix-2_4pre20210908_3c56f62: package 'nix-2.4pre20210908_3c56f62'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
