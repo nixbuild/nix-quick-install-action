@@ -34,14 +34,14 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         nix_version:
           - 2.4
-          - 2.3.15
-          - 2.3.14
-          - 2.3.12
-          - 2.3.10
-          - 2.3.7
-          - 2.2.2
-          - 2.1.3
-          - 2.0.4
+          # - 2.3.15
+          # - 2.3.14
+          # - 2.3.12
+          # - 2.3.10
+          # - 2.3.7
+          # - 2.2.2
+          # - 2.1.3
+          # - 2.0.4
         exclude:
           - os: macos-latest
             nix_version: 2.0.4
@@ -66,12 +66,12 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         nix_version:
           - 2.4
-          - 2.3.15
-          - 2.3.14
-          - 2.3.12
-          - 2.3.10
-          - 2.3.7
-          - 2.2.2
+          # - 2.3.15
+          # - 2.3.14
+          # - 2.3.12
+          # - 2.3.10
+          # - 2.3.7
+          # - 2.2.2
         include:
           - nix_version: 2.4
             nix_conf: experimental-features = nix-command flakes

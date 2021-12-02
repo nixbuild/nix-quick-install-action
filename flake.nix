@@ -53,16 +53,16 @@
 
       makeNixArchive = nix:
         pkgs.runCommand "nix-archive" {
-          buildInputs = [ nix pkgs.gnutar pkgs.zstd ];
+          buildInputs = [ nix pkgs.gnutar pkgs.gzip ];
           closureInfo = pkgs.closureInfo { rootPaths =  [ nix ]; };
-          fileName = "nix-${nix.version}-${system}.tar.zstd";
+          fileName = "nix-${nix.version}-${system}.tar.gz";
           inherit nix;
         } ''
           mkdir -p "$out" root/nix/var/nix
           NIX_STATE_DIR="$(pwd)/root/nix/var/nix" nix-store --load-db \
             < $closureInfo/registration
           ln -s $nix root/nix/.nix
-          tar -cvT $closureInfo/store-paths -C root nix | zstd - -o "$out/$fileName"
+          tar -czvT $closureInfo/store-paths -C root nix -f "$out/$fileName"
         '';
 
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
