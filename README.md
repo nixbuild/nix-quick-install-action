@@ -1,3 +1,7 @@
+## Fork
+
+This is a fork which uses gzip to build compiled nix archives, which tends to be a bit more commonly available than zstd.
+
 # Nix Quick Install Action
 
 This GitHub Action installs [Nix](https://nixos.org/nix/) in single-user mode,
