@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -eux
 set -o pipefail
 
 # Create user-writeable /nix
@@ -9,7 +9,7 @@ if [[ $OSTYPE =~ darwin ]]; then
   sudo $SHELL -euo pipefail << EOF
   echo nix >> /etc/synthetic.conf
   echo -e "run\\tprivate/var/run" >> /etc/synthetic.conf
-  /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -B || true
+  /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || true
   diskutil apfs addVolume disk1 APFS nix -mountpoint /nix
   mdutil -i off /nix
   chown $USER /nix
@@ -24,10 +24,9 @@ fi
 
 # Fetch and unpack nix
 rel="$(head -n1 "$RELEASE_FILE")"
-url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
+url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.gz"
 
-curl -sL --retry 3 --retry-connrefused "$url" | zstdcat | \
-  tar --strip-components 1 -xC /nix
+curl -sL --retry 3 --retry-connrefused "$url" | tar --strip-components 1 -xzC /nix
 
 # Setup nix.conf
 if [ -n "$NIX_CONF" ]; then

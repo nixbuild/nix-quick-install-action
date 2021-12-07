@@ -10,11 +10,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
-    runs-on: ubuntu-latest
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - uses: cachix/install-nix-action@v15
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v12
           nix_version: 2.7.0
@@ -37,7 +37,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         nix_version:
           - 2.8.0
           - 2.7.0

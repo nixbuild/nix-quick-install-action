@@ -103,7 +103,7 @@
       allNixArchives = lib.concatMap (system:
         map (version: {
           inherit system version;
-          fileName = "nix-${version}-${system}.tar.zstd";
+          fileName = "nix-${version}-${system}.tar.gz";
         }) (lib.attrNames (nixArchives system))
       ) allSystems;
 
