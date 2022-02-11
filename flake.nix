@@ -4,6 +4,8 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "nixpkgs/nixos-unstable-small";
+    nixpkgs-nix-2_6.url = "nixpkgs/8ea208739449a10d5deee5cea0f229ac3a65cfb6";
+    nixpkgs-nix-2_5.url = "nixpkgs/89f196fe781c53cb50fef61d3063fa5e8d61b6e5";
     nixpkgs-nix-2_4.url = "nixpkgs/e912008eef096f52f28cf87492830c54ef334eb4";
     nixpkgs-nix-2_3_15.url = "nixpkgs/9bd0be76b2219e8984566340e26a0f85caeb89cd";
     nixpkgs-nix-2_3_14.url = "nixpkgs/314f595ab1cd09a27ad66dd1283344fa5745e473";
@@ -22,6 +24,8 @@
     self,
     flake-utils,
     nixpkgs,
+    nixpkgs-nix-2_6,
+    nixpkgs-nix-2_5,
     nixpkgs-nix-2_4,
     nixpkgs-nix-2_3_15,
     nixpkgs-nix-2_3_14,
@@ -68,7 +72,9 @@
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
       ) (
-        [ nixpkgs-nix-2_4.legacyPackages.${system}.nix
+        [ nixpkgs-nix-2_6.legacyPackages.${system}.nix
+          nixpkgs-nix-2_5.legacyPackages.${system}.nix
+          nixpkgs-nix-2_4.legacyPackages.${system}.nix
           nixpkgs-nix-2_3_15.legacyPackages.${system}.nix
           nixpkgs-nix-2_3_14.legacyPackages.${system}.nix
           nixpkgs-nix-2_3_12.legacyPackages.${system}.nix
