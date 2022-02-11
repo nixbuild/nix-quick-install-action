@@ -1,8 +1,10 @@
-on:
-  - push
-  - pull_request
-
 name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
