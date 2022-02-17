@@ -1,8 +1,10 @@
-on:
-  - push
-  - pull_request
-
 name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -33,6 +35,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-10.15]
         nix_version:
+          - 2.6.0
+          - 2.5.1
           - 2.4
           - 2.3.15
           - 2.3.14
@@ -65,6 +69,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-10.15]
         nix_version:
+          - 2.6.0
+          - 2.5.1
           - 2.4
           - 2.3.15
           - 2.3.14
@@ -73,6 +79,10 @@ jobs:
           - 2.3.7
           - 2.2.2
         include:
+          - nix_version: 2.6.0
+            nix_conf: experimental-features = nix-command flakes
+          - nix_version: 2.5.1
+            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.4
             nix_conf: experimental-features = nix-command flakes
     runs-on: ${{ matrix.os }}
