@@ -1,10 +1,12 @@
-v9
+v10
 
 ## Changes
 
-* Removes support for the unstable Nix versions, since they have been superseded by the stable 2.4 release.
+* Adds support for Nix 2.5.1, 2.6.0 and 2.7pre20220127_558c4ee
 
-* Adds support for Nix 2.0.4 (released in 2018).
+* Changes default Nix version from 2.4 to 2.6.0
 
-* Added convenience flake outputs to allow users to build or run any version of Nix locally:
-  https://github.com/nixbuild/nix-quick-install-action/tree/v9#using-specific-nix-versions-locally
+## Known issues
+
+* `macos-latest` not currently not supported, use `macos-10.15` instead.
+  See https://github.com/nixbuild/nix-quick-install-action/issues/7
