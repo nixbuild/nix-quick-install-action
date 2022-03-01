@@ -35,6 +35,7 @@ jobs:
         os: [ubuntu-latest, macos-10.15]
         nix_version:
           - 2.7pre20220127_558c4ee
+          - 2.6.1
           - 2.6.0
           - 2.5.1
           - 2.4
@@ -70,6 +71,7 @@ jobs:
         os: [ubuntu-latest, macos-10.15]
         nix_version:
           - 2.7pre20220127_558c4ee
+          - 2.6.1
           - 2.6.0
           - 2.5.1
           - 2.4
@@ -81,6 +83,8 @@ jobs:
           - 2.2.2
         include:
           - nix_version: 2.7pre20220127_558c4ee
+            nix_conf: experimental-features = nix-command flakes
+          - nix_version: 2.6.1
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.6.0
             nix_conf: experimental-features = nix-command flakes
