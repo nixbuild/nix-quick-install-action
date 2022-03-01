@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "nixpkgs/nixos-unstable-small";
+    nixpkgs-nix-unstable.url = "nixpkgs/nixos-unstable-small";
     nixpkgs-nix-2_6_1.url = "nixpkgs/a4a3ef1016e6dddda8ebd3bde232ba5102a406e7";
     nixpkgs-nix-2_6_0.url = "nixpkgs/8ea208739449a10d5deee5cea0f229ac3a65cfb6";
     nixpkgs-nix-2_5_1.url = "nixpkgs/89f196fe781c53cb50fef61d3063fa5e8d61b6e5";
@@ -24,7 +24,7 @@
   outputs = {
     self,
     flake-utils,
-    nixpkgs,
+    nixpkgs-nix-unstable,
     nixpkgs-nix-2_6_1,
     nixpkgs-nix-2_6_0,
     nixpkgs-nix-2_5_1,
@@ -43,14 +43,14 @@
 
     let
 
-      inherit (nixpkgs) lib;
+      inherit (nixpkgs-nix-unstable) lib;
 
       preferRemoteBuild = drv: drv.overrideAttrs (_: {
         preferLocalBuild = false;
         allowSubstitutes = true;
       });
 
-      pkgs = import nixpkgs {
+      pkgs = import nixpkgs-nix-unstable {
         inherit system;
         overlays = [
           (self: super: super.prefer-remote-fetch self super)
