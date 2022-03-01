@@ -38,7 +38,7 @@
     nixpkgs-nix-2_1_3,
     nixpkgs-nix-2_0_4
   }:
-  let allSystems = ["x86_64-linux" "x86_64-darwin"];
+  let allSystems = ["x86_64-linux" "x86_64-darwin" "aarch64-linux"];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
@@ -107,7 +107,9 @@
     in rec {
       defaultApp = apps.release;
 
-      apps.release= flake-utils.lib.mkApp { drv = packages.release; };
+      apps.release = flake-utils.lib.mkApp { drv = packages.release; };
+
+      overlays = final: prev: nixPackages;
 
       packages = nixPackages // {
         nix-archives = preferRemoteBuild (pkgs.buildEnv {
