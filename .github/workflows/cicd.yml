@@ -61,6 +61,7 @@ jobs:
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
+          nix_on_tmpfs: true
       - name: Test nix
         run: nix-build -v --version
 
