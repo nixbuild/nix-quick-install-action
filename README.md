@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v10
+      - uses: nixbuild/nix-quick-install-action@v11
       - run: nix-build --version
 ```
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v10
+      - uses: nixbuild/nix-quick-install-action@v11
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -122,16 +122,38 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/22d8a3d6e4a5ce86b61a019e2ecc0057ab3f08e2
+github:nixbuild/nix-quick-install-action/a5018538f650039eebc26dd33b4ea3d05241ce27
 ├───apps
+│   ├───aarch64-linux
+│   │   └───release: app
 │   ├───x86_64-darwin
 │   │   └───release: app
 │   └───x86_64-linux
 │       └───release: app
 ├───defaultApp
+│   ├───aarch64-linux: app
 │   ├───x86_64-darwin: app
 │   └───x86_64-linux: app
+├───overlays
+│   ├───aarch64-linux: Nixpkgs overlay
+│   ├───x86_64-darwin: Nixpkgs overlay
+│   └───x86_64-linux: Nixpkgs overlay
 └───packages
+    ├───aarch64-linux
+    │   ├───nix-2_1_3: package 'nix-2.1.3'
+    │   ├───nix-2_2_2: package 'nix-2.2.2'
+    │   ├───nix-2_3_10: package 'nix-2.3.10'
+    │   ├───nix-2_3_12: package 'nix-2.3.12'
+    │   ├───nix-2_3_14: package 'nix-2.3.14'
+    │   ├───nix-2_3_15: package 'nix-2.3.15'
+    │   ├───nix-2_3_7: package 'nix-2.3.7'
+    │   ├───nix-2_4: package 'nix-2.4'
+    │   ├───nix-2_5_1: package 'nix-2.5.1'
+    │   ├───nix-2_6_0: package 'nix-2.6.0'
+    │   ├───nix-2_6_1: package 'nix-2.6.1'
+    │   ├───nix-2_7pre20220127_558c4ee: package 'nix-2.7pre20220127_558c4ee'
+    │   ├───nix-archives: package 'nix-archives'
+    │   └───release: package 'release'
     ├───x86_64-darwin
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
@@ -143,6 +165,7 @@ github:nixbuild/nix-quick-install-action/22d8a3d6e4a5ce86b61a019e2ecc0057ab3f08e
     │   ├───nix-2_4: package 'nix-2.4'
     │   ├───nix-2_5_1: package 'nix-2.5.1'
     │   ├───nix-2_6_0: package 'nix-2.6.0'
+    │   ├───nix-2_6_1: package 'nix-2.6.1'
     │   ├───nix-2_7pre20220127_558c4ee: package 'nix-2.7pre20220127_558c4ee'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
@@ -158,6 +181,7 @@ github:nixbuild/nix-quick-install-action/22d8a3d6e4a5ce86b61a019e2ecc0057ab3f08e
         ├───nix-2_4: package 'nix-2.4'
         ├───nix-2_5_1: package 'nix-2.5.1'
         ├───nix-2_6_0: package 'nix-2.6.0'
+        ├───nix-2_6_1: package 'nix-2.6.1'
         ├───nix-2_7pre20220127_558c4ee: package 'nix-2.7pre20220127_558c4ee'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
@@ -168,7 +192,7 @@ been removed in the latest revision of `nix-quick-install-action`, you can
 specify a specific release of `nix-quick-install-action` like this:
 
 ```
-$ nix build github:nixbuild/nix-quick-install-action/v10#nix-2_3_7
+$ nix build github:nixbuild/nix-quick-install-action/v11#nix-2_3_7
 ```
 
-Note that we've added `/v10` to the flake url above.
+Note that we've added `/v11` to the flake url above.
