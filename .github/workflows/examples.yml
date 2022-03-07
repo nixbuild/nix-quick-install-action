@@ -1,5 +1,11 @@
 name: Examples
-on: push
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
 jobs:
   minimal:
     runs-on: ubuntu-latest

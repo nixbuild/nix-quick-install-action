@@ -17,6 +17,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v10
+          nix_version: 2.6.0
           nix_conf: experimental-features = nix-command flakes
       - name: Build nix archives
         id: build-nix-archives
