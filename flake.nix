@@ -38,7 +38,7 @@
     nixpkgs-nix-2_1_3,
     nixpkgs-nix-2_0_4
   }:
-  let allSystems = ["x86_64-linux" "x86_64-darwin" "aarch64-linux"];
+  let allSystems = ["x86_64-linux" "x86_64-darwin"];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
