@@ -17,6 +17,9 @@ EOF
 else
   sys="x86_64-linux"
   sudo install -d -o "$USER" /nix
+  if [[ "$NIX_ON_TMPFS" == "true" || "$NIX_ON_TMPFS" == "True" || "$NIX_ON_TMPFS" == "TRUE" ]]; then
+    sudo mount -t tmpfs -o size=90%,mode=0755,gid="$(id -g)",uid="$(id -u)" tmpfs /nix
+  fi
 fi
 
 # Fetch and unpack nix

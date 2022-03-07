@@ -23,6 +23,16 @@ inputs:
       the NIX_USER_CONF_FILES environment variable. You can also set that
       variable yourself to control the Nix configuration.
 
+  nix_on_tmpfs:
+    required: true
+    default: false
+    description: |
+      Installs /nix on a tmpfs mount. This can make Nix operations faster, but
+      you risk running out of memory if your Nix store grows to big. Only
+      enable this if you're absolutely sure the size of your Nix store (and
+      database, logs etc) will be considerably less than the available memory.
+      This option does nothing on MacOS runners.
+
   nix_archives_url:
     required: false
     description: |
@@ -40,6 +50,7 @@ runs:
         NIX_VERSION: ${{ inputs.nix_version }}
         NIX_CONF: ${{ inputs.nix_conf }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
+        NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
 
 
 branding:
