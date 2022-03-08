@@ -19,6 +19,10 @@ jobs:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v11
           nix_version: 2.6.1
           nix_conf: experimental-features = nix-command flakes
+      - uses: cachix/cachix-action@v10
+        with:
+          name: nixbuild
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Build nix archives
         id: build-nix-archives
         run: |
@@ -109,7 +113,7 @@ jobs:
       - uses: cachix/cachix-action@v10
         with:
           name: nixbuild
-          signingKey: ${{ secrets.cachix_signing_key }}
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Verify nix config
         run: |
           if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" "$HOME/.config/nix/nix.conf"; then
@@ -144,6 +148,10 @@ jobs:
           nix_archives_url: file:///tmp/archives
           nix_version: 2.4
           nix_conf: experimental-features = nix-command flakes
+      - uses: cachix/cachix-action@v10
+        with:
+          name: nixbuild
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Build release script
         run: nix build .#release
       - name: Release if needed
