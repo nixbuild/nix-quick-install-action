@@ -6,7 +6,7 @@ inputs:
 
   nix_version:
     required: true
-    default: "2.6.1"
+    default: "2.7.0"
     description: |
       The version of Nix that should be installed
 
