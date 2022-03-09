@@ -1,13 +1,12 @@
-v11
+v12
 
 ## Changes
 
-* Adds support for Nix 2.6.1
+* Adds support for Nix 2.7.0
 
-* Changes default Nix version from 2.6.0 to 2.6.1
+* Changes default Nix version from 2.6.1 to 2.7.0
 
-* Adds support for setting up `/nix` on a `tmpfs` mount.
-  See https://github.com/nixbuild/nix-quick-install-action/blob/v11/action.yml#L26.
+* Removes support for Nix 2.7pre20220127_558c4ee
 
 ## Known issues
 
