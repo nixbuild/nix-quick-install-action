@@ -16,8 +16,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v11
-          nix_version: 2.6.1
+          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v12
+          nix_version: 2.7.0
           nix_conf: experimental-features = nix-command flakes
       - uses: cachix/cachix-action@v10
         with:
