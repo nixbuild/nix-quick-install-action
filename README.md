@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/b7ef39bced2009ef867ab33f3e962b31da79fc68
+github:nixbuild/nix-quick-install-action/1ad1d1910805642b0a1cbf5bcc8cdcd0e4c161b9
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -148,6 +148,7 @@ github:nixbuild/nix-quick-install-action/b7ef39bced2009ef867ab33f3e962b31da79fc6
     │   ├───nix-2_6_0: package 'nix-2.6.0'
     │   ├───nix-2_6_1: package 'nix-2.6.1'
     │   ├───nix-2_7_0: package 'nix-2.7.0'
+    │   ├───nix-2_8_0: package 'nix-2.8.0'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
@@ -164,6 +165,7 @@ github:nixbuild/nix-quick-install-action/b7ef39bced2009ef867ab33f3e962b31da79fc6
         ├───nix-2_6_0: package 'nix-2.6.0'
         ├───nix-2_6_1: package 'nix-2.6.1'
         ├───nix-2_7_0: package 'nix-2.7.0'
+        ├───nix-2_8_0: package 'nix-2.8.0'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
