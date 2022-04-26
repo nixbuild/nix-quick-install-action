@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.7.0, works fine), and enable the flakes
+it (the default Nix version, 2.8.0, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
