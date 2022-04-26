@@ -1,12 +1,11 @@
-v12
+v13
 
 ## Changes
 
-* Adds support for Nix 2.7.0
+* Adds support for Nix 2.8.0
 
-* Changes default Nix version from 2.6.1 to 2.7.0
+* Changes default Nix version from 2.7.0 to 2.8.0
 
-* Removes support for Nix 2.7pre20220127_558c4ee
 
 ## Known issues
 
