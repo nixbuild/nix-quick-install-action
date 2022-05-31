@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v12
+      - uses: nixbuild/nix-quick-install-action@v14
       - run: nix-build --version
 ```
 
@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.8.0, works fine), and enable the flakes
+it (the default Nix version, 2.8.1, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v12
+      - uses: nixbuild/nix-quick-install-action@v14
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/1ad1d1910805642b0a1cbf5bcc8cdcd0e4c161b9
+github:nixbuild/nix-quick-install-action/ff92fcfba97b83aa266b1cd68a30bdff446ef192
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -148,7 +148,7 @@ github:nixbuild/nix-quick-install-action/1ad1d1910805642b0a1cbf5bcc8cdcd0e4c161b
     │   ├───nix-2_6_0: package 'nix-2.6.0'
     │   ├───nix-2_6_1: package 'nix-2.6.1'
     │   ├───nix-2_7_0: package 'nix-2.7.0'
-    │   ├───nix-2_8_0: package 'nix-2.8.0'
+    │   ├───nix-2_8_1: package 'nix-2.8.1'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
@@ -165,7 +165,7 @@ github:nixbuild/nix-quick-install-action/1ad1d1910805642b0a1cbf5bcc8cdcd0e4c161b
         ├───nix-2_6_0: package 'nix-2.6.0'
         ├───nix-2_6_1: package 'nix-2.6.1'
         ├───nix-2_7_0: package 'nix-2.7.0'
-        ├───nix-2_8_0: package 'nix-2.8.0'
+        ├───nix-2_8_1: package 'nix-2.8.1'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
