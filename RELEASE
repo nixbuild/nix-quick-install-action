@@ -1,10 +1,10 @@
-v13
+v14
 
 ## Changes
 
-* Adds support for Nix 2.8.0
+* Replaces Nix 2.8.0 with 2.8.1
 
-* Changes default Nix version from 2.7.0 to 2.8.0
+* Changes default Nix version from 2.8.0 to 2.8.1
 
 
 ## Known issues
