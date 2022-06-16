@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.9.0, works fine), and enable the flakes
+it (the default Nix version, 2.9.1, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/a8a0a3303a7093e96675040d588597db7a64affd
+github:nixbuild/nix-quick-install-action/84843604a26a0367e59cb0044496bc2ca8d14701
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -149,7 +149,7 @@ github:nixbuild/nix-quick-install-action/a8a0a3303a7093e96675040d588597db7a64aff
     │   ├───nix-2_6_1: package 'nix-2.6.1'
     │   ├───nix-2_7_0: package 'nix-2.7.0'
     │   ├───nix-2_8_1: package 'nix-2.8.1'
-    │   ├───nix-2_9_0: package 'nix-2.9.0'
+    │   ├───nix-2_9_1: package 'nix-2.9.1'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
@@ -167,7 +167,7 @@ github:nixbuild/nix-quick-install-action/a8a0a3303a7093e96675040d588597db7a64aff
         ├───nix-2_6_1: package 'nix-2.6.1'
         ├───nix-2_7_0: package 'nix-2.7.0'
         ├───nix-2_8_1: package 'nix-2.8.1'
-        ├───nix-2_9_0: package 'nix-2.9.0'
+        ├───nix-2_9_1: package 'nix-2.9.1'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
