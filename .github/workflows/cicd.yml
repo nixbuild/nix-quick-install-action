@@ -17,6 +17,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v15
+          nix_version: 2.9.0
           nix_conf: experimental-features = nix-command flakes
       - uses: cachix/cachix-action@v10
         with:
