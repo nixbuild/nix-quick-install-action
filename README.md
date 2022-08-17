@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v14
+      - uses: nixbuild/nix-quick-install-action@v17
       - run: nix-build --version
 ```
 
@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.9.1, works fine), and enable the flakes
+it (the default Nix version, 2.10.3, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v14
+      - uses: nixbuild/nix-quick-install-action@v17
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/84843604a26a0367e59cb0044496bc2ca8d14701
+github:nixbuild/nix-quick-install-action/126accb4048a668f2aa306bf26dc5921d0213fd6
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -136,6 +136,7 @@ github:nixbuild/nix-quick-install-action/84843604a26a0367e59cb0044496bc2ca8d1470
 │   └───x86_64-linux: Nixpkgs overlay
 └───packages
     ├───x86_64-darwin
+    │   ├───nix-2_10_3: package 'nix-2.10.3'
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
     │   ├───nix-2_3_10: package 'nix-2.3.10'
@@ -150,10 +151,12 @@ github:nixbuild/nix-quick-install-action/84843604a26a0367e59cb0044496bc2ca8d1470
     │   ├───nix-2_7_0: package 'nix-2.7.0'
     │   ├───nix-2_8_1: package 'nix-2.8.1'
     │   ├───nix-2_9_1: package 'nix-2.9.1'
+    │   ├───nix-2_9_2: package 'nix-2.9.2'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
         ├───nix-2_0_4: package 'nix-2.0.4'
+        ├───nix-2_10_3: package 'nix-2.10.3'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
         ├───nix-2_3_10: package 'nix-2.3.10'
@@ -168,6 +171,7 @@ github:nixbuild/nix-quick-install-action/84843604a26a0367e59cb0044496bc2ca8d1470
         ├───nix-2_7_0: package 'nix-2.7.0'
         ├───nix-2_8_1: package 'nix-2.8.1'
         ├───nix-2_9_1: package 'nix-2.9.1'
+        ├───nix-2_9_2: package 'nix-2.9.2'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
 ```
