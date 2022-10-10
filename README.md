@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v17
+      - uses: nixbuild/nix-quick-install-action@v18
       - run: nix-build --version
 ```
 
@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.10.3, works fine), and enable the flakes
+it (the default Nix version, 2.11.0, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nixbuild/nix-quick-install-action@v17
+      - uses: nixbuild/nix-quick-install-action@v18
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/126accb4048a668f2aa306bf26dc5921d0213fd6
+github:nixbuild/nix-quick-install-action/5763b967413132cd83c39a032b5c4b83f3cdbe38
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -137,6 +137,7 @@ github:nixbuild/nix-quick-install-action/126accb4048a668f2aa306bf26dc5921d0213fd
 └───packages
     ├───x86_64-darwin
     │   ├───nix-2_10_3: package 'nix-2.10.3'
+    │   ├───nix-2_11_0: package 'nix-2.11.0'
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
     │   ├───nix-2_3_10: package 'nix-2.3.10'
@@ -157,6 +158,7 @@ github:nixbuild/nix-quick-install-action/126accb4048a668f2aa306bf26dc5921d0213fd
     └───x86_64-linux
         ├───nix-2_0_4: package 'nix-2.0.4'
         ├───nix-2_10_3: package 'nix-2.10.3'
+        ├───nix-2_11_0: package 'nix-2.11.0'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
         ├───nix-2_3_10: package 'nix-2.3.10'
