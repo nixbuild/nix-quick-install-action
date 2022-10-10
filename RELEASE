@@ -1,10 +1,12 @@
-v17
+v18
 
 ## Changes
 
-* Adds Nix 2.9.2 and 2.10.3
+* Adds Nix 2.11.0
 
-* Changes default Nix version from 2.9.1 to 2.10.3
+* Changes default Nix version from 2.10.3 to 2.11.0
+
+* Improves error message when SSH key is invalid or inaccessible
 
 
 ## Known issues
