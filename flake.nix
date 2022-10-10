@@ -3,6 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs-nix-2_11_0.url = "nixpkgs/6e56024e67fb31c07d3531965d6c9210e638e84b";
     nixpkgs-nix-2_10_3.url = "nixpkgs/ed0e38f28d60055832397382c4ca471d2bc1b173";
     nixpkgs-nix-2_9_2.url = "nixpkgs/8404dc74ef972c37009be6b20086ab7bd5e45f21";
     nixpkgs-nix-2_9_1.url = "nixpkgs/0e51dce7781574bbe5c99f649ae8bf157c268d76";
@@ -28,6 +29,7 @@
   outputs = {
     self,
     flake-utils,
+    nixpkgs-nix-2_11_0,
     nixpkgs-nix-2_10_3,
     nixpkgs-nix-2_9_2,
     nixpkgs-nix-2_9_1,
@@ -51,14 +53,14 @@
 
     let
 
-      inherit (nixpkgs-nix-2_10_3) lib;
+      inherit (nixpkgs-nix-2_11_0) lib;
 
       preferRemoteBuild = drv: drv.overrideAttrs (_: {
         preferLocalBuild = false;
         allowSubstitutes = true;
       });
 
-      pkgs = import nixpkgs-nix-2_10_3 {
+      pkgs = import nixpkgs-nix-2_11_0 {
         inherit system;
         overlays = [
           (self: super: super.prefer-remote-fetch self super)
@@ -82,7 +84,8 @@
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
       ) (
-        [ nixpkgs-nix-2_10_3.legacyPackages.${system}.nix
+        [ nixpkgs-nix-2_11_0.legacyPackages.${system}.nix
+          nixpkgs-nix-2_10_3.legacyPackages.${system}.nix
           nixpkgs-nix-2_9_2.legacyPackages.${system}.nix
           nixpkgs-nix-2_9_1.legacyPackages.${system}.nix
           nixpkgs-nix-2_8_1.legacyPackages.${system}.nix
