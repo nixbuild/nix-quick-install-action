@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, macos-10.15, macos-11, macos-12]
+        os: [ubuntu-22.04, macos-12]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +28,6 @@ jobs:
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-          skipPush: ${{ matrix.os == 'macos-10.15' }}
       - name: Build nix archives
         id: build-nix-archives
         run: |
@@ -36,7 +35,7 @@ jobs:
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v3
         with:
-          name: nix-archives-${{ matrix.os }}
+          name: nix-archives-${{ runner.os }}
           path: ${{ steps.build-nix-archives.outputs.result }}/
 
   test-nix:
@@ -77,7 +76,7 @@ jobs:
       - uses: actions/download-artifact@v3
         id: nix-archives
         with:
-          name: nix-archives-${{ matrix.os }}
+          name: nix-archives-${{ runner.os }}
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
@@ -136,7 +135,7 @@ jobs:
       - uses: actions/download-artifact@v3
         id: nix-archives
         with:
-          name: nix-archives-${{ matrix.os }}
+          name: nix-archives-${{ runner.os }}
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
@@ -169,11 +168,11 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
-          name: nix-archives-ubuntu-latest
+          name: nix-archives-Linux
           path: /tmp/archives
       - uses: actions/download-artifact@v3
         with:
-          name: nix-archives-macos-12
+          name: nix-archives-macOS
           path: /tmp/archives
       - uses: ./
         with:
