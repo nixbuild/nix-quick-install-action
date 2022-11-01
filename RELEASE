@@ -1,15 +1,14 @@
-v18
+v19
 
 ## Changes
 
-* Adds Nix 2.11.0
+* Adds support for the GitHub Actions runners `macos-11`, `macos-12`, `ubuntu-18.04` and `ubuntu-22.04`, in addition to the already supported runners `macos-10.15` and `ubuntu-20.04 / ubuntu-latest`. This fixes the long-standing issue https://github.com/nixbuild/nix-quick-install-action/issues/7.
 
-* Changes default Nix version from 2.10.3 to 2.11.0
+## Supported runners
 
-* Improves error message when SSH key is invalid or inaccessible
-
-
-## Known issues
-
-* `macos-latest` not currently not supported, use `macos-10.15` instead.
-  See https://github.com/nixbuild/nix-quick-install-action/issues/7
+* ubuntu-18.04
+* ubuntu-20.04
+* ubuntu-22.04
+* macos-10.15
+* macos-11
+* macos-12
