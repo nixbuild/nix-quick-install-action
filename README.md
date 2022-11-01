@@ -7,7 +7,7 @@ The Nix installation is deterministic &ndash; for a given
 release of this action the resulting Nix setup will always be identical, no
 matter when you run the action.
 
-* Supports Linux and MacOS 10.15 runners
+* Supports all Linux and MacOS runners
 
 * Single-user installation (no `nix-daemon`)
 
@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v18
+      - uses: nixbuild/nix-quick-install-action@v19
       - run: nix-build --version
 ```
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v18
+      - uses: nixbuild/nix-quick-install-action@v19
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
