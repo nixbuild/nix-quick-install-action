@@ -27,7 +27,7 @@ jobs:
         id: build-nix-archives
         run: |
           nix build -v .#nix-archives
-          echo "::set-output name=result::$(readlink result)"
+          echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v2
         with:
           name: nix-archives-${{ matrix.os }}
