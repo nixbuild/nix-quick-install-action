@@ -173,14 +173,6 @@ jobs:
           path: /tmp/archives
       - uses: actions/download-artifact@v3
         with:
-          name: nix-archives-macos-10.15
-          path: /tmp/archives
-      - uses: actions/download-artifact@v3
-        with:
-          name: nix-archives-macos-11
-          path: /tmp/archives
-      - uses: actions/download-artifact@v3
-        with:
           name: nix-archives-macos-12
           path: /tmp/archives
       - uses: ./
