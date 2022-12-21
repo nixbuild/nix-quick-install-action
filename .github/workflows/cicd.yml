@@ -31,7 +31,7 @@ jobs:
       - name: Build nix archives
         id: build-nix-archives
         run: |
-          nix build -v .#nix-archives
+          nix build .#nix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v3
         with:
