@@ -24,7 +24,6 @@ jobs:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v19
           nix_version: 2.11.0
           nix_conf: experimental-features = nix-command flakes
-          nix_on_tmpfs: true
       - uses: cachix/cachix-action@v12
         with:
           name: nixbuild
