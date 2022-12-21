@@ -61,6 +61,21 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-nix-2_12_0": {
+      "locked": {
+        "lastModified": 1671692767,
+        "narHash": "sha256-D2XVX2BdLhzkMbXgjbYxXKhYozhOOJH71UcQQPQxRug=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
+        "type": "indirect"
+      }
+    },
     "nixpkgs-nix-2_1_3": {
       "flake": false,
       "locked": {
@@ -204,6 +219,7 @@
         "nixpkgs-nix-2_0_4": "nixpkgs-nix-2_0_4",
         "nixpkgs-nix-2_10_3": "nixpkgs-nix-2_10_3",
         "nixpkgs-nix-2_11_0": "nixpkgs-nix-2_11_0",
+        "nixpkgs-nix-2_12_0": "nixpkgs-nix-2_12_0",
         "nixpkgs-nix-2_1_3": "nixpkgs-nix-2_1_3",
         "nixpkgs-nix-2_2_2": "nixpkgs-nix-2_2_2",
         "nixpkgs-nix-2_3_15": "nixpkgs-nix-2_3_15",
