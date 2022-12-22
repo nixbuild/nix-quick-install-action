@@ -1,14 +1,9 @@
-v19
+v20
 
 ## Changes
 
-* Adds support for the GitHub Actions runners `macos-11`, `macos-12`, `ubuntu-18.04` and `ubuntu-22.04`, in addition to the already supported runners `macos-10.15` and `ubuntu-20.04 / ubuntu-latest`. This fixes the long-standing issue https://github.com/nixbuild/nix-quick-install-action/issues/7.
+* Adds the Nix versions 2.12.0, 2.11.1 and 2.3.16
 
-## Supported runners
+* Changes the default Nix version from 2.11.0 to 2.12.0
 
-* ubuntu-18.04
-* ubuntu-20.04
-* ubuntu-22.04
-* macos-10.15
-* macos-11
-* macos-12
+* Removes the Nix versions 2.11.0, 2.9.1, 2.6.0, 2.3.15, 2.3.14, 2.3.12, 2.3.10, 2.3.7. All of these versions has been obsoleted by newer minor revisions.
