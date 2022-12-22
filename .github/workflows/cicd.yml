@@ -24,7 +24,6 @@ jobs:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v19
           nix_version: 2.11.0
           nix_conf: experimental-features = nix-command flakes
-          nix_on_tmpfs: true
       - uses: cachix/cachix-action@v12
         with:
           name: nixbuild
@@ -32,7 +31,7 @@ jobs:
       - name: Build nix archives
         id: build-nix-archives
         run: |
-          nix build -v .#nix-archives
+          nix build .#nix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v3
         with:
@@ -52,21 +51,16 @@ jobs:
           - macos-11
           - macos-10.15
         nix_version:
+          - 2.12.0
           - 2.11.0
           - 2.10.3
           - 2.9.2
-          - 2.9.1
           - 2.8.1
           - 2.7.0
           - 2.6.1
-          - 2.6.0
           - 2.5.1
           - 2.4
           - 2.3.15
-          - 2.3.14
-          - 2.3.12
-          - 2.3.10
-          - 2.3.7
           - 2.2.2
           - 2.1.3
           - 2.0.4
@@ -105,38 +99,31 @@ jobs:
           - macos-11
           - macos-10.15
         nix_version:
+          - 2.12.0
           - 2.11.0
           - 2.10.3
           - 2.9.2
-          - 2.9.1
           - 2.8.1
           - 2.7.0
           - 2.6.1
-          - 2.6.0
           - 2.5.1
           - 2.4
           - 2.3.15
-          - 2.3.14
-          - 2.3.12
-          - 2.3.10
-          - 2.3.7
           - 2.2.2
         include:
+          - nix_version: 2.12.0
+            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.11.0
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.10.3
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.9.2
             nix_conf: experimental-features = nix-command flakes
-          - nix_version: 2.9.1
-            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.8.1
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.7.0
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.6.1
-            nix_conf: experimental-features = nix-command flakes
-          - nix_version: 2.6.0
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.5.1
             nix_conf: experimental-features = nix-command flakes
