@@ -51,11 +51,7 @@
           inherit nix;
         } ''
           mkdir -p "$out" root/nix/var/{nix,nix-quick-install-action}
-          NIX_STATE_DIR="$(pwd)/root/nix/var/nix" nix-store --load-db \
-            < $closureInfo/registration
           ln -s $nix root/nix/var/nix-quick-install-action/nix
-          # Leave this in for one release so we still can bootstrap our CI
-          ln -s $nix root/nix/.nix
           cp -t root/nix/var/nix-quick-install-action $closureInfo/registration
           tar -cvT $closureInfo/store-paths -C root nix | zstd -o "$out/$fileName"
         '';
