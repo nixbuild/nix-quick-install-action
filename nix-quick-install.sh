@@ -50,13 +50,10 @@ curl -sL --retry 3 --retry-connrefused "$url" | zstd -df - -o "$archive"
 
 # Unpack nix
 if [[ "$sys" =~ .*-darwin ]]; then
-  # MacOS tar doesn't have the --skip-old-files, so we have to ignore error
-  # code 2
-  ret=0
-  tar --keep-old-files --strip-components 1 -x -f "$archive" -C /nix || ret=$?
-  if [[ "$ret" != 0 && "$ret" != 2 ]]; then
-    exit "$ret"
-  fi
+  # MacOS tar doesn't have the --skip-old-files, so we use rsync instead
+  tmpdir="$(mktemp -d)"
+  tar --keep-old-files --strip-components 1 -x -f "$archive" -C "$tmpdir"
+  rsync --archive --ignore-existing "$tmpdir/" /nix/
 else
   tar --skip-old-files --strip-components 1 -x -f "$archive" -C /nix
 fi
