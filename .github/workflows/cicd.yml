@@ -93,8 +93,11 @@ jobs:
         run: nix-build -v --version
       - name: Add to store
         run: |
-          echo 12345 > file
-          nix-store --add ./file
+          file="$(mktemp)"
+          echo "$RANDOM" > "$file"
+          path="$(nix-store --add "$file")"
+          mkdir -p ~/.cache/nix
+          ln -s "$path" ~/.cache/nix/test-path
 
   test-cachix:
     needs: build
@@ -234,7 +237,9 @@ jobs:
       - name: Test nix
         run: nix-build -v --version
       - name: Verify store path
-        run: nix-store --verify-path /nix/store/9qfc1g7h2ihpgqs3ihd3a7jhhgp8k8iy-file
+        run: |
+          stat ~/.cache/nix/test-path
+          nix-store --verify-path ~/.cache/nix/test-path
 
   release:
     runs-on: ubuntu-latest
