@@ -3,9 +3,28 @@
 set -eu
 set -o pipefail
 
-# Create user-writeable /nix
-if [[ $OSTYPE =~ darwin ]]; then
-  sys="x86_64-darwin"
+# Figure out system type (TODO don't assume x86_64)
+case "$OSTYPE" in
+  darwin*)
+    sys="x86_64-darwin"
+    ;;
+  linux*)
+    sys="x86_64-linux"
+    ;;
+  *)
+    echo >& "unsupported OS type: $OSTYPE"
+    exit 1
+esac
+
+# Make sure /nix exists and is writeable
+if [ -a /nix ]; then
+  if ! [ -w /nix ]; then
+    echo >&2 "/nix exists but is not writeable, can't set up nix-quick-install-action"
+    exit 1
+  else
+    rm -rf /nix/var/nix-quick-install-action
+  fi
+elif [[ "$sys" =~ .*-darwin ]]; then
   sudo $SHELL -euo pipefail << EOF
   echo nix >> /etc/synthetic.conf
   echo -e "run\\tprivate/var/run" >> /etc/synthetic.conf
@@ -17,19 +36,28 @@ if [[ $OSTYPE =~ darwin ]]; then
   chown $USER /nix
 EOF
 else
-  sys="x86_64-linux"
   sudo install -d -o "$USER" /nix
   if [[ "$NIX_ON_TMPFS" == "true" || "$NIX_ON_TMPFS" == "True" || "$NIX_ON_TMPFS" == "TRUE" ]]; then
     sudo mount -t tmpfs -o size=90%,mode=0755,gid="$(id -g)",uid="$(id -u)" tmpfs /nix
   fi
 fi
 
-# Fetch and unpack nix
+# Fetch nix archive
 rel="$(head -n1 "$RELEASE_FILE")"
 url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
+archive="$(mktemp)"
+curl -sL --retry 3 --retry-connrefused "$url" | zstd -df - -o "$archive"
 
-curl -sL --retry 3 --retry-connrefused "$url" | zstdcat | \
-  tar --strip-components 1 -xC /nix
+# Unpack nix
+if [[ "$sys" =~ .*-darwin ]]; then
+  # MacOS tar doesn't have the --skip-old-files, so we use rsync instead
+  tmpdir="$(mktemp -d)"
+  tar --keep-old-files --strip-components 1 -x -f "$archive" -C "$tmpdir"
+  rsync --archive --ignore-existing "$tmpdir/" /nix/
+else
+  tar --skip-old-files --strip-components 1 -x -f "$archive" -C /nix
+fi
+rm -f "$archive"
 
 # Setup nix.conf
 if [ -n "$NIX_CONF" ]; then
@@ -38,8 +66,11 @@ if [ -n "$NIX_CONF" ]; then
   printenv NIX_CONF > "$NIX_CONF_FILE"
 fi
 
+# Populate the nix db
+nix="$(readlink /nix/var/nix-quick-install-action/nix)"
+"$nix/bin/nix-store" --load-db < /nix/var/nix-quick-install-action/registration
+
 # Install nix in profile
-nix="$(readlink /nix/.nix)"
 MANPATH= . "$nix/etc/profile.d/nix.sh"
 "$nix/bin/nix-env" -i "$nix"
 
