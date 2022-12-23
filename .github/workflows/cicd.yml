@@ -73,6 +73,12 @@ jobs:
             nix_version: 2.0.4
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: divnix/nix-cache-action@v3.0.11-nix
+        with:
+          key: test-${{matrix.os}}-nix-${{matrix.nix_version}}
+          path: |
+            /nix
+            ~/.cache/nix
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         id: nix-archives
@@ -85,6 +91,10 @@ jobs:
           nix_on_tmpfs: true
       - name: Test nix
         run: nix-build -v --version
+      - name: Add to store
+        run: |
+          echo 12345 > file
+          nix-store --add ./file
 
   test-cachix:
     needs: build
@@ -158,12 +168,69 @@ jobs:
           dd if=/dev/urandom of=random count=1
           cachix push nixbuild "$(nix add-to-store random)"
 
+  test-overwrite-nix-dir:
+    needs: test
+    continue-on-error: true
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - macos-12
+          - macos-11
+          - macos-10.15
+        nix_version:
+          - 2.12.0
+          - 2.11.1
+          - 2.10.3
+          - 2.9.2
+          - 2.8.1
+          - 2.7.0
+          - 2.6.1
+          - 2.5.1
+          - 2.4
+          - 2.3.16
+          - 2.2.2
+          - 2.1.3
+          - 2.0.4
+        exclude:
+          - os: macos-10.15
+            nix_version: 2.0.4
+          - os: macos-11
+            nix_version: 2.0.4
+          - os: macos-12
+            nix_version: 2.0.4
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: divnix/nix-cache-action@v3.0.11-nix
+        with:
+          key: test-${{matrix.os}}-nix-${{matrix.nix_version}}
+          path: |
+            /nix
+            ~/.cache/nix
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        id: nix-archives
+        with:
+          name: nix-archives-${{ runner.os }}
+      - uses: ./
+        with:
+          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
+          nix_version: ${{ matrix.nix_version }}
+          nix_on_tmpfs: true
+      - name: Test nix
+        run: nix-build -v --version
+      - name: Verify store path
+        run: nix-store --verify-path /nix/store/9qfc1g7h2ihpgqs3ihd3a7jhhgp8k8iy-file
+
   release:
     runs-on: ubuntu-latest
     needs:
       - build
       - test
       - test-cachix
+      - test-overwrite-nix-dir
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v3
