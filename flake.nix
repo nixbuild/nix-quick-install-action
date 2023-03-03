@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-nix-2_13_3.url = "nixpkgs/36ea86257bfbbc1d7f52f5676082e2f4c33e9b19";
+    nixpkgs-nix-2_14_1.url = "nixpkgs/96cc38b1e808343f21d34b18ad13b336ac1b400b";
     nixpkgs-nix-2_9_2.url = "nixpkgs/593d839e8fadea1183e071186ae1b584792d4884";
     nixpkgs-nix-2_5_1.url = "nixpkgs/89f196fe781c53cb50fef61d3063fa5e8d61b6e5";
     nixpkgs-nix-2_4.url = "nixpkgs/e912008eef096f52f28cf87492830c54ef334eb4";
@@ -18,7 +18,7 @@
   outputs = {
     self,
     flake-utils,
-    nixpkgs-nix-2_13_3,
+    nixpkgs-nix-2_14_1,
     nixpkgs-nix-2_9_2,
     nixpkgs-nix-2_5_1,
     nixpkgs-nix-2_4,
@@ -31,14 +31,14 @@
 
     let
 
-      inherit (nixpkgs-nix-2_13_3) lib;
+      inherit (nixpkgs-nix-2_14_1) lib;
 
       preferRemoteBuild = drv: drv.overrideAttrs (_: {
         preferLocalBuild = false;
         allowSubstitutes = true;
       });
 
-      pkgs = import nixpkgs-nix-2_13_3 {
+      pkgs = import nixpkgs-nix-2_14_1 {
         inherit system;
         overlays = [
           (self: super: super.prefer-remote-fetch self super)
@@ -61,17 +61,18 @@
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
       ) (
-        [ nixpkgs-nix-2_13_3.legacyPackages.${system}.nixVersions.nix_2_13
-          nixpkgs-nix-2_13_3.legacyPackages.${system}.nixVersions.nix_2_12
-          nixpkgs-nix-2_13_3.legacyPackages.${system}.nixVersions.nix_2_11
-          nixpkgs-nix-2_13_3.legacyPackages.${system}.nixVersions.nix_2_10
+        [ nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_14
+          nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_13
+          nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_12
+          nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_11
+          nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_10
           nixpkgs-nix-2_9_2.legacyPackages.${system}.nixVersions.nix_2_9
           nixpkgs-nix-2_9_2.legacyPackages.${system}.nixVersions.nix_2_8
           nixpkgs-nix-2_9_2.legacyPackages.${system}.nixVersions.nix_2_7
           nixpkgs-nix-2_9_2.legacyPackages.${system}.nixVersions.nix_2_6
           nixpkgs-nix-2_5_1.legacyPackages.${system}.nix
           nixpkgs-nix-2_4.legacyPackages.${system}.nix
-          nixpkgs-nix-2_13_3.legacyPackages.${system}.nixVersions.nix_2_3
+          nixpkgs-nix-2_14_1.legacyPackages.${system}.nixVersions.nix_2_3
           (import nixpkgs-nix-2_2_2 { inherit system; }).nix
           (import nixpkgs-nix-2_1_3 { inherit system; }).nix
         ] ++ lib.optionals (system == "x86_64-linux") [
