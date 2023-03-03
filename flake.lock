@@ -31,33 +31,18 @@
         "type": "indirect"
       }
     },
-    "nixpkgs-nix-2_12_0": {
+    "nixpkgs-nix-2_13_3": {
       "locked": {
-        "lastModified": 1671692767,
-        "narHash": "sha256-D2XVX2BdLhzkMbXgjbYxXKhYozhOOJH71UcQQPQxRug=",
+        "lastModified": 1677523218,
+        "narHash": "sha256-7L7ML3sngVz4EEO+4/f1auwM4Yi7ty+rghiCDWf5T2M=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
+        "rev": "36ea86257bfbbc1d7f52f5676082e2f4c33e9b19",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
-        "type": "indirect"
-      }
-    },
-    "nixpkgs-nix-2_13_2": {
-      "locked": {
-        "lastModified": 1675779317,
-        "narHash": "sha256-B6Z0hbff/hudMEx3zci/1UIck4JgjD1xO67dgXiVY6c=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "f30a2734341993614edf1419829c03e2f63e3f4b",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "rev": "f30a2734341993614edf1419829c03e2f63e3f4b",
+        "rev": "36ea86257bfbbc1d7f52f5676082e2f4c33e9b19",
         "type": "indirect"
       }
     },
@@ -123,16 +108,31 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-nix-2_9_2": {
+      "locked": {
+        "lastModified": 1671692767,
+        "narHash": "sha256-D2XVX2BdLhzkMbXgjbYxXKhYozhOOJH71UcQQPQxRug=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "rev": "593d839e8fadea1183e071186ae1b584792d4884",
+        "type": "indirect"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs-nix-2_0_4": "nixpkgs-nix-2_0_4",
-        "nixpkgs-nix-2_12_0": "nixpkgs-nix-2_12_0",
-        "nixpkgs-nix-2_13_2": "nixpkgs-nix-2_13_2",
+        "nixpkgs-nix-2_13_3": "nixpkgs-nix-2_13_3",
         "nixpkgs-nix-2_1_3": "nixpkgs-nix-2_1_3",
         "nixpkgs-nix-2_2_2": "nixpkgs-nix-2_2_2",
         "nixpkgs-nix-2_4": "nixpkgs-nix-2_4",
-        "nixpkgs-nix-2_5_1": "nixpkgs-nix-2_5_1"
+        "nixpkgs-nix-2_5_1": "nixpkgs-nix-2_5_1",
+        "nixpkgs-nix-2_9_2": "nixpkgs-nix-2_9_2"
       }
     }
   },
