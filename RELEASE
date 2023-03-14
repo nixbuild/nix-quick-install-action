@@ -1,5 +1,9 @@
-v21
+v22
 
 ## Changes
 
-* `nix-quick-install-action` now supports installation into a pre-existing `/nix` directory. This means that you for example can cache the contents of `/nix` between different jobs or different runs of one job, for performance gains. `nix-quick-install-action` will not remove any existing content found in the Nix database or store. For this to work, the pre-existing `/nix` directory must be writeable by the job runner user.
+* Adds the Nix versions 2.12.1, 2.13.3 and 2.14.1
+
+* Changes the default Nix version from 2.12.0 to 2.14.1
+
+* Removes the Nix version 2.12.0
