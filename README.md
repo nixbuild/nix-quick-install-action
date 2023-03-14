@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v21
+      - uses: nixbuild/nix-quick-install-action@v22
       - run: nix-build --version
 ```
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v21
+      - uses: nixbuild/nix-quick-install-action@v22
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/8d1952d7134cebeadb4770749151740da1bf57a9
+github:nixbuild/nix-quick-install-action/19435c2819421bac750ea2bfc7c3db59c15020fa
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -138,7 +138,9 @@ github:nixbuild/nix-quick-install-action/8d1952d7134cebeadb4770749151740da1bf57a
     ├───x86_64-darwin
     │   ├───nix-2_10_3: package 'nix-2.10.3'
     │   ├───nix-2_11_1: package 'nix-2.11.1'
-    │   ├───nix-2_12_0: package 'nix-2.12.0'
+    │   ├───nix-2_12_1: package 'nix-2.12.1'
+    │   ├───nix-2_13_3: package 'nix-2.13.3'
+    │   ├───nix-2_14_1: package 'nix-2.14.1'
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
     │   ├───nix-2_3_16: package 'nix-2.3.16'
@@ -154,7 +156,9 @@ github:nixbuild/nix-quick-install-action/8d1952d7134cebeadb4770749151740da1bf57a
         ├───nix-2_0_4: package 'nix-2.0.4'
         ├───nix-2_10_3: package 'nix-2.10.3'
         ├───nix-2_11_1: package 'nix-2.11.1'
-        ├───nix-2_12_0: package 'nix-2.12.0'
+        ├───nix-2_12_1: package 'nix-2.12.1'
+        ├───nix-2_13_3: package 'nix-2.13.3'
+        ├───nix-2_14_1: package 'nix-2.14.1'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
         ├───nix-2_3_16: package 'nix-2.3.16'
