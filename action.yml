@@ -19,9 +19,19 @@ inputs:
   nix_conf:
     required: false
     description: |
-      If set, this configuration is written to a new file which is then added to
-      the NIX_USER_CONF_FILES environment variable. You can also set that
-      variable yourself to control the Nix configuration.
+      If set, this configuration is written to XDG_CONFIG_HOME/nix/nix.conf,
+      which is read by Nix.
+      See https://nixos.org/manual/nix/stable/command-ref/conf-file.html for
+      information on what settings that are available. Make sure the settings
+      you define are supported by the Nix version you're using.
+
+  github_access_token:
+    required: false
+    description: |
+      Configure Nix to use the specified token when it is fetching private
+      sources from GitHub. If this setting is not specified,
+      nix-quick-install-action will use the content of the GITHUB_TOKEN
+      environment variable instead (if set).
 
   nix_on_tmpfs:
     required: true
@@ -51,6 +61,7 @@ runs:
         NIX_CONF: ${{ inputs.nix_conf }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
+        GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
 
 
 branding:

@@ -60,10 +60,20 @@ fi
 rm -f "$archive"
 
 # Setup nix.conf
-if [ -n "$NIX_CONF" ]; then
-  NIX_CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/nix/nix.conf"
-  mkdir -p "$(dirname "$NIX_CONF_FILE")"
+NIX_CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/nix/nix.conf"
+mkdir -p "$(dirname "$NIX_CONF_FILE")"
+touch "$NIX_CONF_FILE"
+if [ -n "${NIX_CONF:-}" ]; then
   printenv NIX_CONF > "$NIX_CONF_FILE"
+fi
+
+# Setup GitHub access token
+if [[ -n "${GITHUB_ACCESS_TOKEN:-}" ]]; then
+  echo >>"$NIX_CONF_FILE" \
+    "access-tokens = github.com=$GITHUB_ACCESS_TOKEN"
+elif [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  echo >>"$NIX_CONF_FILE" \
+    "access-tokens = github.com=$GITHUB_TOKEN"
 fi
 
 # Populate the nix db
