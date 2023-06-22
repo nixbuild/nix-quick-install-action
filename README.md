@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v22
+      - uses: nixbuild/nix-quick-install-action@v23
       - run: nix-build --version
 ```
 
@@ -64,7 +64,7 @@ jobs:
 ### Using Nix flakes
 
 To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.12.0, works fine), and enable the flakes
+it (the default Nix version, 2.16.1, works fine), and enable the flakes
 functionality in the nix configuration:
 
 ```yaml
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v22
+      - uses: nixbuild/nix-quick-install-action@v23
         with:
           nix_conf: experimental-features = nix-command flakes
       - name: nix build
@@ -105,10 +105,10 @@ Build a specific version of Nix like this (requires you to use a version of Nix
 that supports flakes):
 
 ```
-$ nix build github:nixbuild/nix-quick-install-action#nix-2_3_7
+$ nix build github:nixbuild/nix-quick-install-action#nix-2_3_16
 
 $ ./result/bin/nix --version
-nix (Nix) 2.3.7
+nix (Nix) 2.3.16
 ```
 
 With `nix shell -c` you can also directly run Nix like this:
@@ -122,7 +122,7 @@ List all available Nix versions like this:
 
 ```
 $ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/19435c2819421bac750ea2bfc7c3db59c15020fa
+github:nixbuild/nix-quick-install-action/10392fafadd0d126bf44633d015661e818ea39e2
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -141,6 +141,8 @@ github:nixbuild/nix-quick-install-action/19435c2819421bac750ea2bfc7c3db59c15020f
     │   ├───nix-2_12_1: package 'nix-2.12.1'
     │   ├───nix-2_13_3: package 'nix-2.13.3'
     │   ├───nix-2_14_1: package 'nix-2.14.1'
+    │   ├───nix-2_15_1: package 'nix-2.15.1'
+    │   ├───nix-2_16_1: package 'nix-2.16.1'
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
     │   ├───nix-2_3_16: package 'nix-2.3.16'
@@ -159,6 +161,8 @@ github:nixbuild/nix-quick-install-action/19435c2819421bac750ea2bfc7c3db59c15020f
         ├───nix-2_12_1: package 'nix-2.12.1'
         ├───nix-2_13_3: package 'nix-2.13.3'
         ├───nix-2_14_1: package 'nix-2.14.1'
+        ├───nix-2_15_1: package 'nix-2.15.1'
+        ├───nix-2_16_1: package 'nix-2.16.1'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
         ├───nix-2_3_16: package 'nix-2.3.16'
