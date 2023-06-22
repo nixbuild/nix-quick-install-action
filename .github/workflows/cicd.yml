@@ -51,6 +51,8 @@ jobs:
           - macos-11
           - macos-10.15
         nix_version:
+          - 2.16.1
+          - 2.15.1
           - 2.14.1
           - 2.13.3
           - 2.12.1
@@ -114,6 +116,8 @@ jobs:
           - macos-11
           - macos-10.15
         nix_version:
+          - 2.16.1
+          - 2.15.1
           - 2.14.1
           - 2.13.3
           - 2.12.1
@@ -128,6 +132,10 @@ jobs:
           - 2.3.16
           - 2.2.2
         include:
+          - nix_version: 2.16.1
+            nix_conf: experimental-features = nix-command flakes
+          - nix_version: 2.15.1
+            nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.14.1
             nix_conf: experimental-features = nix-command flakes
           - nix_version: 2.13.3
@@ -191,6 +199,8 @@ jobs:
           - macos-12
           - macos-11
         nix_version:
+          - 2.16.1
+          - 2.15.1
           - 2.14.1
           - 2.13.3
           - 2.12.1
