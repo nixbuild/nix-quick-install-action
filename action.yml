@@ -26,11 +26,9 @@ inputs:
       you define are supported by the Nix version you're using.
 
   github_access_token:
-    required: false
+    default: ${{ github.token }}
     description: |
-      Configure Nix to use the specified token when fetching from GitHub. If
-      this setting is not specified, nix-quick-install-action will use the
-      content of the GITHUB_TOKEN environment variable instead (if set).
+      Configure Nix to use the specified token when fetching from GitHub.
 
   nix_on_tmpfs:
     required: true

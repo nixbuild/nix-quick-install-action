@@ -71,9 +71,6 @@ fi
 if [[ -n "${GITHUB_ACCESS_TOKEN:-}" ]]; then
   echo >>"$NIX_CONF_FILE" \
     "access-tokens = github.com=$GITHUB_ACCESS_TOKEN"
-elif [[ -n "${GITHUB_TOKEN:-}" ]]; then
-  echo >>"$NIX_CONF_FILE" \
-    "access-tokens = github.com=$GITHUB_TOKEN"
 fi
 
 # Populate the nix db
