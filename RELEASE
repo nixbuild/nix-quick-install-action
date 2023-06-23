@@ -1,9 +1,9 @@
-v23
+v24
+
+## Fixes
+
+* Changes the default Nix version from 2.14.1 to 2.16.1, which was supposed to be done in the previous release (v23).
 
 ## Changes
 
-* Adds the Nix versions 2.15.1 and 2.16.1
-
-* Changes the default Nix version from 2.14.1 to 2.16.1
-
-* Adds the setting `github_access_token` for configuring a GitHub access token that Nix will use to access GitHub repositories.
+* Sets the default value of the `github_access_token` setting to `$(( github.token }}` (the automatically generated GitHub token).
