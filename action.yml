@@ -60,8 +60,8 @@ runs:
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
         GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
 
-    - name: Read nixConfig from Flake
-      if: contains(${{ inputs.nix_conf }}, "flakes")
+    - name: Setup Flakes
+      if: contains(${{ github.action_ref }}, "flake")
       run: ${{ github.action_path }}/read-nix-config-from-flake.sh
       shell: bash
       env:

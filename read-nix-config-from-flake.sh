@@ -25,10 +25,13 @@ fi
 nix_conf="$(mktemp -d)/nix.conf"
 NIX_CONFIG=$(nix --experimental-features "nix-command" eval --raw --impure --expr '(import '"$flake_file"').nixConfig or {}' --apply "$(<"${BASH_SOURCE[0]%/*}/nix_config.nix")" | tee "$nix_conf")
 
+echo >> $nix_conf
+echo "accept-flake-config = true" >> $nix_conf
+
 # make sure behaviour between old and new style commands remains aligned
 if [[ ! -z "$NIX_CONFIG" ]]; then
     echo >> $nix_conf
-    echo "accept-flake-config = true" >> $nix_conf
+    echo "experimental-features = nix-command flakes" >> $nix_conf
 fi
 
 NIX_USER_CONF_FILES="$nix_conf:$NIX_CONF_FILE:${NIX_USER_CONF_FILES:-}"
