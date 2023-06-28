@@ -45,6 +45,15 @@ inputs:
     description: |
       Don't use. For bootstrapping purposes only.
 
+  load_nixConfig:
+    default: true
+    description: |
+      Reads out a flakes 'nixConfig' attribute, if there is one, and loads
+      it into the environment config for old-sytle commands to pick it up.
+
+      If this cause undesired behaviour, you can switch it off by setting
+      this to false.
+
 
 runs:
   using: "composite"
@@ -60,6 +69,15 @@ runs:
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
         GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
 
+    - name: Preload nixConfig from Flake
+      if: ${{ inputs.load_nixConfig }}
+      run: ${{ github.action_path }}/read-nix-config-from-flake.sh
+      shell: bash
+      env:
+        NIX_VERSION: ${{ inputs.nix_version }}
+        GH_TOKEN: ${{ inputs.github_access_token }} # used by gh cli
+        OWNER_AND_REPO: ${{ github.repository }}
+        SHA: ${{ github.sha }}
 
 branding:
   icon: zap
