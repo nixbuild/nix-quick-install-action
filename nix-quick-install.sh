@@ -3,6 +3,8 @@
 set -eu
 set -o pipefail
 
+source "${BASH_SOURCE[0]%/*}/vercomp.sh"
+
 # Figure out system type (TODO don't assume x86_64)
 case "$OSTYPE" in
   darwin*)
@@ -72,6 +74,15 @@ if [[ -n "${GITHUB_ACCESS_TOKEN:-}" ]]; then
   echo >>"$NIX_CONF_FILE" \
     "access-tokens = github.com=$GITHUB_ACCESS_TOKEN"
 fi
+
+# Setup Flakes
+if vergt "$NIX_VERSION" "2.13"; then
+  echo >>"$NIX_CONF_FILE" \
+    "experimental-features = nix-command flakes"
+  echo >>"$NIX_CONF_FILE" \
+    "accept-flake-config = true"
+fi
+
 
 # Populate the nix db
 nix="$(readlink /nix/var/nix-quick-install-action/nix)"

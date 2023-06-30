@@ -12,4 +12,9 @@
       });
 
   };
+
+  nixConfig = {
+    allow-import-from-derivation = "true";
+  };
+ 
 }

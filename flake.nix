@@ -15,6 +15,12 @@
     nixpkgs-nix-2_0_4.flake = false;
   };
 
+  nixConfig = {
+    # We set some dummy Nix config here so we can use it for verification in our
+    # CI test
+    stalled-download-timeout = 333; # default 300
+  };
+
   outputs = {
     self,
     flake-utils,

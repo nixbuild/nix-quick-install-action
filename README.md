@@ -56,16 +56,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: nixbuild/nix-quick-install-action@v24
-      - run: nix-build --version
+      - run: nix build --version
+      - run: nix build ./examples/flakes-simple
+      - name: hello
+        run: ./result/bin/hello
 ```
 
 ![action-minimal](examples/action-minimal.png)
 
-### Using Nix flakes
+### Flakes
 
-To be able to use Nix flakes you need to specify a version of Nix that supports
-it (the default Nix version, 2.16.1, works fine), and enable the flakes
-functionality in the nix configuration:
+For `nix` > `2.13`, these settings are always set by default:
+
+```conf
+experimental-features = nix-command flakes
+accept-flake-config = true
+```
+
+This variant will also automatically set up the environment to bridge the
+configuration from the `nixConfig` flake attribute for old-style nix commands.
+
+To disable that convenience bridge, you can specify:
 
 ```yaml
 name: Examples
@@ -76,12 +87,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: nixbuild/nix-quick-install-action@v24
-        with:
-          nix_conf: experimental-features = nix-command flakes
-      - name: nix build
-        run: nix build ./examples/flakes-simple
-      - name: hello
-        run: ./result/bin/hello
+        with: {load_nixConfig: false}
 ```
 
 ![action-minimal](examples/action-flakes-simple.png)
