@@ -13,7 +13,7 @@ vercomp () {
     done
     for ((i=0; i<${#ver1[@]}; i++))
     do
-        if [[ -z ${ver2[i]} ]]
+        if [[ -z ${ver2[i]-} ]]
         then
             # fill empty fields in ver2 with zeros
             ver2[i]=0
