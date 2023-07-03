@@ -49,7 +49,8 @@ inputs:
     default: true
     description: |
       Reads out a flakes 'nixConfig' attribute, if there is one, and loads
-      it into the environment config for old-sytle commands to pick it up.
+      it into the environment config for old-style commands (`nix-build`,
+      `nix-store` etc) to pick it up.
 
       If this cause undesired behaviour, you can switch it off by setting
       this to false.

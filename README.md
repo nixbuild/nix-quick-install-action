@@ -74,7 +74,8 @@ accept-flake-config = true
 ```
 
 This variant will also automatically set up the environment to bridge the
-configuration from the `nixConfig` flake attribute for old-style nix commands.
+configuration from the `nixConfig` flake attribute for old-style (`nix-build`,
+`nix-store` etc) Nix commands.
 
 To disable that convenience bridge, you can specify:
 
