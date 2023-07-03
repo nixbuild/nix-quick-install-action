@@ -9,16 +9,14 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v24
+      - uses: nixbuild/nix-quick-install-action@v25
       - run: nix-build --version
 
   flakes-simple:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v24
-        with:
-          nix_conf: experimental-features = nix-command flakes
+      - uses: nixbuild/nix-quick-install-action@v25
       - name: nix build
         run: nix build ./examples/flakes-simple
       - name: hello

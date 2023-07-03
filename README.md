@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v24
+      - uses: nixbuild/nix-quick-install-action@v25
       - run: nix build --version
       - run: nix build ./examples/flakes-simple
       - name: hello
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v24
+      - uses: nixbuild/nix-quick-install-action@v25
         with: {load_nixConfig: false}
 ```
 
