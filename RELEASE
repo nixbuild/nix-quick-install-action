@@ -1,9 +1,7 @@
-v24
-
-## Fixes
-
-* Changes the default Nix version from 2.14.1 to 2.16.1, which was supposed to be done in the previous release (v23).
+v25
 
 ## Changes
 
-* Sets the default value of the `github_access_token` setting to `$(( github.token }}` (the automatically generated GitHub token).
+* When using a Nix version newer than 2.13, `nix-quick-install-action` will now automatically add `experimental-features = nix-command flakes` and `accept-flake-config = true` to the Nix configuration. This means that if you are using flakes you don't have to add these settings yourself to the `nix_conf` action input.
+
+* If you have a `nixConfig` attribute in your `flake.nix`, `nix-quick-install-action` will now automatically load it into the installed Nix configuration. This means that even old-style Nix commands (like `nix-build`, `nix-store` etc) will be able to use the Nix configuration from `flake.nix`. This feature was contributed by @blaggacao.
