@@ -124,6 +124,25 @@ jobs:
           - 2.4
           - 2.3.16
           - 2.2.2
+        include:
+          - nix_version: 2.12.1
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.11.1
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.10.3
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.9.2
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.8.1
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.7.0
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.6.1
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.5.1
+            nix_conf: experimental-features = nix-command
+          - nix_version: 2.4
+            nix_conf: experimental-features = nix-command
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
