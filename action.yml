@@ -71,7 +71,8 @@ runs:
         GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
 
     - name: Preload nixConfig from Flake
-      if: ${{ inputs.load_nixConfig }}
+      # Boolean input should be compared with string until https://github.com/actions/runner/issues/2238 resolved
+      if: ${{ inputs.load_nixConfig == 'true' }}
       run: ${{ github.action_path }}/read-nix-config-from-flake.sh
       shell: bash
       env:
