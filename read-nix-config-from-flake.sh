@@ -32,16 +32,20 @@ if [ "$flake_file" = "$tmp" ]; then
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "/repos/$OWNER_AND_REPO/contents/flake.nix?ref=$SHA" || true
   gh_ec=$?
-  if [ "$gh_ec" -ne 0 ]; then
-    if grep -q "HTTP 404" "$gh_err"; then
-      echo >&2 "No flake.nix found, not loading config"
-      exit 0
-    else
+  if grep -q "HTTP 404" "$gh_err"; then
+    echo >&2 "No flake.nix found, not loading config"
+    exit 0
+  else
+    if [ "$gh_ec" -ne 0 ]; then
       echo >&2 "Error when fetching flake.nix: ($gh_ec) $(cat "$gh_err")"
+      cat >&2 "$gh_out"
+      exit 1
+    elif ! jq -r '.content|gsub("[\n\t]"; "")|@base64d' "$gh_out" >"$flake_file"; then
+      echo >&2 "Error when parsing flake.nix"
+      cat >&2 "$gh_err"
+      cat >&2 "$gh_out"
       exit 1
     fi
-  else
-    jq -r '.content|gsub("[\n\t]"; "")|@base64d' "$gh_out" >"$flake_file" || exit 1
   fi
 fi
 
