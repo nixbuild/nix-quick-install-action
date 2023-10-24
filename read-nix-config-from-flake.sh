@@ -25,13 +25,24 @@ flake_url=${flake_url:="github:$OWNER_AND_REPO/$SHA"}
 
 # only fetch if not (locally) defined (e.g. for testing)
 if [ "$flake_file" = "$tmp" ]; then
-  set -x
-  gh api \
+  gh_err="$(mktemp)"
+  gh api 2>"$gh_err" >"$flake_file" \
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    "/repos/$OWNER_AND_REPO/contents/flake.nix?ref=$SHA" |
-    jq -r '.content|gsub("[\n\t]"; "")|@base64d' >"$flake_file"
-  set +x
+    "/repos/$OWNER_AND_REPO/contents/flake.nix?ref=$SHA" || true
+  gh_ec=$?
+
+  if [ "$gh_ec" -ne 0 ]; then
+    if grep -q "HTTP 404" "$gh_err"; then
+      echo >&2 "No flake.nix found, not loading config"
+      exit 0
+    else
+      echo >&2 "Error when fetching flake.nix: ($gh_ec) $(cat "$gh_err")"
+      exit 1
+    fi
+  else
+    jq -r '.content|gsub("[\n\t]"; "")|@base64d' >"$flake_file" || exit 1
+  fi
 fi
 
 nix_conf="$(mktemp -d)/flake-nixConfig.conf"
