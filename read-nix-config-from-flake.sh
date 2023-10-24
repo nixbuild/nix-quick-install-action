@@ -3,6 +3,12 @@
 set -eu
 set -o pipefail
 
+# Exit early if config loading has not been enabled
+[[ "$LOAD_NIXCONFIG" == "true"
+|| "$LOAD_NIXCONFIG" == "True"
+|| "$LOAD_NIXCONFIG" == "TRUE"
+]] || exit 0
+
 source "${BASH_SOURCE[0]%/*}/vercomp.sh"
 if verlte "$NIX_VERSION" "2.13"; then
   echo "Do not load flake config on nix version <= 2.13"
