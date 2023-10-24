@@ -1,7 +1,9 @@
-v25
+v26
 
 ## Changes
 
-* When using a Nix version newer than 2.13, `nix-quick-install-action` will now automatically add `experimental-features = nix-command flakes` and `accept-flake-config = true` to the Nix configuration. This means that if you are using flakes you don't have to add these settings yourself to the `nix_conf` action input.
+* Fix loading of `nixConfig` from `flake.nix`. If you had no `flake.nix` file in your repository, you would get an error when using `nix-quick-install-action`. This was reported in [#35](https://github.com/nixbuild/nix-quick-install-action/issues/35).
 
-* If you have a `nixConfig` attribute in your `flake.nix`, `nix-quick-install-action` will now automatically load it into the installed Nix configuration. This means that even old-style Nix commands (like `nix-build`, `nix-store` etc) will be able to use the Nix configuration from `flake.nix`. This feature was contributed by @blaggacao.
+* Bump minor Nix versions: 2.13.3 -> 2.13.6, 2.15.1 -> 2.15.3, 2.16.1 -> 2.16.2
+
+* Bump default Nix version: 2.16.1 -> 2.16.2
