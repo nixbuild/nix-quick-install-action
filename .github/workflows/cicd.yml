@@ -48,10 +48,10 @@ jobs:
           - macos-12
           - macos-11
         nix_version:
-          - 2.16.1
-          - 2.15.1
+          - 2.16.2
+          - 2.15.3
           - 2.14.1
-          - 2.13.3
+          - 2.13.6
           - 2.12.1
           - 2.11.1
           - 2.10.3
@@ -109,10 +109,10 @@ jobs:
           - macos-12
           - macos-11
         nix_version:
-          - 2.16.1
-          - 2.15.1
+          - 2.16.2
+          - 2.15.3
           - 2.14.1
-          - 2.13.3
+          - 2.13.6
           - 2.12.1
           - 2.11.1
           - 2.10.3
@@ -183,10 +183,10 @@ jobs:
           - macos-12
           - macos-11
         nix_version:
-          - 2.16.1
-          - 2.15.1
+          - 2.16.2
+          - 2.15.3
           - 2.14.1
-          - 2.13.3
+          - 2.13.6
           - 2.12.1
           - 2.11.1
           - 2.10.3
@@ -281,7 +281,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.16.1
+          nix_version: 2.16.2
       - uses: cachix/cachix-action@v12
         with:
           name: nixbuild
