@@ -52,13 +52,12 @@ curl -sL --retry 3 --retry-connrefused "$url" | zstd -df - -o "$archive"
 
 # Unpack nix
 if [[ "$sys" =~ .*-darwin ]]; then
-  # MacOS tar doesn't have the --skip-old-files, so we use rsync instead
-  tmpdir="$(mktemp -d)"
-  tar --keep-old-files --strip-components 1 -x -f "$archive" -C "$tmpdir"
-  rsync --archive --ignore-existing "$tmpdir/" /nix/
+  # MacOS tar doesn't have the --skip-old-files, so we use gtar
+  tar=gtar
 else
-  tar --skip-old-files --strip-components 1 -x -f "$archive" -C /nix
+  tar=tar
 fi
+$tar --skip-old-files --strip-components 1 -x -f "$archive" -C /nix
 rm -f "$archive"
 
 # Setup nix.conf
