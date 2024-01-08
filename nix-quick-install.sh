@@ -44,22 +44,16 @@ else
   fi
 fi
 
-# Fetch nix archive
+# Fetch and unpack nix archive
+if [[ "$sys" =~ .*-darwin ]]; then
+  # MacOS tar doesn't have the --skip-old-files, so we use gtar
+  tar=gtar
+else
+  tar=tar
+fi
 rel="$(head -n1 "$RELEASE_FILE")"
 url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
-archive="$(mktemp)"
-curl -sL --retry 3 --retry-connrefused "$url" | zstd -df - -o "$archive"
-
-# Unpack nix
-if [[ "$sys" =~ .*-darwin ]]; then
-  # MacOS tar doesn't have the --skip-old-files, so we use rsync instead
-  tmpdir="$(mktemp -d)"
-  tar --keep-old-files --strip-components 1 -x -f "$archive" -C "$tmpdir"
-  rsync --archive --ignore-existing "$tmpdir/" /nix/
-else
-  tar --skip-old-files --strip-components 1 -x -f "$archive" -C /nix
-fi
-rm -f "$archive"
+curl -sL --retry 3 --retry-connrefused "$url" | $tar --skip-old-files --strip-components 1 -x -I unzstd -C /nix
 
 # Setup nix.conf
 NIX_CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/nix/nix.conf"
