@@ -53,7 +53,17 @@ else
 fi
 rel="$(head -n1 "$RELEASE_FILE")"
 url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
-curl -sL --retry 3 --retry-connrefused "$url" | $tar --skip-old-files --strip-components 1 -x -I unzstd -C /nix
+
+echo >&2 "Fetching nix archives from $url"
+case "$url" in
+  file://)
+    "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
+    ;;
+  *)
+    curl -sL --retry 3 --retry-connrefused "$url" \
+      | "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix
+    ;;
+esac
 
 # Setup nix.conf
 NIX_CONF_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/nix/nix.conf"
