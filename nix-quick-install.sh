@@ -94,7 +94,7 @@ retries=2
 while true; do
   "$nix/bin/nix-store" \
     --load-db < /nix/var/nix-quick-install-action/registration && break || true
-  ((i--))
+  ((retries--))
   echo >&2 "Retrying Nix DB registration"
   sleep 2
 done
