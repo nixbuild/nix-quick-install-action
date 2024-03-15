@@ -90,7 +90,15 @@ fi
 
 # Populate the nix db
 nix="$(readlink /nix/var/nix-quick-install-action/nix)"
-"$nix/bin/nix-store" --load-db < /nix/var/nix-quick-install-action/registration
+retries=2
+while true; do
+  "$nix/bin/nix-store" \
+    --load-db < /nix/var/nix-quick-install-action/registration && break || true
+  ((i--))
+  echo >&2 "Retrying Nix DB registration"
+  sleep 2
+done
+
 
 # Install nix in profile
 MANPATH= . "$nix/etc/profile.d/nix.sh"
