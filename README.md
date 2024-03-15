@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v26
+      - uses: nixbuild/nix-quick-install-action@v27
       - run: nix build --version
       - run: nix build ./examples/flakes-simple
       - name: hello
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v26
+      - uses: nixbuild/nix-quick-install-action@v27
         with: {load_nixConfig: false}
 ```
 
@@ -128,8 +128,8 @@ nix (Nix) 2.2.2
 List all available Nix versions like this:
 
 ```
-$ nix flake show github:nixbuild/nix-quick-install-action
-github:nixbuild/nix-quick-install-action/1fe9e97a7bb9eea2f717fa55360c33293d5e2524
+$ nix flake show --all-systems github:nixbuild/nix-quick-install-action
+github:nixbuild/nix-quick-install-action/d02dd28b62bc5d22fdd0126895a4fbc8347ab665
 ├───apps
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -150,9 +150,12 @@ github:nixbuild/nix-quick-install-action/1fe9e97a7bb9eea2f717fa55360c33293d5e252
     │   ├───nix-2_14_1: package 'nix-2.14.1'
     │   ├───nix-2_15_3: package 'nix-2.15.3'
     │   ├───nix-2_16_2: package 'nix-2.16.2'
+    │   ├───nix-2_17_1: package 'nix-2.17.1'
+    │   ├───nix-2_18_1: package 'nix-2.18.1'
+    │   ├───nix-2_19_3: package 'nix-2.19.3'
     │   ├───nix-2_1_3: package 'nix-2.1.3'
     │   ├───nix-2_2_2: package 'nix-2.2.2'
-    │   ├───nix-2_3_16: package 'nix-2.3.16'
+    │   ├───nix-2_3_17: package 'nix-2.3.17'
     │   ├───nix-2_4: package 'nix-2.4'
     │   ├───nix-2_5_1: package 'nix-2.5.1'
     │   ├───nix-2_6_1: package 'nix-2.6.1'
@@ -170,9 +173,12 @@ github:nixbuild/nix-quick-install-action/1fe9e97a7bb9eea2f717fa55360c33293d5e252
         ├───nix-2_14_1: package 'nix-2.14.1'
         ├───nix-2_15_3: package 'nix-2.15.3'
         ├───nix-2_16_2: package 'nix-2.16.2'
+        ├───nix-2_17_1: package 'nix-2.17.1'
+        ├───nix-2_18_1: package 'nix-2.18.1'
+        ├───nix-2_19_3: package 'nix-2.19.3'
         ├───nix-2_1_3: package 'nix-2.1.3'
         ├───nix-2_2_2: package 'nix-2.2.2'
-        ├───nix-2_3_16: package 'nix-2.3.16'
+        ├───nix-2_3_17: package 'nix-2.3.17'
         ├───nix-2_4: package 'nix-2.4'
         ├───nix-2_5_1: package 'nix-2.5.1'
         ├───nix-2_6_1: package 'nix-2.6.1'
