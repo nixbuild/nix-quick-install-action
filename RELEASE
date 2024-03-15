@@ -1,9 +1,25 @@
-v26
+v27
+
+## Security Notice
+
+This release (and previous releases) includes Nix versions that are vulnerable to [CVE-2024-27297](https://www.cve.org/CVERecord?id=CVE-2024-27297). The current default Nix version, 2.19.3, is not vulnerable. If you select another Nix version you should use your own judgement to decide if CVE-2024-27297 is applicable to your usage of Nix in your GitHub Actions workflow.
+
+The following Nix versions that are packaged with this action are **not** vulnerable:
+
+* 2.19.3 (the default version)
+* 2.18.1
+* 2.3.17
+
+The above versions have been explicitly patched by the `nixpkgs` maintainers.
+
+The rest of the Nix versions provided by this action **are vulnerable** to CVE-2024-27297.
+
+In the next release of this action (v28), all vulnerable Nix versions will be removed.
 
 ## Changes
 
-* Fix loading of `nixConfig` from `flake.nix`. If you had no `flake.nix` file in your repository, you would get an error when using `nix-quick-install-action`. This was reported in [#35](https://github.com/nixbuild/nix-quick-install-action/issues/35).
+* Bump minor Nix versions: 2.3.16 -> 2.3.17
 
-* Bump minor Nix versions: 2.13.3 -> 2.13.6, 2.15.1 -> 2.15.3, 2.16.1 -> 2.16.2
+* Add Nix versions: 2.17.1, 2.18.1, 2.19.3
 
-* Bump default Nix version: 2.16.1 -> 2.16.2
+* Bump default Nix version: 2.16.2 -> 2.19.3
