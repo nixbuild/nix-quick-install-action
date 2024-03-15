@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "nixpkgs/f592a7ea771bc3c417f7e3026af615d0c6be84ce";
+    nixpkgs-unstable.url = "nixpkgs/627771c19dba1d4cbee75dccb402388ba8023fda";
     nixpkgs-nix-2_9_2.url = "nixpkgs/593d839e8fadea1183e071186ae1b584792d4884";
     nixpkgs-nix-2_5_1.url = "nixpkgs/89f196fe781c53cb50fef61d3063fa5e8d61b6e5";
     nixpkgs-nix-2_4.url = "nixpkgs/e912008eef096f52f28cf87492830c54ef334eb4";
