@@ -75,9 +75,9 @@ jobs:
         run: nix-build -v --version
       - name: Add to store
         run: |
-          file="$(mktemp)"
+          file="$RANDOM"
           echo "$RANDOM" > "$file"
-          path="$(nix-store --add "$file")"
+          path="$(nix-store --add "./$file")"
           mkdir -p ~/.cache/nix
           ln -s "$path" ~/.cache/nix/test-path
 
