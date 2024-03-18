@@ -218,7 +218,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.16.2
+          nix_version: 2.19.3
       - uses: cachix/cachix-action@v12
         with:
           name: nixbuild
