@@ -52,8 +52,7 @@
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
       ) (
-        [ nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_22
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_21
+        [ nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_21
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_20
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_19
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_18
