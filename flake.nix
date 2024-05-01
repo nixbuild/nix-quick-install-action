@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "nixpkgs/295ee8d482bc8620fa2c3757c7a95a7e824222bc";
+    nixpkgs-unstable.url = "nixpkgs/c10b1bb002e7414ecf7c9d9e5f7ebaeaeae32c92";
   };
 
   nixConfig = {
@@ -52,7 +52,8 @@
       nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
       ) (
-        [ nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_21
+        [ nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_22
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_21
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_20
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_19
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_18
