@@ -1,25 +1,11 @@
-v27
-
-## Security Notice
-
-This release (and previous releases) includes Nix versions that are vulnerable to [CVE-2024-27297](https://www.cve.org/CVERecord?id=CVE-2024-27297). The current default Nix version, 2.19.3, is not vulnerable. If you select another Nix version you should use your own judgement to decide if CVE-2024-27297 is applicable to your usage of Nix in your GitHub Actions workflow.
-
-The following Nix versions that are packaged with this action are **not** vulnerable:
-
-* 2.19.3 (the default version)
-* 2.18.1
-* 2.3.17
-
-The above versions have been explicitly patched by the `nixpkgs` maintainers.
-
-The rest of the Nix versions provided by this action **are vulnerable** to CVE-2024-27297.
-
-In the next release of this action (v28), all vulnerable Nix versions will be removed.
+v28
 
 ## Changes
 
-* Bump minor Nix versions: 2.3.16 -> 2.3.17
+* Remove all Nix versions that are vulnerable to [CVE-2024-27297](https://www.cve.org/CVERecord?id=CVE-2024-27297).
 
-* Add Nix versions: 2.17.1, 2.18.1, 2.19.3
+* Bump minor Nix versions: 2.18.1 -> 2.18.2
 
-* Bump default Nix version: 2.16.2 -> 2.19.3
+* Add Nix versions: 2.20.5, 2.21.0
+
+* Bump default Nix version: 2.19.3 -> 2.21.0
