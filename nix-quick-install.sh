@@ -5,13 +5,28 @@ set -o pipefail
 
 source "${BASH_SOURCE[0]%/*}/vercomp.sh"
 
+case "$(uname -m)" in
+  x86_64)
+    arch="x86_64"
+    ;;
+  arm64)
+    sys="aarch64"
+    ;;
+  aarch64)
+    arch="aarch64"
+    ;;
+  *)
+    echo >&2 "unsupported architecture: $(uname -m)"
+    exit 1
+esac
+
 # Figure out system type (TODO don't assume x86_64)
 case "$OSTYPE" in
   darwin*)
-    sys="x86_64-darwin"
+    sys="$arch-darwin"
     ;;
   linux*)
-    sys="x86_64-linux"
+    sys="$arch-linux"
     ;;
   *)
     echo >& "unsupported OS type: $OSTYPE"
