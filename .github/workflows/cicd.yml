@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-22.04, macos-12]
+        os: [ubuntu-22.04, macos-13]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -45,14 +45,16 @@ jobs:
         os:
           - ubuntu-22.04
           - ubuntu-20.04
-          - macos-12
-          - macos-11
+          - macos-13
         nix_version:
-          - 2.21.0
-          - 2.20.5
-          - 2.19.3
-          - 2.18.2
-          - 2.3.17
+          - 2.24.9
+          - 2.23.3
+          - 2.22.3
+          - 2.21.4
+          - 2.20.8
+          - 2.19.6
+          - 2.18.8
+          - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: divnix/nix-cache-action@v3.0.11-nix
@@ -89,14 +91,16 @@ jobs:
         os:
           - ubuntu-22.04
           - ubuntu-20.04
-          - macos-12
-          - macos-11
+          - macos-13
         nix_version:
-          - 2.21.0
-          - 2.20.5
-          - 2.19.3
-          - 2.18.2
-          - 2.3.17
+          - 2.24.9
+          - 2.23.3
+          - 2.22.3
+          - 2.21.4
+          - 2.20.8
+          - 2.19.6
+          - 2.18.8
+          - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -134,14 +138,16 @@ jobs:
         os:
           - ubuntu-22.04
           - ubuntu-20.04
-          - macos-12
-          - macos-11
+          - macos-13
         nix_version:
-          - 2.21.0
-          - 2.20.5
-          - 2.19.3
-          - 2.18.2
-          - 2.3.17
+          - 2.24.9
+          - 2.23.3
+          - 2.22.3
+          - 2.21.4
+          - 2.20.8
+          - 2.19.6
+          - 2.18.8
+          - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
