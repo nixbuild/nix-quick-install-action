@@ -19,10 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: ./
-        with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v28
-          nix_version: 2.21.0
+      - uses: cachix/install-nix-action@v30
       - uses: cachix/cachix-action@v12
         with:
           name: nixbuild
