@@ -10,7 +10,7 @@ case "$(uname -m)" in
     arch="x86_64"
     ;;
   arm64)
-    sys="aarch64"
+    arch="aarch64"
     ;;
   aarch64)
     arch="aarch64"
