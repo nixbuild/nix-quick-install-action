@@ -44,6 +44,7 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
+          - macos-14
           - macos-13
         nix_version:
           - 2.24.9
@@ -89,6 +90,7 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
+          - macos-14
           - macos-13
         nix_version:
           - 2.24.9
@@ -135,6 +137,7 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
+          - macos-14
           - macos-13
         nix_version:
           - 2.24.9
