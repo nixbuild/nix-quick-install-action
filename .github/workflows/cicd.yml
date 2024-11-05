@@ -18,9 +18,9 @@ jobs:
         os: [ubuntu-22.04, macos-13, macos-14]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v30
-      - uses: cachix/cachix-action@v12
+      - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -29,9 +29,9 @@ jobs:
         run: |
           nix build .#nix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: nix-archives-${{ runner.os }}
+          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
           path: ${{ steps.build-nix-archives.outputs.result }}/
 
   test:
@@ -54,11 +54,11 @@ jobs:
           - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         id: nix-archives
         with:
-          name: nix-archives-${{ runner.os }}
+          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
@@ -92,17 +92,17 @@ jobs:
           - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         id: nix-archives
         with:
-          name: nix-archives-${{ runner.os }}
+          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
           nix_conf: ${{ matrix.nix_conf }}
-      - uses: cachix/cachix-action@v12
+      - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -127,20 +127,24 @@ jobs:
       - test-cachix
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: nix-archives-Linux
+          name: nix-archives-Linux-X64
           path: /tmp/archives
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: nix-archives-macOS
+          name: nix-archives-macOS-X64
+          path: /tmp/archives
+      - uses: actions/download-artifact@v4
+        with:
+          name: nix-archives-macOS-ARM64
           path: /tmp/archives
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
           nix_version: 2.24.9
-      - uses: cachix/cachix-action@v12
+      - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
