@@ -17,7 +17,7 @@
     flake-utils,
     nixpkgs-unstable,
   }:
-  let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
+  let allSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
