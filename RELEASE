@@ -1,11 +1,15 @@
-v28
+v29
 
 ## Changes
 
-* Remove all Nix versions that are vulnerable to [CVE-2024-27297](https://www.cve.org/CVERecord?id=CVE-2024-27297).
+* Bump minor Nix versions: 2.18.2 -> 2.18.8, 2.19.3 -> 2.19.6, 2.20.5 -> 2.20.8,
+  2.21.0 -> 2.21.4.
 
-* Bump minor Nix versions: 2.18.1 -> 2.18.2
+* Add Nix versions: 2.22.3, 2.23.3, 2.24.9
 
-* Add Nix versions: 2.20.5, 2.21.0
+* Bump default Nix version: 2.21.0 -> 2.24.9
 
-* Bump default Nix version: 2.19.3 -> 2.21.0
+* Add support for `macos-14` (ARM64) runners, and remove support for deprecated
+  runners. The supported runners are now `ubuntu-22.04`, `macos-13` and
+  `macos-14`. Other runners might work, but are not tested by the
+  `nix-quick-install-action` CI.
