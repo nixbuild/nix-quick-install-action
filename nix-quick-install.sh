@@ -20,7 +20,6 @@ case "$(uname -m)" in
     exit 1
 esac
 
-# Figure out system type (TODO don't assume x86_64)
 case "$OSTYPE" in
   darwin*)
     sys="$arch-darwin"
