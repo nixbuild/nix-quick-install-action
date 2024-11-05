@@ -102,11 +102,7 @@ done
 
 # Install nix in profile
 MANPATH= . "$nix/etc/profile.d/nix.sh"
-if vergt "$NIX_VERSION" "2.4"; then
-  "$nix/bin/nix-env" -i "$nix"
-else
-  "$nix/bin/nix-env" --option sandbox false -i "$nix"
-fi
+"$nix/bin/nix-env" -i "$nix"
 
 # Certificate bundle is not detected by nix.sh on macOS.
 if [ -z "${NIX_SSL_CERT_FILE:-}" -a -e "/etc/ssl/cert.pem" ]; then

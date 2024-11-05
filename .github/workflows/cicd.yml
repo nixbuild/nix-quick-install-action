@@ -43,7 +43,6 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-24.04
           - ubuntu-22.04
           - macos-13
         nix_version:
@@ -89,7 +88,6 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-24.04
           - ubuntu-22.04
           - macos-13
         nix_version:
@@ -136,7 +134,6 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-24.04
           - ubuntu-22.04
           - macos-13
         nix_version:
