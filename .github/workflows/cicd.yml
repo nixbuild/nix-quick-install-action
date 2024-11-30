@@ -15,27 +15,31 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-22.04, macos-13, macos-14]
+        os: 
+          - ubuntu-latest
+          - macos-13 # Intel
+          - macos-latest # ARM
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v29
-          nix_version: 2.24.9
+          # TODO(ttlgcc): Parameterize flake version.
+          nix_archives_url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v0
+          lix_version: 2.91.1
       - uses: cachix/cachix-action@v15
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-      - name: Build nix archives
-        id: build-nix-archives
+          name: fabrictest
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - name: Build Lix archives
+        id: build-lix-archives
         run: |
-          nix build .#nix-archives
+          nix build .#lix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
-          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
-          path: ${{ steps.build-nix-archives.outputs.result }}/
+          name: lix-archives-${{ runner.os }}-${{ runner.arch }}
+          path: ${{ steps.build-lix-archives.outputs.result }}/
 
   test:
     needs: build
@@ -43,29 +47,23 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-22.04
-          - macos-14
-          - macos-13
-        nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
-          - 2.3.18
+          - ubuntu-latest
+          - macos-13 # Intel
+          - macos-latest # ARM
+        lix_version:
+          - 2.91.1
+          - 2.90.0
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        id: nix-archives
+        id: lix-archives
         with:
-          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
+          name: lix-archives-${{ runner.os }}-${{ runner.arch }}
       - uses: ./
         with:
-          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
-          nix_version: ${{ matrix.nix_version }}
+          nix_archives_url: file://${{steps.lix-archives.outputs.download-path}}
+          lix_version: ${{ matrix.lix_version }}
           nix_on_tmpfs: true
       - name: Test nix
         run: nix-build -v --version
@@ -81,46 +79,40 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-22.04
-          - macos-14
-          - macos-13
-        nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
-          - 2.3.18
+          - ubuntu-latest
+          - macos-13 # Intel
+          - macos-latest # ARM
+        lix_version:
+          - 2.90.0
+          - 2.91.1
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        id: nix-archives
+        id: lix-archives
         with:
-          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
+          name: lix-archives-${{ runner.os }}-${{ runner.arch }}
       - uses: ./
         with:
-          nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
-          nix_version: ${{ matrix.nix_version }}
+          nix_archives_url: file://${{ steps.lix-archives.outputs.download-path }}
+          lix_version: ${{ matrix.lix_version }}
           nix_conf: ${{ matrix.nix_conf }}
       - uses: cachix/cachix-action@v15
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          name: fabrictest
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
       - name: Verify nix config
         run: |
-          if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" "$HOME/.config/nix/nix.conf"; then
+          if ! egrep -q "^substituters = https://cache.nixos.org https://fabrictest.cachix.org$" "$HOME/.config/nix/nix.conf"; then
             echo "Invalid substituters config"
             exit 1
           fi
       - name: Push to Cachix
-        if: github.event_name == 'push' && github.repository_owner == 'nixbuild'
+        if: github.event_name == 'push' && github.repository_owner == 'fabrictest'
         run: |
           dd if=/dev/urandom of=random count=1
-          cachix push nixbuild "$(nix add-to-store random)"
+          cachix push fabrictest "$(nix add-to-store random)"
 
   release:
     runs-on: ubuntu-latest
@@ -129,28 +121,30 @@ jobs:
       - test
       - test-cachix
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: nix-archives-Linux-X64
+          name: lix-archives-Linux-X64
           path: /tmp/archives
       - uses: actions/download-artifact@v4
         with:
-          name: nix-archives-macOS-X64
+          name: lix-archives-macOS-X64
           path: /tmp/archives
       - uses: actions/download-artifact@v4
         with:
-          name: nix-archives-macOS-ARM64
+          name: lix-archives-macOS-ARM64
           path: /tmp/archives
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.24.9
+          lix_version: 2.91.1
       - uses: cachix/cachix-action@v15
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          name: fabrictest
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - name: Build release script
         run: nix build .#release
       - name: Release if needed

@@ -1,15 +1,7 @@
-v29
+v0
 
 ## Changes
 
-* Bump minor Nix versions: 2.18.2 -> 2.18.8, 2.19.3 -> 2.19.6, 2.20.5 -> 2.20.8,
-  2.21.0 -> 2.21.4.
-
-* Add Nix versions: 2.22.3, 2.23.3, 2.24.9
-
-* Bump default Nix version: 2.21.0 -> 2.24.9
-
-* Add support for `macos-14` (ARM64) runners, and remove support for deprecated
-  runners. The supported runners are now `ubuntu-22.04`, `macos-13` and
-  `macos-14`. Other runners might work, but are not tested by the
-  `nix-quick-install-action` CI.
+> [!WARNING]
+> This release bootstraps the project.
+> DO NOT use it in production just yet.

@@ -35,10 +35,10 @@ esac
 # Make sure /nix exists and is writeable
 if [ -a /nix ]; then
   if ! [ -w /nix ]; then
-    echo >&2 "/nix exists but is not writeable, can't set up nix-quick-install-action"
+    echo >&2 "/nix exists but is not writeable, can't set up lix-quick-install-action"
     exit 1
   else
-    rm -rf /nix/var/nix-quick-install-action
+    rm -rf /nix/var/lix-quick-install-action
   fi
 elif [[ "$sys" =~ .*-darwin ]]; then
   sudo $SHELL -euo pipefail << EOF
@@ -67,9 +67,9 @@ else
   tar=tar
 fi
 rel="$(head -n1 "$RELEASE_FILE")"
-url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
+url="${NIX_ARCHIVES_URL:-https://github.com/fabrictest/lix-quick-install-action/releases/download/$rel}/lix-$NIX_VERSION-$sys.tar.zstd"
 
-echo >&2 "Fetching nix archives from $url"
+echo >&2 "Fetching lix archives from $url"
 case "$url" in
   file://)
     "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
@@ -95,20 +95,18 @@ if [[ -n "${GITHUB_ACCESS_TOKEN:-}" ]]; then
 fi
 
 # Setup Flakes
-if vergt "$NIX_VERSION" "2.13"; then
-  echo >>"$NIX_CONF_FILE" \
-    "experimental-features = nix-command flakes"
-  echo >>"$NIX_CONF_FILE" \
-    "accept-flake-config = true"
-fi
+echo >>"$NIX_CONF_FILE" \
+  "experimental-features = nix-command flakes"
+echo >>"$NIX_CONF_FILE" \
+  "accept-flake-config = true"
 
 
 # Populate the nix db
-nix="$(readlink /nix/var/nix-quick-install-action/nix)"
+nix="$(readlink /nix/var/lix-quick-install-action/nix)"
 retries=2
 while true; do
   "$nix/bin/nix-store" \
-    --load-db < /nix/var/nix-quick-install-action/registration && break || true
+    --load-db < /nix/var/lix-quick-install-action/registration && break || true
   ((retries--))
   echo >&2 "Retrying Nix DB registration"
   sleep 2

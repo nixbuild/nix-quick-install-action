@@ -1,42 +1,42 @@
-name: Nix Quick Install
-description: Quickly installs Nix in unprivileged single-user mode
-author: Rickard Nilsson
+name: Lix Quick Install
+description: Quickly installs Lix in unprivileged single-user mode
+author: F. Emerson, Rickard Nilsson
 
 inputs:
 
-  nix_version:
+  lix_version:
     required: true
-    default: "2.24.9"
+    default: 2.91.0
     description: |
-      The version of Nix that should be installed
+      The version of Lix that should be installed.
 
-      If not specified, the latest stable Nix release is used. Note that each
-      release of nix-quick-install-action has a specific set of supported
-      Nix versions, which do not change. You can check what Nix versions are
-      supported by the version of nix-quick-install-action you're using by
-      going to https://github.com/nixbuild/nix-quick-install-action/releases
+      If not specified, the latest stable Lix release is used. Note that each
+      release of lix-quick-install-action has a specific set of supported
+      Lix versions, which do not change. You can check what Lix versions are
+      supported by the version of lix-quick-install-action you're using by
+      going to https://github.com/fabrictest/lix-quick-install-action/releases.
 
   nix_conf:
     required: false
     description: |
-      If set, this configuration is written to XDG_CONFIG_HOME/nix/nix.conf,
-      which is read by Nix.
-      See https://nixos.org/manual/nix/stable/command-ref/conf-file.html for
+      If set, this configuration is written to $XDG_CONFIG_HOME/nix/nix.conf,
+      which is read by Lix.
+      See https://docs.lix.systems/manual/lix/stable/command-ref/conf-file.html for
       information on what settings that are available. Make sure the settings
-      you define are supported by the Nix version you're using.
+      you define are supported by the Lix version you're using.
 
   github_access_token:
     default: ${{ github.token }}
     description: |
-      Configure Nix to use the specified token when fetching from GitHub.
+      Configure Lix to use the specified token when fetching from GitHub.
 
   nix_on_tmpfs:
     required: true
     default: false
     description: |
-      Installs /nix on a tmpfs mount. This can make Nix operations faster, but
-      you risk running out of memory if your Nix store grows to big. Only
-      enable this if you're absolutely sure the size of your Nix store (and
+      Installs /nix on a tmpfs mount. This can make Lix operations faster, but
+      you risk running out of memory if your Lix store grows too big. Only
+      enable this if you're absolutely sure the size of your Lix store (and
       database, logs etc) will be considerably less than the available memory.
       This option does nothing on MacOS runners.
 
@@ -45,16 +45,15 @@ inputs:
     description: |
       Don't use. For bootstrapping purposes only.
 
-
 runs:
   using: "composite"
   steps:
-    - name: Install Nix in single-user mode
+    - name: Install Lix in single-user mode
       run: ${{ github.action_path }}/nix-quick-install.sh
       shell: bash
       env:
         RELEASE_FILE: ${{ github.action_path }}/RELEASE
-        NIX_VERSION: ${{ inputs.nix_version }}
+        NIX_VERSION: ${{ inputs.lix_version }}
         NIX_CONF: ${{ inputs.nix_conf }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
