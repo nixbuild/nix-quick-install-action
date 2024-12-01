@@ -6,7 +6,7 @@ inputs:
 
   lix_version:
     required: true
-    default: 2.91.0
+    default: 2.91.1
     description: |
       The version of Lix that should be installed.
 
