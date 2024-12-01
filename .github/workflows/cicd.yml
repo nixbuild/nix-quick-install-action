@@ -25,7 +25,7 @@ jobs:
       - uses: ./
         with:
           # TODO(ttlgcc): Parameterize flake version.
-          nix_archives_url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v1
+          nix_archives_url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v2
           lix_version: 2.91.1
       - uses: cachix/cachix-action@v15
         with:
