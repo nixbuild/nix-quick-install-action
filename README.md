@@ -57,9 +57,7 @@ jobs:
         run: ./result/bin/hello
 ```
 
-TODO(ttlgcc): The image below still refers to nix-quick-install-action.
-
-![action-minimal](examples/action-minimal.png)
+![action-minimal](https://github.com/user-attachments/assets/89a6c8bf-5a07-4301-b2fc-43f1aa38fbd3)
 
 ### Flakes
 
@@ -70,7 +68,7 @@ experimental-features = nix-command flakes
 accept-flake-config = true
 ```
 
-![action-minimal](examples/action-flakes-simple.png)
+![action-flake](https://github.com/user-attachments/assets/f2fded39-3f20-4e32-9444-21e571fe615c)
 
 You can see the flake definition for the above example in
 [examples/flakes-simple/flake.nix](examples/flakes-simple/flake.nix).
