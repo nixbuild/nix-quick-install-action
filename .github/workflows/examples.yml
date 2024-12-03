@@ -4,8 +4,8 @@ on:
     branches:
       - master
 jobs:
-  minimal:
-    name: Minimal
+  flakes:
+    name: Flakes
     strategy:
       fail-fast: true
       matrix:
@@ -18,22 +18,8 @@ jobs:
       - name: Install Lix
         uses: fabrictest/lix-quick-install-action@v4
       - name: Print Lix version
-        run: nix-build --version
-  flakes:
-    name: Flakes
-    strategy:
-      fail-fast: true
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-13 # X64
-          - macos-latest # ARM64
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: fabrictest/lix-quick-install-action@v4
-      - name: Check out repository
-        uses: actions/checkout@v4
+        run: nix --version
       - name: Build flake
         run: nix build ./examples/flakes
-      - name: Print a `hello, world` message
+      - name: Print `hello, world` message
         run: ./result/bin/hello
