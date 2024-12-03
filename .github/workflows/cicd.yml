@@ -1,15 +1,12 @@
 name: CI/CD
-
 on:
   pull_request:
   push:
     branches:
       - master
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build:
     strategy:
@@ -17,110 +14,94 @@ jobs:
       matrix:
         os: 
           - ubuntu-latest
-          - macos-13 # Intel
-          - macos-latest # ARM
+          - macos-13 # X64
+          - macos-latest # ARM64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Lix
+        uses: ./
         with:
+          lix-version: 2.91.1
           # TODO(ttlgcc): Parameterize flake version.
-          nix_archives_url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v2
-          lix_version: 2.91.1
-      - uses: cachix/cachix-action@v15
+          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v2
+      - name: Install Cachix
+        uses: cachix/cachix-action@v15
         with:
           name: fabrictest
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - name: Build Lix archives
-        id: build-lix-archives
+      - name: Build archives
+        id: archives
+        shell: bash
         run: |
           nix build .#lix-archives
-          echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
+          cat >>"$GITHUB_OUTPUT" <<EOF
+          result=$(readlink result)
+          EOF
+      - name: Upload archives
+        uses: actions/upload-artifact@v4
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
-          path: ${{ steps.build-lix-archives.outputs.result }}/
-
+          path: ${{ steps.archives.outputs.result }}/
   test:
-    needs: build
+    needs: 
+      - build
     strategy:
       fail-fast: true
       matrix:
         os:
           - ubuntu-latest
-          - macos-13 # Intel
-          - macos-latest # ARM
-        lix_version:
+          - macos-13 # X64
+          - macos-latest # ARM64
+        lix-version:
           - 2.91.1
           - 2.90.0
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        id: lix-archives
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Download archives
+        id: archives
+        uses: actions/download-artifact@v4
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
-      - uses: ./
+      - name: Install Lix
+        uses: ./
         with:
-          nix_archives_url: file://${{steps.lix-archives.outputs.download-path}}
-          lix_version: ${{ matrix.lix_version }}
-          nix_on_tmpfs: true
-      - name: Test nix
-        run: nix-build -v --version
-      - name: Add to store
-        run: |
-          file="$RANDOM"
-          echo "$RANDOM" > "$file"
-          path="$(nix-store --add "./$file")"
-
-  test-cachix:
-    needs: build
-    strategy:
-      fail-fast: true
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-13 # Intel
-          - macos-latest # ARM
-        lix_version:
-          - 2.90.0
-          - 2.91.1
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        id: lix-archives
+          lix-version: ${{ matrix.lix-version }}
+          lix-archives-url: file://${{ steps.archives.outputs.download-path }}
+          lix-on-tmpfs: true
+      - name: Install Cachix
+        uses: cachix/cachix-action@v15
         with:
-          name: lix-archives-${{ runner.os }}-${{ runner.arch }}
-      - uses: ./
-        with:
-          nix_archives_url: file://${{ steps.lix-archives.outputs.download-path }}
-          lix_version: ${{ matrix.lix_version }}
-          nix_conf: ${{ matrix.nix_conf }}
-      - uses: cachix/cachix-action@v15
-        with:
-          name: fabrictest
+          name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
-      - name: Verify nix config
+      - name: Verify that one can call nix-build
+        shell: bash
         run: |
-          if ! egrep -q "^substituters = https://cache.nixos.org https://fabrictest.cachix.org$" "$HOME/.config/nix/nix.conf"; then
-            echo "Invalid substituters config"
-            exit 1
-          fi
-      - name: Push to Cachix
-        if: github.event_name == 'push' && github.repository_owner == 'fabrictest'
+          nix-build -v --version
+      - name: Verify that one can add a file to the Lix store
+        id: lix-store-add
+        shell: bash
         run: |
-          dd if=/dev/urandom of=random count=1
-          cachix push fabrictest "$(nix add-to-store random)"
-
+          f=./$RANDOM
+          echo $RANDOM >$f
+          cat >>"$GITHUB_OUTPUT" <<EOF
+          result=$(nix-store --add $f)
+          EOF
+      - name: Verify that one can push such file to Cachix
+        if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
+        shell: bash
+        run: |
+          cachix push "${{ vars.CACHIX_CACHE_NAME }}" "${{ steps.lix-store-add.outputs.result }}"
   release:
     runs-on: ubuntu-latest
     needs:
       - build
       - test
-      - test-cachix
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
     permissions:
       contents: write
     steps:
@@ -139,11 +120,11 @@ jobs:
           path: /tmp/archives
       - uses: ./
         with:
-          nix_archives_url: file:///tmp/archives
-          lix_version: 2.91.1
+          lix-archives-url: file:///tmp/archives
+          lix-version: 2.91.1
       - uses: cachix/cachix-action@v15
         with:
-          name: fabrictest
+          name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - name: Build release script
         run: nix build .#release

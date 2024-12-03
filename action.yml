@@ -1,9 +1,8 @@
 name: Lix Quick Install
 description: Quickly installs Lix in unprivileged single-user mode
-author: Fabric Test
+author: Fabric Test contributors
 inputs:
   lix-version:
-    default: 2.91.1
     description: |
       The version of Lix that should be installed.
 
@@ -12,44 +11,133 @@ inputs:
       Lix versions, which do not change. You can check what Lix versions are
       supported by the version of lix-quick-install-action you're using by
       going to https://github.com/fabrictest/lix-quick-install-action/releases.
+    default: 2.91.1
   nix-conf:
-    required: false
     description: |
       If set, this configuration is written to $XDG_CONFIG_HOME/nix/nix.conf,
       which is read by Lix.
       See https://docs.lix.systems/manual/lix/stable/command-ref/conf-file.html for
       information on what settings that are available. Make sure the settings
       you define are supported by the Lix version you're using.
-  github-token:
-    default: ${{ github.token }}
+    required: false
+  github-access-token:
     description: |
       Configure Lix to use the specified token when fetching from GitHub.
       Defaults to `github.token`.
+    default: ${{ github.token }}
   lix-on-tmpfs:
-    default: false
     description: |
       Installs /nix on a tmpfs mount. This can make Lix operations faster, but
       you risk running out of memory if your Lix store grows too big. Only
       enable this if you're absolutely sure the size of your Lix store (and
       database, logs etc) will be considerably less than the available memory.
       This option does nothing on MacOS runners.
-  lix-archives-url:
-    required: false
+    default: false
+  github-server-url:
     description: |
-      Don't use. For bootstrapping purposes only.
+      The URL of the GitHub server.  Defaults to `https://github.com`.
+    default: https://github.com
+  lix-archives-url:
+    description: |
+      Internal.
+    required: false
 runs:
   using: composite
   steps:
-    - name: Install Lix in single-user mode
-      run: ${{ github.action_path }}/nix-quick-install.sh
+    - name: Do preflight checks
+      id: checks
       shell: bash
+      run: |
+        [ ${{ runner.os }} = Linux -o ${{ runner.os }} = macOS ] || {
+          echo "::error::failed to set up lix-quick-install-action: ${{ runner.os }} isn't supported (yet? :)"
+          exit 1
+        }
+        [ ! -e /nix -o -w /nix ] || {
+          echo "::error::failed to set up lix-quick-install-action: /nix exists but isn't writable"
+          exit 1
+        }
+        cat >>"$GITHUB_OUTPUT" <<EOF
+        install-nix-dir=$([ -e /nix ] || echo 1)
+        rel=$(head -n1 "$release_file")
+        EOF
       env:
-        RELEASE_FILE: ${{ github.action_path }}/RELEASE
-        NIX_VERSION: ${{ inputs.lix-version }}
-        NIX_CONF: ${{ inputs.nix-conf }}
-        NIX_ARCHIVES_URL: ${{ inputs.lix-archives-url }}
-        NIX_ON_TMPFS: ${{ inputs.lix-on-tmpfs }}
-        GITHUB_ACCESS_TOKEN: ${{ inputs.github-token }}
+        release_file: ${{ github.action_path }}/RELEASE
+    - name: Install /nix (Linux)
+      if: ${{ steps.checks.outputs.install-nix-dir && runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        sudo install -d -o "$USER" /nix
+        ${{ inputs.lix-on-tmpfs && 'sudo mount -t tmpfs -o size=90%,mode=0755,uid="$UID",gid="$(id -g)" tmpfs /nix' || '' }}
+    - name: Install /nix (macOS)
+      if: ${{ steps.checks.outputs.install-nix-dir && runner.os == 'macOS' }}
+      shell: bash
+      run: |
+        set -x
+        sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
+        nix
+        run	private/var/run
+        EOF
+        sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || :
+        [ -L /run ] || {
+          echo "::error::failed to set up lix-quick-install-action: apfs.util failed to symlink /run"
+          exit 1
+        }
+        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix ||
+            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix
+        sudo mdutil -i off /nix
+        sudo chown "$USER" /nix
+    - name: Clean up /nix
+      shell: bash
+      run: |
+        rm -rf /nix/var/lix-quick-install-action
+    - name: Fetch archive
+      shell: bash
+      run: |
+        ${{
+          startsWith(inputs.lix-archives-url, 'file://') &&
+              '<"${lix_archive_url#file://}"' ||
+              'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
+        }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
+      env:
+        lix_archive_url: >-
+          ${{
+            format('{0}/lix-{1}-{2}-{3}.tar.zstd',
+                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', inputs.github-server-url, github.action_repository, steps.checks.outputs.rel),
+                inputs.lix-version,
+                runner.arch == 'ARM64' && 'aarch64' || 'x86_64',
+                runner.os == 'macOS' && 'darwin' || 'linux'
+            )
+          }}
+    - name: Synthesize nix.conf
+      shell: bash
+      run: |
+        : "${XDG_CONFIG_HOME:=$HOME/.config}"
+        mkdir -p "$XDG_CONFIG_HOME"/nix
+        cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
+        accept-flake-config = true
+        access-tokens = ${github_server_url#*://}=$github_access_token
+        experimental-features = nix-command flakes
+        $nix_conf
+        EOF
+      env:
+        github_server_url: ${{ inputs.github-server-url }}
+        github_access_token: ${{ inputs.github-access-token }}
+        nix_conf: ${{ inputs.nix-conf }}
+    - name: Install Lix in profile
+      shell: bash
+      run: |
+        nix=$(readlink /nix/var/lix-quick-install-action/nix)
+        "$nix"/bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
+        MANPATH='' . "$nix"/etc/profile.d/nix.sh
+        "$nix"/bin/nix-env --install "$nix"
+        cat >>"$GITHUB_PATH" <<EOF
+        $HOME/.nix-profile/bin
+        EOF
+        cat >>"$GITHUB_ENV" <<EOF
+        NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile
+        NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
+        NIX_SSL_CERT_FILE=${NIX_SSL_CERT_FILE:-$([ ! -e /etc/ssl/cert.pem ] || echo /etc/ssl/cert.pem)}
+        EOF
 branding:
   icon: package
   color: purple
