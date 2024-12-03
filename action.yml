@@ -44,14 +44,16 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Do preflight checks
-      id: checks
+    - name: Detect unsupported systems
+      if: ${{ !contains(fromJSON('["Linux", "macOS"]'), runner.os) }}
       shell: bash
       run: |
-        [ ${{ runner.os }} = Linux -o ${{ runner.os }} = macOS ] || {
-          echo "::error::failed to set up lix-quick-install-action: ${{ runner.os }} isn't supported (yet? :)"
-          exit 1
-        }
+        echo "::error::failed to set up lix-quick-install-action: ${{ runner.os }} isn't supported (yet? :)"
+        exit 1
+    - name: Resolve variables
+      id: vars
+      shell: bash
+      run: |
         [ ! -e /nix -o -w /nix ] || {
           echo "::error::failed to set up lix-quick-install-action: /nix exists but isn't writable"
           exit 1
@@ -63,13 +65,13 @@ runs:
       env:
         release_file: ${{ github.action_path }}/RELEASE
     - name: Install /nix (Linux)
-      if: ${{ steps.checks.outputs.install-nix-dir && runner.os == 'Linux' }}
+      if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'Linux' }}
       shell: bash
       run: |
         sudo install -d -o "$USER" /nix
         ${{ inputs.lix-on-tmpfs && 'sudo mount -t tmpfs -o size=90%,mode=0755,uid="$UID",gid="$(id -g)" tmpfs /nix' || '' }}
     - name: Install /nix (macOS)
-      if: ${{ steps.checks.outputs.install-nix-dir && runner.os == 'macOS' }}
+      if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
         sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
@@ -101,7 +103,7 @@ runs:
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', inputs.github-server-url, github.action_repository, steps.checks.outputs.rel),
+                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', inputs.github-server-url, github.action_repository, steps.vars.outputs.rel),
                 inputs.lix-version,
                 runner.arch == 'ARM64' && 'aarch64' || 'x86_64',
                 runner.os == 'macOS' && 'darwin' || 'linux'
