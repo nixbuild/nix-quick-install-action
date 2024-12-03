@@ -72,7 +72,6 @@ runs:
       if: ${{ steps.checks.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
-        set -x
         sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
         nix
         run	private/var/run
