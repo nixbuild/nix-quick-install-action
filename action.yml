@@ -76,15 +76,15 @@ runs:
         nix
         run	private/var/run
         EOF
-        sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || :
+        sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t >/dev/null || :
         [ -L /run ] || {
           echo "::error::failed to set up lix-quick-install-action: apfs.util failed to symlink /run"
           exit 1
         }
-        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix ||
-            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix
-        sudo mdutil -i off /nix
-        sudo chown "$USER" /nix
+        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix >/dev/null ||
+            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix >/dev/null
+        sudo mdutil -i off /nix >/dev/null
+        sudo chown "$USER" /nix >/dev/null
     - name: Clean up /nix
       shell: bash
       run: |
