@@ -52,9 +52,8 @@ jobs:
     steps:
       - uses: fabrictest/lix-quick-install-action@v1
       - run: nix build --version
-      - run: nix build ./examples/flakes-simple
-      - name: hello
-        run: ./result/bin/hello
+      - run: nix build ./examples/flakes
+      - run: ./result/bin/hello
 ```
 
 ![action-minimal](https://github.com/user-attachments/assets/89a6c8bf-5a07-4301-b2fc-43f1aa38fbd3)
@@ -71,7 +70,7 @@ accept-flake-config = true
 ![action-flake](https://github.com/user-attachments/assets/f2fded39-3f20-4e32-9444-21e571fe615c)
 
 You can see the flake definition for the above example in
-[examples/flakes-simple/flake.nix](examples/flakes-simple/flake.nix).
+[examples/flakes/flake.nix](examples/flakes/flake.nix).
 
 ### Using Cachix
 

@@ -1,23 +1,20 @@
 name: Examples
-
 on:
   push:
     branches:
       - master
-
 jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
       - uses: fabrictest/lix-quick-install-action@v4
       - run: nix-build --version
-
-  flakes-simple:
+  flakes:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: fabrictest/lix-quick-install-action@v4
       - name: nix build
-        run: nix build ./examples/flakes-simple
+        run: nix build ./examples/flakes
       - name: hello
         run: ./result/bin/hello
