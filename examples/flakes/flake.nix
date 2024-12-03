@@ -8,7 +8,7 @@
         "aarch64-darwin"
         "x86_64-darwin"
         "x86_64-linux"
-      ] (system: nixpkgs.legacyPackages.${system});
+      ] (system: f nixpkgs.legacyPackages.${system});
   in {
     defaultPackage = forAllSystems (pkgs: pkgs.hello.overrideDerivation (drv: {
       patches = (drv.patches or [ ]) ++ [ ./hello.patch ];

@@ -5,12 +5,26 @@ on:
       - master
 jobs:
   minimal:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13 # X64
+          - macos-latest # ARM64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: fabrictest/lix-quick-install-action@v4
       - run: nix-build --version
   flakes:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13 # X64
+          - macos-latest # ARM64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: fabrictest/lix-quick-install-action@v4
