@@ -5,6 +5,7 @@ on:
       - master
 jobs:
   minimal:
+    name: Minimal
     strategy:
       fail-fast: true
       matrix:
@@ -14,9 +15,12 @@ jobs:
           - macos-latest # ARM64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: fabrictest/lix-quick-install-action@v4
-      - run: nix-build --version
+      - name: Install Lix
+        uses: fabrictest/lix-quick-install-action@v4
+      - name: Retrieve Lix version
+        run: nix-build --version
   flakes:
+    name: Flakes
     strategy:
       fail-fast: true
       matrix:
@@ -26,9 +30,10 @@ jobs:
           - macos-latest # ARM64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
       - uses: fabrictest/lix-quick-install-action@v4
-      - name: nix build
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Build flake
         run: nix build ./examples/flakes
-      - name: hello
+      - name: Call `hello`
         run: ./result/bin/hello
