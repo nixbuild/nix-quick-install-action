@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Install Lix
         uses: fabrictest/lix-quick-install-action@v4
-      - name: Retrieve Lix version
+      - name: Print Lix version
         run: nix-build --version
   flakes:
     name: Flakes
@@ -35,5 +35,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Build flake
         run: nix build ./examples/flakes
-      - name: Call `hello`
+      - name: Print a `hello, world` message
         run: ./result/bin/hello
