@@ -91,7 +91,7 @@ runs:
       shell: bash
       run: |
         rm -rf /nix/var/lix-quick-install-action
-    - name: Fetch archive
+    - name: Fetch Lix archive
       shell: bash
       run: |
         ${{
