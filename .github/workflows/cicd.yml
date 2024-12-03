@@ -1,4 +1,4 @@
-name: CI/CD
+name: CICD
 on:
   pull_request:
   push:
@@ -32,7 +32,7 @@ jobs:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - name: Build Lix archives
-        id: archives
+        id: lix-archives
         shell: bash
         run: |
           nix build .#lix-archives
@@ -63,7 +63,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Download Lix archives
-        id: archives
+        id: lix-archives
         uses: actions/download-artifact@v4
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
