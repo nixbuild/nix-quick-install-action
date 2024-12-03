@@ -21,14 +21,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Install Lix
-        uses: ./
+        uses: .
         with:
           # TODO(ttlgcc): Parameterize flake version.
-          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v2
+          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v4
       - name: Install Cachix
         uses: cachix/cachix-action@v15
         with:
-          name: fabrictest
+          name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - name: Build archives
         id: archives
@@ -66,7 +66,7 @@ jobs:
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
       - name: Install Lix
-        uses: ./
+        uses: .
         with:
           lix-version: ${{ matrix.lix-version }}
           lix-archives-url: file://${{ steps.archives.outputs.download-path }}
@@ -117,7 +117,7 @@ jobs:
         with:
           name: lix-archives-macOS-ARM64
           path: /tmp/archives
-      - uses: ./
+      - uses: .
         with:
           lix-archives-url: file:///tmp/archives
       - uses: cachix/cachix-action@v15
