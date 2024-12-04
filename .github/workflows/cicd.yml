@@ -25,13 +25,13 @@ jobs:
         uses: ./
         with:
           # TODO(ttlgcc): Parameterize flake version.
-          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v4
+          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v6
       - name: Set up Cachix
         uses: cachix/cachix-action@v15
         with:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - name: Build Lix archives
+      - name: Build archives
         id: lix-archives
         shell: bash
         run: |
@@ -39,7 +39,7 @@ jobs:
           cat >>"$GITHUB_OUTPUT" <<EOF
           result=$(readlink result)
           EOF
-      - name: Upload Lix archives
+      - name: Upload archives
         uses: actions/upload-artifact@v4
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
@@ -62,7 +62,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Download Lix archives
+      - name: Download archives
         id: lix-archives
         uses: actions/download-artifact@v4
         with:
@@ -79,7 +79,7 @@ jobs:
           name: ${{ vars.CACHIX_CACHE_NAME }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
-      - name: Verify that the expected Lix version was installed
+      - name: Verify that Lix was installed
         shell: bash
         run: |
           nix-build -v --version
