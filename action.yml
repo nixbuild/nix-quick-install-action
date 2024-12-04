@@ -1,6 +1,6 @@
 name: Lix Quick Install
 description: Quickly installs Lix in unprivileged single-user mode
-author: Fabric Test contributors
+author: F. Emerson
 inputs:
   lix-version:
     description: |
@@ -35,7 +35,7 @@ inputs:
     default: false
   github-server-url:
     description: |
-      The URL of the GitHub server.  Defaults to `https://github.com`.
+      The URL of the GitHub server. Defaults to `https://github.com`.
     default: https://github.com
   lix-archives-url:
     description: |
@@ -44,22 +44,17 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Detect unsupported systems
-      if: ${{ !contains(fromJSON('["Linux", "macOS"]'), runner.os) }}
-      shell: bash
-      run: |
-        echo "::error::failed to set up lix-quick-install-action: ${{ runner.os }} isn't supported (yet? :)"
-        exit 1
     - name: Resolve variables
       id: vars
       shell: bash
       run: |
-        [ ! -e /nix -o -w /nix ] || {
-          echo "::error::failed to set up lix-quick-install-action: /nix exists but isn't writable"
+
+        test ! -e /nix -o -w /nix || {
+          echo "::error::failed to set up Lix: /nix exists but isn't writable"
           exit 1
         }
         cat >>"$GITHUB_OUTPUT" <<EOF
-        install-nix-dir=$([ -e /nix ] || echo 1)
+        install-nix-dir=$(test -e /nix || echo true)
         rel=$(head -n1 "$release_file")
         EOF
       env:
@@ -68,32 +63,40 @@ runs:
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'Linux' }}
       shell: bash
       run: |
+
         sudo install -d -o "$USER" /nix
-        ${{ inputs.lix-on-tmpfs && 'sudo mount -t tmpfs -o size=90%,mode=0755,uid="$UID",gid="$(id -g)" tmpfs /nix' || '' }}
+        ${{
+          inputs.lix-on-tmpfs &&
+              'sudo mount -t tmpfs -o size=90%,mode=0755,uid=$UID,gid=$(id -g) tmpfs /nix' ||
+              ''
+        }}
     - name: Install /nix (macOS)
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
+
         sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
         nix
         run	private/var/run
         EOF
-        sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t >/dev/null || :
-        [ -L /run ] || {
-          echo "::error::failed to set up lix-quick-install-action: apfs.util failed to symlink /run"
+        sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || :
+        test -L /run || {
+          echo "::error::failed to set up Lix: apfs.util couldn't symlink /run"
           exit 1
         }
-        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix >/dev/null ||
-            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix >/dev/null
-        sudo mdutil -i off /nix >/dev/null
-        sudo chown "$USER" /nix >/dev/null
+        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix ||
+            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix
+        sudo mdutil -i off /nix
+        sudo chown "$USER" /nix
     - name: Clean up /nix
       shell: bash
       run: |
+
         rm -rf /nix/var/lix-quick-install-action
-    - name: Fetch Lix archive
+    - name: Fetch archive
       shell: bash
       run: |
+
         ${{
           startsWith(inputs.lix-archives-url, 'file://') &&
               '<"${lix_archive_url#file://}"' ||
@@ -105,13 +108,14 @@ runs:
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
                 inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', inputs.github-server-url, github.action_repository, steps.vars.outputs.rel),
                 inputs.lix-version,
-                runner.arch == 'ARM64' && 'aarch64' || 'x86_64',
-                runner.os == 'macOS' && 'darwin' || 'linux'
+                (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
+                (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
             )
           }}
     - name: Synthesize nix.conf
       shell: bash
       run: |
+
         : "${XDG_CONFIG_HOME:=$HOME/.config}"
         mkdir -p "$XDG_CONFIG_HOME"/nix
         cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
@@ -127,17 +131,18 @@ runs:
     - name: Install Lix in profile
       shell: bash
       run: |
-        nix=$(readlink /nix/var/lix-quick-install-action/nix)
-        "$nix"/bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
-        MANPATH='' . "$nix"/etc/profile.d/nix.sh
-        "$nix"/bin/nix-env --install "$nix"
+
+        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/nix)"
+        ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
+        MANPATH='' . ./etc/profile.d/nix.sh
+        ./bin/nix-env --install "$PWD"
         cat >>"$GITHUB_PATH" <<EOF
         $HOME/.nix-profile/bin
         EOF
         cat >>"$GITHUB_ENV" <<EOF
         NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile
         NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
-        NIX_SSL_CERT_FILE=${NIX_SSL_CERT_FILE:-$([ ! -e /etc/ssl/cert.pem ] || echo /etc/ssl/cert.pem)}
+        NIX_SSL_CERT_FILE=${NIX_SSL_CERT_FILE:-$(test ! -e /etc/ssl/cert.pem || echo /etc/ssl/cert.pem)}
         EOF
 branding:
   icon: package
