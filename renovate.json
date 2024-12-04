@@ -1,16 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices",
-    "customManagers:githubActionsVersions",
-    "schedule:daily",
-    ":prImmediately",
-    ":rebaseStalePrs"
-  ],
-  "labels": [
-    "dependency updates"
-  ],
-  "lockFileMaintenance": {
-    "enabled": true
-  }
+    "github>fabrictest/renovate-config"
+  ]
 }
