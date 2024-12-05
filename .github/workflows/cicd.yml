@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: Bootstrap Lix
         uses: ./
         with:
@@ -40,7 +40,7 @@ jobs:
           result=$(readlink result)
           EOF
       - name: Upload archives
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
           path: ${{ steps.lix-archives.outputs.result }}/
@@ -61,10 +61,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: Download archives
         id: lix-archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: lix-archives-${{ runner.os }}-${{ runner.arch }}
       - name: Install Lix ${{ matrix.lix-version }}
@@ -108,19 +108,19 @@ jobs:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: Download Lix archive (Linux, X64)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: lix-archives-Linux-X64
           path: /tmp/archives
       - name: Download Lix archive (macOS, X64)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: lix-archives-macOS-X64
           path: /tmp/archives
       - name: Download Lix archive (macOS, ARM64)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.1.8
         with:
           name: lix-archives-macOS-ARM64
           path: /tmp/archives
