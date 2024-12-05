@@ -48,7 +48,7 @@ runs:
       id: vars
       shell: bash
       run: |
-
+        #
         test ! -e /nix -o -w /nix || {
           echo "::error::failed to set up Lix: /nix exists but isn't writable"
           exit 1
@@ -63,7 +63,7 @@ runs:
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'Linux' }}
       shell: bash
       run: |
-
+        #
         sudo install -d -o "$USER" /nix
         ${{
           inputs.lix-on-tmpfs &&
@@ -74,7 +74,7 @@ runs:
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
-
+        #
         sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
         nix
         run	private/var/run
@@ -91,12 +91,12 @@ runs:
     - name: Clean up /nix
       shell: bash
       run: |
-
+        #
         rm -rf /nix/var/lix-quick-install-action
     - name: Fetch archive
       shell: bash
       run: |
-
+        #
         ${{
           startsWith(inputs.lix-archives-url, 'file://') &&
               '<"${lix_archive_url#file://}"' ||
@@ -115,7 +115,7 @@ runs:
     - name: Synthesize nix.conf
       shell: bash
       run: |
-
+        #
         : "${XDG_CONFIG_HOME:=$HOME/.config}"
         mkdir -p "$XDG_CONFIG_HOME"/nix
         cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
@@ -131,7 +131,7 @@ runs:
     - name: Install Lix in profile
       shell: bash
       run: |
-
+        #
         CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/nix)"
         ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
         MANPATH='' . ./etc/profile.d/nix.sh

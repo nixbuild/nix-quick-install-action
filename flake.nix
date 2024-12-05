@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "nixpkgs/970e93b9f82e2a0f3675757eb0bfc73297cc6370";
+    nixpkgs.url = "github:NixOS/nixpkgs/970e93b9f82e2a0f3675757eb0bfc73297cc6370";
   };
 
   nixConfig = {
@@ -15,21 +15,21 @@
   outputs = {
     self,
     flake-utils,
-    nixpkgs-unstable,
+    nixpkgs,
   }:
   let allSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
 
-      inherit (nixpkgs-unstable) lib;
+      inherit (nixpkgs) lib;
 
       preferRemoteBuild = drv: drv.overrideAttrs (_: {
         preferLocalBuild = false;
         allowSubstitutes = true;
       });
 
-      pkgs = import nixpkgs-unstable {
+      pkgs = import nixpkgs {
         inherit system;
         overlays = [
           (self: super: super.prefer-remote-fetch self super)
@@ -82,7 +82,10 @@
     in rec {
       defaultApp = apps.release;
 
-      apps.release = flake-utils.lib.mkApp { drv = packages.release; };
+      apps.release = {
+        type = "app";
+        program = lib.getExe packages.release;
+      };
 
       overlays = final: prev: nixPackages;
 
