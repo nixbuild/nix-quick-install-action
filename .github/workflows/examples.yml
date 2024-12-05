@@ -16,11 +16,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Lix
-        uses: fabrictest/lix-quick-install-action@v6
+        uses: fabrictest/lix-quick-install-action@9697e99bcfa92ababd7b61fe70e89c27d08b6199 # v6
       - name: Print Lix version
         run: nix --version
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Build flake
         run: nix build ./examples/flakes
       - name: Print `hello, world` message
