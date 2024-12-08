@@ -20,7 +20,7 @@ inputs:
       information on what settings that are available. Make sure the settings
       you define are supported by the Lix version you're using.
     required: false
-  github-access-token:
+  github-token:
     description: |
       Configure Lix to use the specified token when fetching from GitHub.
       Defaults to `github.token`.
@@ -33,10 +33,6 @@ inputs:
       database, logs etc) will be considerably less than the available memory.
       This option does nothing on MacOS runners.
     default: false
-  github-server-url:
-    description: |
-      The URL of the GitHub server. Defaults to `https://github.com`.
-    default: https://github.com
   lix-archives-url:
     description: |
       Internal.
@@ -106,7 +102,7 @@ runs:
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', inputs.github-server-url, github.action_repository, steps.vars.outputs.rel),
+                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.rel),
                 inputs.lix-version,
                 (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
                 (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
@@ -120,13 +116,13 @@ runs:
         mkdir -p "$XDG_CONFIG_HOME"/nix
         cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
         accept-flake-config = true
-        access-tokens = ${github_server_url#*://}=$github_access_token
+        access-tokens = ${github_server_url#*://}=$github_token
         experimental-features = nix-command flakes
         $nix_conf
         EOF
       env:
-        github_server_url: ${{ inputs.github-server-url }}
-        github_access_token: ${{ inputs.github-access-token }}
+        github_server_url: ${{ github.server_url }}
+        github_token: ${{ inputs.github-token }}
         nix_conf: ${{ inputs.nix-conf }}
     - name: Install Lix in profile
       shell: bash
