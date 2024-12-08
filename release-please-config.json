@@ -1,0 +1,13 @@
+{
+	"bootstrap-sha": "9870a8df0505c5fa9da7de64be584d71f6d8141d",
+	"plugins": [
+		{
+			"type": "sentence-case"
+		}
+	],
+	"release-type": "simple",
+	"packages": {
+		".": {
+		}
+	}
+}
