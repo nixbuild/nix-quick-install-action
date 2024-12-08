@@ -8,6 +8,7 @@
 	"changelog-type": "github",
 	"include-component-in-tag": false,
 	"include-v-in-tag": true,
+	"pull-request-title-pattern": "chore: release${component} ${version}",
 	"pull-request-header": "",
 	"pull-request-footer": "",
 	"packages": {
