@@ -129,6 +129,21 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           token: ${{ steps.app-token.outputs.token }}
+      - name: Set Git identity
+        if: ${{ steps.release.outputs.release_created }}
+        shell: bash
+        run: |
+          name="$slug[bot]"
+          email="$(gh api /users/"$name" --jq .id)+$name@noreply.users.github.com"
+          cat >>"$GITHUB_ENV" <<EOF
+          GIT_AUTHOR_NAME=$name
+          GIT_AUTHOR_EMAIL=$email
+          GIT_COMMITTER_NAME=$name
+          GIT_COMMITTER_EMAIL=$email
+          EOF
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          slug: ${{ steps.app-token.outputs.app-slug }}
       - name: Tag major and minor versions
         if: ${{ steps.release.outputs.release_created }}
         shell: bash
@@ -140,6 +155,7 @@ jobs:
             git push origin "$tag"
           done
         env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           tag_major: v${{ steps.release.outputs.major }}
           tag_minor: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
   publish:
