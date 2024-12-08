@@ -115,7 +115,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v1.11.0
         with:
-          app-id: ${{ var.M_S_B_O_Y_APP_ID }}
+          app-id: ${{ vars.M_S_B_O_Y_APP_ID }}
           private-key: ${{ secrets.M_S_B_O_Y_PRIVATE_KEY }}
       - name: Cut a release
         id: release
@@ -159,7 +159,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v1.11.0
         with:
-          app-id: ${{ var.M_S_B_O_Y_APP_ID }}
+          app-id: ${{ vars.M_S_B_O_Y_APP_ID }}
           private-key: ${{ secrets.M_S_B_O_Y_PRIVATE_KEY }}
       - name: Download archives
         id: archives
