@@ -5,6 +5,7 @@
 	"plugins": [
 		"sentence-case"
 	],
+	"always-update": true,
 	"changelog-type": "github",
 	"include-component-in-tag": false,
 	"include-v-in-tag": true,
