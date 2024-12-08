@@ -1,3 +1,4 @@
+---
 name: Examples
 on:
   push:
@@ -18,7 +19,7 @@ jobs:
       - name: Install Lix
         uses: fabrictest/lix-quick-install-action@9697e99bcfa92ababd7b61fe70e89c27d08b6199 # v6
       - name: Print Lix version
-        run: nix --version
+        run: nix-build --version
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Build flake

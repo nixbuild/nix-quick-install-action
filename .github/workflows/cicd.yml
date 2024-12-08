@@ -1,3 +1,4 @@
+---
 name: CICD
 on:
   pull_request:
@@ -25,11 +26,11 @@ jobs:
         uses: ./
         with:
           # TODO(ttlgcc): Parameterize flake version.
-          lix-archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v6
+          archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v6
       - name: Set up Cachix
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
-          name: ${{ vars.CACHIX_CACHE_NAME }}
+          name: ${{ vars.CACHIX_CACHE }}
           authToken: ${{ secrets.CACHIX_TOKEN }}
       - name: Build archives
         id: archives
@@ -72,11 +73,11 @@ jobs:
         with:
           lix-version: ${{ matrix.lix-version }}
           lix-on-tmpfs: true
-          lix-archives-url: file://${{ steps.archives.outputs.download-path }}
+          archives-url: file://${{ steps.archives.outputs.download-path }}
       - name: Set up Cachix
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
-          name: ${{ vars.CACHIX_CACHE_NAME }}
+          name: ${{ vars.CACHIX_CACHE }}
           authToken: ${{ secrets.CACHIX_TOKEN }}
           skipPush: true
       - name: Verify that Lix was installed
@@ -96,9 +97,9 @@ jobs:
         if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
         shell: bash
         run: |
-          cachix push "$CACHIX_CACHE_NAME" "$result"
+          cachix push "$cache" "$result"
         env:
-          CACHIX_CACHE_NAME: ${{ vars.CACHIX_CACHE_NAME }}
+          cache: ${{ vars.CACHIX_CACHE }}
           result: ${{ steps.lix-store-add.outputs.result }}
   release:
     name: Release
@@ -109,36 +110,37 @@ jobs:
       - test
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
+      - name: Generate ephemeral GitHub token
+        id: app-token
+        uses: actions/create-github-app-token@v1.11.0
+        with:
+          app-id: ${{ var.M_S_B_O_Y_APP_ID }}
+          private-key: ${{ secrets.M_S_B_O_Y_PRIVATE_KEY }}
       - name: Cut a release
         id: release
         uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           target-branch: ${{ github.ref_name }}
       - name: Check out repository
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
       - name: Tag major and minor versions
         if: ${{ steps.release.outputs.release_created }}
         shell: bash
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git config url."https://$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf 'https://github.com/'
-          for tag in "$major" "$minor"; do
+          for tag in "$tag_major" "$tag_minor"; do
             git tag -d "$tag" || :
             git push origin :"$tag" || :
             git tag -a "$tag" -m "Release $tag"
             git push origin "$tag"
           done
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          major: v${{ steps.release.outputs.major }}
-          minor: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
+          tag_major: v${{ steps.release.outputs.major }}
+          tag_minor: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
   publish:
     name: Publish
     strategy:
@@ -152,9 +154,13 @@ jobs:
     needs:
       - release
     if: ${{ needs.release.outputs.created }}
-    permissions:
-      contents: write
     steps:
+      - name: Generate ephemeral GitHub token
+        id: app-token
+        uses: actions/create-github-app-token@v1.11.0
+        with:
+          app-id: ${{ var.M_S_B_O_Y_APP_ID }}
+          private-key: ${{ secrets.M_S_B_O_Y_PRIVATE_KEY }}
       - name: Download archives
         id: archives
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
@@ -165,6 +171,6 @@ jobs:
         run: |
           gh release upload "$tag" "$archives"/lix-*.tar.zstd
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           tag: ${{ needs.release.outputs.tag }}
           archives: ${{ steps.archives.outputs.download-path }}

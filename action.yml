@@ -33,7 +33,7 @@ inputs:
       database, logs etc) will be considerably less than the available memory.
       This option does nothing on MacOS runners.
     default: false
-  lix-archives-url:
+  archives-url:
     description: |
       Internal.
     required: false
@@ -94,7 +94,7 @@ runs:
       run: |
         #
         ${{
-          startsWith(inputs.lix-archives-url, 'file://') &&
+          startsWith(inputs.archives-url, 'file://') &&
               '<"${lix_archive_url#file://}"' ||
               'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
         }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
@@ -102,7 +102,7 @@ runs:
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.lix-archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.rel),
+                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.rel),
                 inputs.lix-version,
                 (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
                 (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
