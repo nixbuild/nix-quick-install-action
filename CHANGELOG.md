@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.0.4 (2024-12-09)
+
+## What's Changed
+* chore(deps): pin dependencies by @renovate in https://github.com/fabrictest/lix-quick-install-action/pull/23
+
+
+**Full Changelog**: https://github.com/fabrictest/lix-quick-install-action/compare/v7.0.3...v7.0.4
+
 ## 7.0.3 (2024-12-09)
 
 **Full Changelog**: https://github.com/fabrictest/lix-quick-install-action/compare/v7.0.2...v7.0.3
