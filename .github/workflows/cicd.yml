@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 env:
   # renovate: datasource=github-releases depName=fabrictest/lix-quick-install-action
-  LIX_QUICK_INSTALL_ACTION_VERSION: 7.0.2
+  LIX_QUICK_INSTALL_ACTION_VERSION: 7.0.4
 jobs:
   build:
     name: Build
