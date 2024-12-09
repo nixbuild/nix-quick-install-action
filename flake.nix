@@ -94,58 +94,6 @@
           name = "lix-archives";
           paths = lib.attrValues (nixArchives system);
         });
-        release = preferRemoteBuild (pkgs.writeScriptBin "release" ''
-          #!${pkgs.stdenv.shell}
-
-          PATH="${lib.makeBinPath (with pkgs; [
-            coreutils gitMinimal github-cli
-          ])}"
-
-          if [ "$GITHUB_ACTIONS" != "true" ]; then
-            echo >&2 "not running in GitHub, exiting"
-            exit 1
-          fi
-
-          set -euo pipefail
-
-          nix_archives="$1"
-          release_file="$2"
-          release="$(head -n1 "$release_file")"
-          prev_release="$(gh release list -L 1 | cut -f 3)"
-
-          if [ "$release" = "$prev_release" ]; then
-            echo >&2 "Release tag not updated ($release)"
-            exit
-          else
-            release_notes="$(mktemp)"
-            tail -n+2 "$release_file" > "$release_notes"
-
-            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" ''
-              ## Supported Nix Versions on Linux Runners
-              ${lib.concatStringsSep "\n" (
-                map (v: "* ${v}") (
-                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-linux")))
-                )
-              )}
-
-              ## Supported Nix Versions on MacOS Runners
-              ${lib.concatStringsSep "\n" (
-                map (v: "* ${v}") (
-                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-darwin")))
-                )
-              )}
-            ''}"
-
-            echo >&2 "New release: $prev_release -> $release"
-            gh release create "$release" ${
-              lib.concatMapStringsSep " " ({ system, version, fileName }:
-                ''"$nix_archives/${fileName}#lix-${version}-${system}"''
-              ) allNixArchives
-            } \
-              --title "$GITHUB_REPOSITORY@$release" \
-              --notes-file "$release_notes"
-          fi
-        '');
       };
     }
   );
