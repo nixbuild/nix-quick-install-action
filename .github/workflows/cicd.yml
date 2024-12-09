@@ -188,6 +188,11 @@ jobs:
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: archives-${{ runner.os }}-${{ runner.arch }}
+      - name: Attest archives
+        uses: actions/attest-build-provenance@v2.0.1
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          subject-path: ${{ steps.archives.outputs.download-path }}/lix-*.tar.zstd
       - name: Attach archives to the GitHub release
         shell: bash
         run: |
