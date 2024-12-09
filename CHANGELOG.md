@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.3 (2024-12-09)
+
+**Full Changelog**: https://github.com/fabrictest/lix-quick-install-action/compare/v7.0.2...v7.0.3
+
 ## 7.0.2 (2024-12-08)
 
 **Full Changelog**: https://github.com/fabrictest/lix-quick-install-action/compare/v7.0.1...v7.0.2
