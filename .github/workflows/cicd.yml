@@ -17,7 +17,7 @@ env:
   RUNNER_UBUNTU_VERSION: "24.04"
 jobs:
   resolve:
-    name: Resolve
+    name: Resolve variables
     runs-on: ubuntu-latest
     steps:
       - name: Runners to use
