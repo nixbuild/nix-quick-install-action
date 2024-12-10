@@ -15,15 +15,33 @@ env:
   # renovate: datasource=github-runners depName=ubuntu
   RUNNER_UBUNTU_VERSION: "24.04"
 jobs:
+  resolve:
+    name: Resolve
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runners to use
+        id: runner-os
+        shell: bash
+        run: |
+          cat >>"$GITHUB_OUTPUT" <<EOF
+          json<<JSON
+          [
+            "macos-$RUNNER_MACOS_VERSION",
+            "macos-13",
+            "ubuntu-$RUNNER_UBUNTU_VERSION"
+          ]
+          JSON
+          EOF
+    outputs:
+      runner-os: ${{ steps.runner-os.outputs.json }}
   build:
     name: Build
+    needs:
+      - resolve
     strategy:
       fail-fast: true
       matrix:
-        os:
-          - macos-${{ env.RUNNER_MACOS_VERSION }}
-          - macos-13 # X64
-          - ubuntu-${{ env.RUNNER_UBUNTU_VERSION }}
+        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -66,10 +84,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os:
-          - macos-${{ env.RUNNER_MACOS_VERSION }}
-          - macos-13 # X64
-          - ubuntu-${{ env.RUNNER_UBUNTU_VERSION }}
+        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
         lix-version:
           - 2.90.0
           - 2.91.1
@@ -176,10 +191,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os:
-          - macos-${{ env.RUNNER_MACOS_VERSION }}
-          - macos-13 # X64
-          - ubuntu-${{ env.RUNNER_UBUNTU_VERSION }}
+        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
     needs:
       - release
