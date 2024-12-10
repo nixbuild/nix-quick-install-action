@@ -79,14 +79,7 @@
         }) (lib.attrNames (nixArchives system))
       ) allSystems;
 
-    in rec {
-      defaultApp = apps.release;
-
-      apps.release = {
-        type = "app";
-        program = lib.getExe packages.release;
-      };
-
+    in {
       overlays = final: prev: nixPackages;
 
       packages = nixPackages // {
