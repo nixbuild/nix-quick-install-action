@@ -60,7 +60,7 @@ jobs:
       - name: Bootstrap Lix
         uses: ./
         with:
-          archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v${{ step.bootstrap-version.outputs.string }}
+          archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v${{ steps.bootstrap-version.outputs.string }}
       - name: Set up Cachix
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
