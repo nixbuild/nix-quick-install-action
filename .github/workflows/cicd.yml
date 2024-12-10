@@ -174,15 +174,15 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         shell: bash
         run: |
-          for tag in "v$M" "v$M.$m"; do
+          for tag in "v$maj" "v$maj.$min"; do
             git tag -d "$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
             git push origin :"$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
             git tag -a "$tag" -m "Release $tag"
             git push origin "$tag"
           done
         env:
-          M: ${{ steps.release.outputs.major }}
-          m: ${{ steps.release.outputs.minor }}
+          maj: ${{ steps.release.outputs.major }}
+          min: ${{ steps.release.outputs.minor }}
     outputs:
       created: ${{ steps.release.outputs.release_created || '' }}
       tag: ${{ steps.release.outputs.tag_name }}
