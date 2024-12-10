@@ -24,13 +24,7 @@ jobs:
         shell: bash
         run: |
           cat >>"$GITHUB_OUTPUT" <<EOF
-          json<<JSON
-          [
-            "macos-$RUNNER_MACOS_VERSION",
-            "macos-13",
-            "ubuntu-$RUNNER_UBUNTU_VERSION"
-          ]
-          JSON
+          json=["macos-$RUNNER_MACOS_VERSION", "macos-13", "ubuntu-$RUNNER_UBUNTU_VERSION"]
           EOF
     outputs:
       runner-os: ${{ steps.runner-os.outputs.json }}
