@@ -1,7 +1,9 @@
 {
 	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+	"plugins": [
+		"sentence-case",
+	],
 	"always-update": true,
-	"changelog-type": "github",
 	"packages": {
 		".": {
 			"release-type": "simple",
