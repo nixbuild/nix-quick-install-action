@@ -11,7 +11,7 @@ inputs:
       Lix versions, which do not change. You can check what Lix versions are
       supported by the version of lix-quick-install-action you're using by
       going to https://github.com/fabrictest/lix-quick-install-action/releases.
-    default: 2.91.1
+    required: false
   nix-conf:
     description: |
       If set, this configuration is written to $XDG_CONFIG_HOME/nix/nix.conf,
@@ -40,18 +40,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Resolve action version
-      id: version
-      shell: bash
-      run: |
-        #
-        cat >>"$GITHUB_OUTPUT" <<EOF
-        self=$(cat "$action_path"/version.txt)
-        EOF
-      env:
-        action_path: ${{ github.action_path }}
-    - name: Should we install /nix?
-      id: install-nix-dir
+    - name: Do preflight checks and resolve variables
+      id: vars
       shell: bash
       run: |
         #
@@ -60,21 +50,27 @@ runs:
           exit 1
         }
         cat >>"$GITHUB_OUTPUT" <<EOF
-        yes=$(test -e /nix || echo yes)
+        action-version=$(tr -d \\n "$GITHUB_ACTION_PATH"/version.txt)
+        lix-version=$LIX_${{ inputs.lix-version && '' || 'DEFAULT_' }}VERSION
+        install-nix-dir=$(test -e /nix || echo true)
         EOF
+      env:
+        LIX_VERSION: ${{ inputs.lix-version }}
+        # renovate: datasource=github-tags depName=lix-project/lix
+        LIX_DEFAULT_VERSION: 2.91.1
     - name: Install /nix (Linux)
-      if: ${{ steps.install-nix-dir.outputs.yes && runner.os == 'Linux' }}
+      if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'Linux' }}
       shell: bash
       run: |
         #
         sudo install -d -o "$USER" /nix
         ${{
           inputs.lix-on-tmpfs &&
-              'sudo mount -t tmpfs -o size=90%,mode=0755,uid=$UID,gid=$(id -g) tmpfs /nix' ||
+              'sudo mount -t tmpfs -o "size=90%,mode=0755,uid=$UID,gid=$(id -g)" tmpfs /nix' ||
               ''
         }}
     - name: Install /nix (macOS)
-      if: ${{ steps.install-nix-dir.outputs.yes && runner.os == 'macOS' }}
+      if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
         #
@@ -102,15 +98,15 @@ runs:
         #
         ${{
           startsWith(inputs.archives-url, 'file://') &&
-              '<"${lix_archive_url#file://}"' ||
+              '<"${lix_archive_url#*://}"' ||
               'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
         }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
       env:
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.version.outputs.self),
-                inputs.lix-version,
+                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.action-version),
+                steps.vars.outputs.lix-version,
                 (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
                 (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
             )
@@ -123,13 +119,12 @@ runs:
         mkdir -p "$XDG_CONFIG_HOME"/nix
         cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
         accept-flake-config = true
-        access-tokens = ${github_server_url#*://}=$github_token
+        access-tokens = ${GITHUB_SERVER_URL#*://}=$GITHUB_TOKEN
         experimental-features = nix-command flakes
         $nix_conf
         EOF
       env:
-        github_server_url: ${{ github.server_url }}
-        github_token: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
         nix_conf: ${{ inputs.nix-conf }}
     - name: Install Lix in profile
       shell: bash
