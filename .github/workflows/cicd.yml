@@ -76,6 +76,9 @@ jobs:
           path: ${{ steps.archives.outputs.result }}/
   test:
     name: Test
+    needs:
+      - resolve
+      - build
     strategy:
       fail-fast: true
       matrix:
@@ -83,8 +86,6 @@ jobs:
         lix-version:
           - 2.90.0
           - 2.91.1
-    needs:
-      - build
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -183,13 +184,14 @@ jobs:
       tag: ${{ steps.release.outputs.tag_name }}
   publish:
     name: Publish
+    needs:
+      - resolve
+      - release
     strategy:
       fail-fast: true
       matrix:
         os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
-    needs:
-      - release
     if: ${{ needs.release.outputs.created }}
     permissions:
       id-token: write
