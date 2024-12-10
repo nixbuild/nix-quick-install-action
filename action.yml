@@ -50,7 +50,7 @@ runs:
           exit 1
         }
         cat >>"$GITHUB_OUTPUT" <<EOF
-        action-version=$(tr -d \\n "$GITHUB_ACTION_PATH"/version.txt)
+        action-version=$(tr -d \\n <"$GITHUB_ACTION_PATH"/version.txt)
         lix-version=$LIX_${{ inputs.lix-version && '' || 'DEFAULT_' }}VERSION
         install-nix-dir=$(test -e /nix || echo true)
         EOF

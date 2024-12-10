@@ -54,7 +54,7 @@ jobs:
         run: |
           git switch --detach HEAD~1
           cat >>"$GITHUB_OUTPUT" <<EOF
-          string=$(tr -d \\n version.txt)
+          string=$(tr -d \\n <version.txt)
           EOF
           git switch -
       - name: Bootstrap Lix
