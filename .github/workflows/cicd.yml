@@ -10,13 +10,8 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-env:
-  # renovate: datasource=github-runners depName=macos
-  RUNNER_MACOS_VERSION: "15"
-  # renovate: datasource=github-runners depName=ubuntu
-  RUNNER_UBUNTU_VERSION: "24.04"
 jobs:
-  resolve:
+  vars:
     name: Resolve variables
     runs-on: ubuntu-latest
     steps:
@@ -24,34 +19,39 @@ jobs:
         id: runner-os
         shell: bash
         run: |
-          cat >>"$GITHUB_OUTPUT" <<EOF
-          json=["macos-$RUNNER_MACOS_VERSION", "macos-13", "ubuntu-$RUNNER_UBUNTU_VERSION"]
-          EOF
+          printf 'json=["macos-%s", "macos-13", "ubuntu-%s"]' "$RUNNER_MACOS_VERSION" "$RUNNER_UBUNTU_VERSION" >>"$GITHUB_OUTPUT"
+        env:
+          # renovate: datasource=github-runners depName=macos
+          RUNNER_MACOS_VERSION: "15"
+          # renovate: datasource=github-runners depName=ubuntu
+          RUNNER_UBUNTU_VERSION: "24.04"
     outputs:
       runner-os: ${{ steps.runner-os.outputs.json }}
   build:
     name: Build
     needs:
-      - resolve
+      - vars
     strategy:
       fail-fast: true
       matrix:
-        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Which version should I use to bootstrap Lix?
-        id: bootstrap-version
-        shell: bash
-        run: |
-          cat >>"$GITHUB_OUTPUT" <<EOF
-          string=$(gh api /repos/"$GITHUB_ACTION_REPOSITORY"/contents/version.txt --header Accept:application/vnd.github.raw | tr -d \\n)
-          EOF
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 2
+      - name: Which version should I use to bootstrap Lix?
+        id: bootstrap-lix
+        shell: bash
+        run: |
+          git switch --detach HEAD~1
+          xargs printf version=%s\\n <version.txt >>"$GITHUB_OUTPUT"
+          git switch -
       - name: Bootstrap Lix
         uses: ./
         with:
-          archives-url: https://github.com/fabrictest/lix-quick-install-action/releases/download/v${{ steps.bootstrap-version.outputs.string }}
+          archives-url: ${{ github.server_url }}/${{ github.repository }}/releases/download/v${{ steps.bootstrap-lix.outputs.version }}
       - name: Set up Cachix
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
@@ -62,9 +62,7 @@ jobs:
         shell: bash
         run: |
           nix build .#lix-archives
-          cat >>"$GITHUB_OUTPUT" <<EOF
-          result=$(readlink result)
-          EOF
+          readlink result | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
       - name: Upload archives to GitHub
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
@@ -73,12 +71,12 @@ jobs:
   test:
     name: Test
     needs:
-      - resolve
+      - vars
       - build
     strategy:
       fail-fast: true
       matrix:
-        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
         lix-version:
           - 2.90.0
           - 2.91.1
@@ -112,11 +110,8 @@ jobs:
         id: lix-store-add
         shell: bash
         run: |
-          f=./$RANDOM
-          echo $RANDOM >$f
-          cat >>"$GITHUB_OUTPUT" <<EOF
-          result=$(nix-store --add $f)
-          EOF
+          printf %d $RANDOM >${f:=./$RANDOM}
+          nix-store --add $f | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
       - name: Verify that one can push such file to Cachix
         if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
         shell: bash
@@ -132,68 +127,67 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref_name == github.event.repository.default_branch }}
     steps:
-      - name: Generate ephemeral GitHub token
-        id: app-token
+      - name: Generate bot token
+        id: bot-token
         uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
         with:
           app-id: ${{ vars.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_PRIVATE_KEY }}
-      - name: Set M.S.B.O.Y. as Git author and committer
+      - name: Fetch bot ID
+        id: bot-id
         shell: bash
         run: |
-          bot_email="$(gh api "/users/$bot_name" --jq .id)+$bot_name@noreply.users.github.com"
-          cat >>"$GITHUB_ENV" <<EOF
-          GIT_AUTHOR_NAME=$bot_name
-          GIT_AUTHOR_EMAIL=$bot_email
-          GIT_COMMITTER_NAME=$bot_name
-          GIT_COMMITTER_EMAIL=$bot_email
-          EOF
+          gh api /users/"$app_slug"[bot] --jq .id | xargs printf id=%s\\n >>"$GITHUB_OUTPUT"
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          bot_name: ${{ steps.app-token.outputs.app-slug }}[bot]
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+          app_slug: ${{ steps.bot-token.outputs.app-slug }}
       - name: Cut release
         id: release
         uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.bot-token.outputs.token }}
           target-branch: ${{ github.ref_name }}
       - name: Check out repository
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.bot-token.outputs.token }}
       - name: Tag major and minor versions
         if: ${{ steps.release.outputs.release_created }}
         shell: bash
         run: |
-          for tag in "v$maj" "v$maj.$min"; do
+          for tag in "$tag_major" "$tag_minor"; do
             git tag -d "$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
             git push origin :"$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
             git tag -a "$tag" -m "Release $tag"
             git push origin "$tag"
           done
         env:
-          maj: ${{ steps.release.outputs.major }}
-          min: ${{ steps.release.outputs.minor }}
+          GIT_AUTHOR_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_AUTHOR_EMAIL: ${{ steps.bot-id.outputs.id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          GIT_COMMITTER_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_COMMITTER_EMAIL: ${{ steps.bot-id.outputs.id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          tag_major: v${{ steps.release.outputs.major }}
+          tag_minor: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
     outputs:
       created: ${{ steps.release.outputs.release_created || '' }}
       tag: ${{ steps.release.outputs.tag_name }}
   publish:
     name: Publish
     needs:
-      - resolve
+      - vars
       - release
     strategy:
       fail-fast: true
       matrix:
-        os: ${{ fromJSON(needs.resolve.outputs.runner-os) }}
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
     if: ${{ needs.release.outputs.created }}
     permissions:
       id-token: write
     steps:
       - name: Generate ephemeral GitHub token
-        id: app-token
+        id: bot-token
         uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
         with:
           app-id: ${{ vars.BOT_APP_ID }}
@@ -201,7 +195,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.bot-token.outputs.token }}
       - name: Download archives
         id: archives
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
@@ -210,13 +204,13 @@ jobs:
       - name: Attest archives
         uses: actions/attest-build-provenance@7668571508540a607bdfd90a87a560489fe372eb # v2.1.0
         with:
-          github-token: ${{ steps.app-token.outputs.token }}
+          github-token: ${{ steps.bot-token.outputs.token }}
           subject-path: ${{ steps.archives.outputs.download-path }}/lix-*.tar.zstd
       - name: Attach archives to the GitHub release
         shell: bash
         run: |
           gh release upload "$tag" "$archives"/lix-*.tar.zstd
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
           tag: ${{ needs.release.outputs.tag }}
           archives: ${{ steps.archives.outputs.download-path }}

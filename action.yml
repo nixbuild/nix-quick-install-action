@@ -45,6 +45,7 @@ runs:
       shell: bash
       run: |
         #
+        set -u
         test ! -e /nix -o -w /nix || {
           echo "::error::failed to set up Lix: /nix exists but isn't writable"
           exit 1
@@ -52,7 +53,7 @@ runs:
         cat >>"$GITHUB_OUTPUT" <<EOF
         action-version=$(tr -d \\n <"$GITHUB_ACTION_PATH"/version.txt)
         lix-version=$LIX_${{ inputs.lix-version && '' || 'DEFAULT_' }}VERSION
-        install-nix-dir=$(test -e /nix || echo true)
+        install-nix-dir=$(test -e /nix || echo 1)
         EOF
       env:
         LIX_VERSION: ${{ inputs.lix-version }}
@@ -102,6 +103,11 @@ runs:
               'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
         }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
       env:
+
+
+
+
+
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
