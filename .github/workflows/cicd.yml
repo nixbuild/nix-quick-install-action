@@ -37,22 +37,19 @@ jobs:
         os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install Lix
+      - name: Bootstrap Lix
         uses: fabrictest/lix-quick-install-action@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
-      - name: Set up Cachix
-        uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
-        with:
-          name: ${{ vars.CACHIX_NAME }}
-          authToken: ${{ secrets.CACHIX_TOKEN }}
+      - name: Set up Nix binary cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Build archives
+      - name: Build `/nix` archives
         id: archives
         shell: bash
         run: |
           nix build .#lix-archives
           readlink result | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
-      - name: Upload archives to GitHub
+      - name: Upload `/nix` archives to GitHub
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: archives-${{ runner.os }}-${{ runner.arch }}
@@ -73,7 +70,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Download archives from GitHub
+      - name: Download `/nix` archives from GitHub
         id: archives
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
@@ -88,8 +85,8 @@ jobs:
         if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
-          name: ${{ vars.CACHIX_NAME }}
-          authToken: ${{ secrets.CACHIX_TOKEN }}
+          name: ${{ vars.CACHIX_CACHE }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           skipPush: true
       - name: Verify that Lix was installed
         shell: bash
@@ -107,7 +104,7 @@ jobs:
         run: |
           cachix push "$cache" "$result"
         env:
-          cache: ${{ vars.CACHIX_NAME }}
+          cache: ${{ vars.CACHIX_CACHE }}
           result: ${{ steps.lix-store-add.outputs.result }}
   release:
     name: Release
@@ -185,17 +182,17 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           token: ${{ steps.bot-token.outputs.token }}
-      - name: Download archives
+      - name: Download `/nix` archives
         id: archives
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: archives-${{ runner.os }}-${{ runner.arch }}
-      - name: Attest archives
+      - name: Attest `/nix` archives
         uses: actions/attest-build-provenance@7668571508540a607bdfd90a87a560489fe372eb # v2.1.0
         with:
           github-token: ${{ steps.bot-token.outputs.token }}
           subject-path: ${{ steps.archives.outputs.download-path }}/lix-*.tar.zstd
-      - name: Attach archives to the GitHub release
+      - name: Attach `/nix` archives to the GitHub release
         shell: bash
         run: |
           gh release upload "$tag" "$archives"/lix-*.tar.zstd
