@@ -43,10 +43,10 @@
           fileName = "lix-${nix.version}-${system}.tar.zstd";
           inherit nix;
         } ''
-          mkdir -p "$out" root/nix/var/{nix,lix-quick-install-action}
-          ln -s $nix root/nix/var/lix-quick-install-action/nix
-          cp -t root/nix/var/lix-quick-install-action $closureInfo/registration
-          tar -cvT $closureInfo/store-paths -C root nix | zstd -o "$out/$fileName"
+          mkdir -p root/nix/var/{nix,lix-quick-install-action} "$out"
+          ln -s "$nix" root/nix/var/lix-quick-install-action/nix
+          cp {"$closureInfo",root/nix/var/lix-quick-install-action}/registration
+          tar --create --directory=root --files-from="$closureInfo"/store-paths nix | zstd -o "$out/$fileName"
         '';
 
       nixVersions = let

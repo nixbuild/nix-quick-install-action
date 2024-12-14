@@ -45,21 +45,23 @@ runs:
       shell: bash
       run: |
         #
-        set -u
         test ! -e /nix -o -w /nix || {
-          echo "::error::failed to set up Lix: /nix exists but isn't writable"
+          printf "::error::failed to set up Lix: /nix exists but isn't writable\n"
           exit 1
         }
-        cat >>"$GITHUB_OUTPUT" <<EOF
-        action-version=$(tr -d \\n <"$GITHUB_ACTION_PATH"/version.txt)
-        lix-version=$LIX_${{ inputs.lix-version && '' || 'DEFAULT_' }}VERSION
-        install-nix-dir=$(test -e /nix || echo 1)
+        test -n "$LIX_VERSION" || export LIX_VERSION="$LIX_DEFAULT_VERSION"
+        {
+          test -e /nix || printf install-nix-dir=1\\n
+          xargs printf our-version=%s\\n <"$GITHUB_ACTION_PATH"/version.txt
+          xargs printf lix-version=%s\\n <<EOF
+        $LIX_VERSION
         EOF
+        } >>"$GITHUB_OUTPUT"
       env:
         LIX_VERSION: ${{ inputs.lix-version }}
         # renovate: datasource=github-tags depName=lix-project/lix
         LIX_DEFAULT_VERSION: 2.91.1
-    - name: Install /nix (Linux)
+    - name: Mount `/nix` (Linux)
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'Linux' }}
       shell: bash
       run: |
@@ -70,7 +72,7 @@ runs:
               'sudo mount -t tmpfs -o "size=90%,mode=0755,uid=$UID,gid=$(id -g)" tmpfs /nix' ||
               ''
         }}
-    - name: Install /nix (macOS)
+    - name: Mount `/nix` (macOS)
       if: ${{ steps.vars.outputs.install-nix-dir && runner.os == 'macOS' }}
       shell: bash
       run: |
@@ -81,43 +83,49 @@ runs:
         EOF
         sudo /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
         test -L /run || {
-          echo "::error::failed to set up Lix: apfs.util couldn't symlink /run"
+          printf "::error::failed to set up Lix: apfs.util couldn't symlink /run\n"
           exit 1
         }
         sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }} ||
             sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
         sudo mdutil -i off /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
         sudo chown "$USER" /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
-    - name: Clean up /nix
+    - name: Fetch `/nix` archive
       shell: bash
       run: |
         #
         rm -rf /nix/var/lix-quick-install-action
-    - name: Fetch archive
-      shell: bash
-      run: |
-        #
         ${{
           startsWith(inputs.archives-url, 'file://') &&
               '<"${lix_archive_url#*://}"' ||
               'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
         }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
       env:
-
-
-
-
-
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.action-version),
+                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.our-version),
                 steps.vars.outputs.lix-version,
                 (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
                 (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
             )
           }}
-    - name: Synthesize nix.conf
+    - name: Install Lix
+      shell: bash
+      run: |
+        #
+        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/nix)"
+        ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
+        MANPATH='' . ./etc/profile.d/nix.sh
+        : "${NIX_SSL_CERT_FILE:=$(test ! -e /etc/ssl/cert.pem || printf /etc/ssl/cert.pem)}"
+        ./bin/nix-env --install "$PWD"
+        printf %s\\n "$HOME"/.nix-profile/bin >>"$GITHUB_PATH"
+        cat >>"$GITHUB_ENV" <<EOF
+        NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile
+        NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
+        NIX_SSL_CERT_FILE=$NIX_SSL_CERT_FILE
+        EOF
+    - name: Synthesize `nix.conf`
       shell: bash
       run: |
         #
@@ -132,22 +140,6 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         nix_conf: ${{ inputs.nix-conf }}
-    - name: Install Lix in profile
-      shell: bash
-      run: |
-        #
-        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/nix)"
-        ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
-        MANPATH='' . ./etc/profile.d/nix.sh
-        ./bin/nix-env --install "$PWD"
-        cat >>"$GITHUB_PATH" <<EOF
-        $HOME/.nix-profile/bin
-        EOF
-        cat >>"$GITHUB_ENV" <<EOF
-        NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile
-        NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
-        NIX_SSL_CERT_FILE=${NIX_SSL_CERT_FILE:-$(test ! -e /etc/ssl/cert.pem || echo /etc/ssl/cert.pem)}
-        EOF
 branding:
   icon: package
   color: purple
