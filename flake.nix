@@ -1,10 +1,7 @@
 {
   description = "lix-quick-install-action";
 
-  inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
 
   nixConfig = {
     # We set some dummy Nix config here so we can use it for verification in our
@@ -12,72 +9,59 @@
     stalled-download-timeout = 333; # default 300
   };
 
-  outputs = {
-    self,
-    flake-utils,
-    nixpkgs,
-  }:
-  let allSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
-  in flake-utils.lib.eachSystem allSystems (system:
+  outputs = { self, nixpkgs }:
+  let
+    l = nixpkgs.lib // builtins;
 
+    allSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
+
+    forAllSystems = f: l.genAttrs allSystems (system: f (import nixpkgs {
+      inherit system;
+      overlays = [ (final: prev: prev.prefer-remote-fetch final prev) ];
+    }));
+
+  in 
     let
 
-      inherit (nixpkgs) lib;
-
-      preferRemoteBuild = drv: drv.overrideAttrs (_: {
-        preferLocalBuild = false;
-        allowSubstitutes = true;
-      });
-
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [
-          (self: super: super.prefer-remote-fetch self super)
-        ];
-      };
-
-      makeNixArchive = nix:
-        pkgs.runCommand "lix-archive" {
-          buildInputs = [ nix pkgs.gnutar pkgs.zstd ];
-          closureInfo = pkgs.closureInfo { rootPaths =  [ nix ]; };
-          fileName = "lix-${nix.version}-${system}.tar.zstd";
-          inherit nix;
+      makeLixArchive = pkgs: lix:
+        pkgs.runCommand "make-lix-archive" {
+          buildInputs = [ lix pkgs.gnutar pkgs.zstd ];
+          closureInfo = pkgs.closureInfo { rootPaths =  [ lix ]; };
+          fileName = "lix-${lix.version}-${lix.system}.tar.zstd";
+          inherit lix;
         } ''
           mkdir -p root/nix/var/{nix,lix-quick-install-action} "$out"
-          ln -s "$nix" root/nix/var/lix-quick-install-action/nix
+          ln -s "$lix" root/nix/var/lix-quick-install-action/lix
           cp {"$closureInfo",root/nix/var/lix-quick-install-action}/registration
           tar --create --directory=root --files-from="$closureInfo"/store-paths nix | zstd -o "$out/$fileName"
         '';
 
-      nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair nix.version nix) [
+      lixVersions = pkgs: l.listToAttrs (l.map (lix: l.nameValuePair lix.version lix) [
         pkgs.lixVersions.latest
         pkgs.lixVersions.lix_2_90
         pkgs.lixVersions.lix_2_91
         pkgs.lixVersions.stable
       ]);
 
-      nixPackages = lib.mapAttrs'
-        (v: p: lib.nameValuePair "lix-${lib.replaceStrings ["."] ["_"] v}" p)
-        (nixVersions system);
+      lixArchives = pkgs: l.mapAttrs (_: makeLixArchive pkgs) (lixVersions pkgs);
 
-      nixArchives = system: lib.mapAttrs (_: makeNixArchive) (nixVersions system);
+      lixPackages = pkgs: l.mapAttrs' (v: p: l.nameValuePair "lix-${l.replaceStrings ["."] ["_"] v}" p) (lixVersions pkgs);
 
-      allNixArchives = lib.concatMap (system:
-        map (version: {
-          inherit system version;
-          fileName = "lix-${version}-${system}.tar.zstd";
-        }) (lib.attrNames (nixArchives system))
-      ) allSystems;
+      preferRemoteBuild = drv: drv.overrideAttrs (_: {
+        preferLocalBuild = false;
+        allowSubstitutes = true;
+      });
 
     in {
-      overlays = final: prev: nixPackages;
+      overlays = forAllSystems (pkgs: _: _: lixPackages pkgs);
 
-      packages = nixPackages // {
+      packages = forAllSystems (pkgs: 
+      (lixPackages pkgs) // {
         lix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "lix-archives";
-          paths = lib.attrValues (nixArchives system);
+          paths = l.attrValues (lixArchives pkgs);
         });
-      };
-    }
-  );
+      }
+        );
+    };
 }
