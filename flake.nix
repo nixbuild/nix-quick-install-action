@@ -36,31 +36,33 @@
           tar --create --directory=root --files-from="$closureInfo"/store-paths nix | zstd -o "$out/$fileName"
         '';
 
-      lixVersions = pkgs: l.listToAttrs (l.map (lix: l.nameValuePair lix.version lix) [
-        pkgs.lixVersions.latest
-        pkgs.lixVersions.lix_2_90
-        pkgs.lixVersions.lix_2_91
-        pkgs.lixVersions.stable
-      ]);
+      lixVersions = pkgs: l.pipe pkgs.lixVersions [
+        l.attrValues
+        (l.filter l.isDerivation)
+        (l.map (lix: l.nameValuePair lix.version lix))
+        l.listToAttrs
+      ];
 
       lixArchives = pkgs: l.mapAttrs (_: makeLixArchive pkgs) (lixVersions pkgs);
 
-      lixPackages = pkgs: l.mapAttrs' (v: p: l.nameValuePair "lix-${l.replaceStrings ["."] ["_"] v}" p) (lixVersions pkgs);
-
-      preferRemoteBuild = drv: drv.overrideAttrs (_: {
-        preferLocalBuild = false;
-        allowSubstitutes = true;
-      });
+      lixPackages = pkgs: l.pipe pkgs [
+        lixVersions
+        (l.mapAttrs' (vsn: l.nameValuePair "lix-${l.replaceStrings ["."] ["_"] vsn}"))
+      ];
 
     in {
       overlays = forAllSystems (pkgs: _: _: lixPackages pkgs);
 
       packages = forAllSystems (pkgs: 
       (lixPackages pkgs) // {
-        lix-archives = preferRemoteBuild (pkgs.buildEnv {
+        lix-archives = (pkgs.buildEnv {
           name = "lix-archives";
           paths = l.attrValues (lixArchives pkgs);
-        });
+        }).overrideAttrs {
+          preferLocalBuild = false;
+          allowSubstitutes = true;
+
+        };
       }
         );
     };
