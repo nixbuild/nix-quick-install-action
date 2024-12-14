@@ -131,6 +131,8 @@ jobs:
         id: release
         uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
         with:
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
           token: ${{ steps.bot-token.outputs.token }}
           target-branch: ${{ github.ref_name }}
       - name: Check out repository
