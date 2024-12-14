@@ -1,8 +1,5 @@
 {
 	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-	"plugins": [
-		"sentence-case"
-	],
 	"always-update": true,
 	"packages": {
 		".": {
@@ -12,5 +9,9 @@
 				"examples"
 			]
 		}
-	}
+	},
+	"plugins": [
+		"sentence-case"
+	],
+	"pull-request-header": ":robot: I have created a release *beep* *boop*\n"
 }
