@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/970e93b9f82e2a0f3675757eb0bfc73297cc6370";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
   };
 
   nixConfig = {
@@ -49,22 +49,12 @@
           tar --create --directory=root --files-from="$closureInfo"/store-paths nix | zstd -o "$out/$fileName"
         '';
 
-      nixVersions = let
-        # XXX(ttlgcc): LTO is broken on x86_64-darwin.  See:
-        #  https://github.com/NixOS/nixpkgs/pull/353576
-        b_lto = with pkgs.stdenv; lib.mesonBool "b_lto" (!hostPlatform.isStatic && cc.isGNU);
-      in system: lib.listToAttrs (map (nix: lib.nameValuePair
-        nix.version (nix.overrideAttrs (old: {
-          mesonFlags = lib.filter (x: !(lib.hasPrefix "-Db_lto=" x)) old.mesonFlags ++ [ b_lto ];
-        }))
-      ) (
-        [
-          pkgs.lixVersions.latest
-          pkgs.lixVersions.lix_2_90
-          pkgs.lixVersions.lix_2_91
-          pkgs.lixVersions.stable
-        ]
-      ));
+      nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair nix.version nix) [
+        pkgs.lixVersions.latest
+        pkgs.lixVersions.lix_2_90
+        pkgs.lixVersions.lix_2_91
+        pkgs.lixVersions.stable
+      ]);
 
       nixPackages = lib.mapAttrs'
         (v: p: lib.nameValuePair "lix-${lib.replaceStrings ["."] ["_"] v}" p)
