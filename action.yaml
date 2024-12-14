@@ -114,7 +114,7 @@ runs:
       shell: bash
       run: |
         #
-        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/nix)"
+        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/lix)"
         ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
         MANPATH='' . ./etc/profile.d/nix.sh
         : "${NIX_SSL_CERT_FILE:=$(test ! -e /etc/ssl/cert.pem || printf /etc/ssl/cert.pem)}"
