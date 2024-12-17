@@ -82,7 +82,7 @@ jobs:
           lix-on-tmpfs: true
           archives-url: file://${{ steps.archives.outputs.download-path }}
       - name: Set up Cachix
-        if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
+        if: ${{ github.repository_owner == 'fabrictest' }}
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
           name: ${{ vars.CACHIX_CACHE }}
@@ -99,7 +99,7 @@ jobs:
           printf %d $RANDOM >${f:=./$RANDOM}
           nix-store --add $f | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
       - name: Verify that one can push such file to Cachix
-        if: ${{ github.event_name == 'push' && github.repository_owner == 'fabrictest' }}
+        if: ${{ github.repository_owner == 'fabrictest' }}
         shell: bash
         run: |
           cachix push "$cache" "$result"
