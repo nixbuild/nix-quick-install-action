@@ -98,16 +98,16 @@ jobs:
         id: lix-store-add
         shell: bash
         run: |
-          printf %d $RANDOM >${f:=./$RANDOM}
-          nix-store --add $f | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
+          dd if=/dev/urandom of=probe bs=1024 count=1
+          nix-store --add probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
       - name: Verify that one can push such file to Cachix
         if: ${{ github.repository_owner == 'fabrictest' }}
         shell: bash
         run: |
-          cachix push "$cache" "$result"
+          cachix push "$cache" "$probe"
         env:
           cache: ${{ vars.CACHIX_CACHE }}
-          result: ${{ steps.lix-store-add.outputs.result }}
+          probe: ${{ steps.lix-store-add.outputs.probe }}
   release:
     name: Release
     needs:
