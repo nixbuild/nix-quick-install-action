@@ -8,10 +8,10 @@ inputs:
       The version of Lix that should be installed.
 
       If not specified, the latest stable Lix release is used. Note that each
-      release of lix-quick-install-action has a specific set of supported
+      release of action-lix-quick-install has a specific set of supported
       Lix versions, which do not change. You can check what Lix versions are
-      supported by the version of lix-quick-install-action you're using by
-      going to https://github.com/fabrictest/lix-quick-install-action/releases.
+      supported by the version of action-lix-quick-install you're using by
+      going to https://github.com/fabrictest/action-lix-quick-install/releases.
     required: false
   nix-conf:
     description: |
@@ -97,7 +97,7 @@ runs:
       shell: bash
       run: |
         #
-        rm -rf /nix/var/lix-quick-install-action
+        rm -rf /nix/var/action-lix-quick-install
         ${{
           startsWith(inputs.tarballs-url, 'file://') &&
               '<"${lix_archive_url#*://}"' ||
@@ -135,8 +135,8 @@ runs:
       shell: bash
       run: |
         #
-        CDPATH='' cd "$(readlink /nix/var/lix-quick-install-action/lix)"
-        ./bin/nix-store --load-db </nix/var/lix-quick-install-action/registration
+        CDPATH='' cd "$(readlink /nix/var/action-lix-quick-install/lix)"
+        ./bin/nix-store --load-db </nix/var/action-lix-quick-install/registration
         MANPATH='' . ./etc/profile.d/nix.sh
         : "${NIX_SSL_CERT_FILE:=$(test ! -e /etc/ssl/cert.pem || printf /etc/ssl/cert.pem)}"
         ./bin/nix-env --install "$PWD"

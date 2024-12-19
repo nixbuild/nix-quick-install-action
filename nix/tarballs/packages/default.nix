@@ -19,9 +19,9 @@ let
         inherit lix;
       }
       ''
-        mkdir -p root/nix/var/{nix,lix-quick-install-action} "$out"
-        ln -s "$lix" root/nix/var/lix-quick-install-action/lix
-        cp {"$closureInfo",root/nix/var/lix-quick-install-action}/registration
+        mkdir -p root/nix/var/{nix,action-lix-quick-install} "$out"
+        ln -s "$lix" root/nix/var/action-lix-quick-install/lix
+        cp {"$closureInfo",root/nix/var/action-lix-quick-install}/registration
         tar --auto-compress --create --directory=root --file="$out/$fileName" --files-from="$closureInfo"/store-paths nix
       '';
 in

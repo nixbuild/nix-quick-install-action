@@ -5,7 +5,7 @@ let
 in
 {
   default = lib.dev.mkShell {
-    name = "lix-quick-install-action";
+    name = "action-lix-quick-install";
 
     imports = [ std.devshellProfiles.default ];
 

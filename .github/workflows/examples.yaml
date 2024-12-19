@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Lix
-        uses: fabrictest/lix-quick-install-action@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
+        uses: fabrictest/action-lix-quick-install@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
       - name: Print Lix version
         run: nix-build -v --version
       - name: Set up Nix binary cache

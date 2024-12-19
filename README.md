@@ -34,7 +34,7 @@ for this, and works perfectly with this action (see below).
 
 See [action.yml](action.yml) for documentation of the available inputs.
 The available Lix versions are listed in the [release
-notes](https://github.com/fabrictest/lix-quick-install-action/releases/latest).
+notes](https://github.com/fabrictest/action-lix-quick-install/releases/latest).
 
 ## Usage
 
@@ -50,7 +50,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: fabrictest/lix-quick-install-action@v1
+      - uses: fabrictest/action-lix-quick-install@v1
       - run: nix build --version
       - run: nix build ./examples/flakes
       - run: ./result/bin/hello
@@ -88,7 +88,7 @@ Build a specific version of Lix like this (requires you to use a version of Lix
 that supports flakes):
 
 ```console
-$ nix build github:fabrictest/lix-quick-install-action#lix-2_91_1
+$ nix build github:fabrictest/action-lix-quick-install#lix-2_91_1
 $ ./result/bin/nix --version
 nix (Lix, like Nix) 2.91.1
 ```
@@ -96,16 +96,16 @@ nix (Lix, like Nix) 2.91.1
 With `nix shell -c` you can also directly run Nix like this:
 
 ```console
-$ nix shell github:fabrictest/lix-quick-install-action#lix-2_91_1 -c nix --version
+$ nix shell github:fabrictest/action-lix-quick-install#lix-2_91_1 -c nix --version
 nix (Lix, like Nix) 2.91.1
 ```
 
 List all available Lix versions like this:
 
 ```console
-$ nix flake show --all-systems github:fabrictest/lix-quick-install-action/v1
-github:fabrictest/lix-quick-install-action/25aff27c252e0c8cdda3264805f7b6bcd92c8718?narHash=sha256-th0CV5CoVJm1GYjr7dk%2BebG/3pQp//vqndKWeo/yreY%3D
-git+file:///Users/ttlgcc/fabrictest/lix-quick-install-action
+$ nix flake show --all-systems github:fabrictest/action-lix-quick-install/v1
+github:fabrictest/action-lix-quick-install/25aff27c252e0c8cdda3264805f7b6bcd92c8718?narHash=sha256-th0CV5CoVJm1GYjr7dk%2BebG/3pQp//vqndKWeo/yreY%3D
+git+file:///Users/ttlgcc/fabrictest/action-lix-quick-install
 ├───apps
 │   ├───aarch64-darwin
 │   │   └───release: app
@@ -140,11 +140,11 @@ git+file:///Users/ttlgcc/fabrictest/lix-quick-install-action
 ```
 
 If you want to make sure that the version of Lix you're trying to build hasn't
-been removed in the latest revision of `lix-quick-install-action`, you can
-specify a specific release of `lix-quick-install-action` like this:
+been removed in the latest revision of `action-lix-quick-install`, you can
+specify a specific release of `action-lix-quick-install` like this:
 
 ```console
-$ nix build github:fabrictest/lix-quick-install-action/v1#lix-2_91_1
+$ nix build github:fabrictest/action-lix-quick-install/v1#lix-2_91_1
 ```
 
 Note that we've added `/v1` to the flake url above.
