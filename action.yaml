@@ -1,5 +1,6 @@
+---
 name: Lix Quick Install
-description: Quickly installs Lix in unprivileged single-user mode
+description: Install Lix on GitHub Actions faster than you can refresh your browser[1]
 author: F. Emerson
 inputs:
   lix-version:
@@ -33,15 +34,14 @@ inputs:
       database, logs etc) will be considerably less than the available memory.
       This option does nothing on MacOS runners.
     default: false
-  archives-url:
+  tarballs-url:
     description: |
       Internal.
     required: false
 runs:
   using: composite
   steps:
-    - name: Do preflight checks and resolve variables
-      id: vars
+    - name: Do preflight checks
       shell: bash
       run: |
         #
@@ -49,13 +49,16 @@ runs:
           printf "::error::failed to set up Lix: /nix exists but isn't writable\n"
           exit 1
         }
-        test -n "$LIX_VERSION" || export LIX_VERSION="$LIX_DEFAULT_VERSION"
+    - name: Resolve variables
+      id: vars
+      shell: bash
+      run: |
+        #
+        test -n "$LIX_VERSION" || unset LIX_VERSION
         {
           test -e /nix || printf install-nix-dir=1\\n
           xargs printf our-version=%s\\n <"$GITHUB_ACTION_PATH"/version.txt
-          xargs printf lix-version=%s\\n <<EOF
-        $LIX_VERSION
-        EOF
+          xargs printf lix-version=%s\\n <<<"${LIX_VERSION:-$LIX_DEFAULT_VERSION}"
         } >>"$GITHUB_OUTPUT"
       env:
         LIX_VERSION: ${{ inputs.lix-version }}
@@ -77,7 +80,7 @@ runs:
       shell: bash
       run: |
         #
-        sudo tee -a /etc/synthetic.conf >/dev/null <<"EOF"
+        sudo tee -a /etc/synthetic.conf ${{ runner.debug && '' || '>/dev/null' }} <<"EOF"
         nix
         run	private/var/run
         EOF
@@ -96,20 +99,38 @@ runs:
         #
         rm -rf /nix/var/lix-quick-install-action
         ${{
-          startsWith(inputs.archives-url, 'file://') &&
+          startsWith(inputs.tarballs-url, 'file://') &&
               '<"${lix_archive_url#*://}"' ||
               'curl --fail --location --retry-connrefused --silent --show-error --retry 3 "$lix_archive_url" |'
-        }} ${{ runner.os == 'macOS' && 'g' || '' }}tar --extract --skip-old-files --directory=/nix --strip-components=1 --use-compress-program=unzstd
+        }} ${{ runner.os == 'macOS' && 'gtar' || 'tar' }} --auto-compress --extract --skip-old-files --directory=/nix --strip-components=1
       env:
         lix_archive_url: >-
           ${{
             format('{0}/lix-{1}-{2}-{3}.tar.zstd',
-                inputs.archives-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.our-version),
+                inputs.tarballs-url || format('{0}/{1}/releases/download/{2}', github.server_url, github.action_repository, steps.vars.outputs.our-version),
                 steps.vars.outputs.lix-version,
                 (runner.arch == 'ARM64' && 'aarch64') || (runner.arch == 'X64' && 'x86_64') || runner.arch,
                 (runner.os == 'Linux' && 'linux') || (runner.os == 'macOS' && 'darwin') || runner.os
             )
           }}
+    - name: Synthesize `nix.conf`
+      shell: bash
+      run: |
+        #
+        : "${XDG_CONFIG_HOME:=$HOME/.config}"
+        mkdir -p "$XDG_CONFIG_HOME/nix/$GITHUB_REPOSITORY"
+        ${{ runner.debug && 'tee' || 'cat >' }} "$XDG_CONFIG_HOME/nix/nix.conf" <<EOF
+        accept-flake-config = true
+        access-tokens = ${GITHUB_SERVER_URL#*://}=$GITHUB_TOKEN
+        experimental-features = nix-command flakes
+        include $XDG_CONFIG_HOME/nix/$GITHUB_REPOSITORY/nix.conf
+        EOF
+        ${{ runner.debug && 'tee' || 'cat >' }} "$XDG_CONFIG_HOME/nix/$GITHUB_REPOSITORY/nix.conf" <<EOF
+        $nix_conf
+        EOF
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        nix_conf: ${{ inputs.nix-conf }}
     - name: Install Lix
       shell: bash
       run: |
@@ -119,27 +140,12 @@ runs:
         MANPATH='' . ./etc/profile.d/nix.sh
         : "${NIX_SSL_CERT_FILE:=$(test ! -e /etc/ssl/cert.pem || printf /etc/ssl/cert.pem)}"
         ./bin/nix-env --install "$PWD"
-        printf %s\\n "$HOME"/.nix-profile/bin >>"$GITHUB_PATH"
-        cat >>"$GITHUB_ENV" <<EOF
+        printf %s/.nix-profile/bin\\n "$HOME" >>"$GITHUB_PATH"
+        ${{ runner.debug && 'tee -a' || 'cat >>' }} "$GITHUB_ENV" <<EOF
         NIX_PROFILES=/nix/var/nix/profiles/default $HOME/.nix-profile
         NIX_USER_PROFILE_DIR=/nix/var/nix/profiles/per-user/$USER
         NIX_SSL_CERT_FILE=$NIX_SSL_CERT_FILE
         EOF
-    - name: Synthesize `nix.conf`
-      shell: bash
-      run: |
-        #
-        : "${XDG_CONFIG_HOME:=$HOME/.config}"
-        mkdir -p "$XDG_CONFIG_HOME"/nix
-        cat >>"$XDG_CONFIG_HOME"/nix/nix.conf <<EOF
-        accept-flake-config = true
-        access-tokens = ${GITHUB_SERVER_URL#*://}=$GITHUB_TOKEN
-        experimental-features = nix-command flakes
-        $nix_conf
-        EOF
-      env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-        nix_conf: ${{ inputs.nix-conf }}
 branding:
   icon: package
   color: purple

@@ -1,4 +1,5 @@
 ---
+# FIXME(ttlgcc): Split workflow into "CI" for pull requests and "CD" for merges into `main`.
 name: CICD
 on:
   merge_group:
@@ -41,21 +42,19 @@ jobs:
     steps:
       - name: Bootstrap Lix
         uses: fabrictest/lix-quick-install-action@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
-      - name: Set up Nix binary cache
+      - name: Set up Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v8
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Build `/nix` archives
-        id: archives
+      - name: Build `/nix` tarballs
         shell: bash
         run: |
-          nix build .#lix-archives
-          readlink result | xargs printf result=%s\\n >>"$GITHUB_OUTPUT"
-      - name: Upload `/nix` archives to GitHub
+          nix build .#lix-tarballs
+      - name: Upload `/nix` tarballs to GitHub
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
-          name: archives-${{ runner.os }}-${{ runner.arch }}
-          path: ${{ steps.archives.outputs.result }}/
+          name: tarballs-${{ runner.os }}-${{ runner.arch }}
+          path: result/lix-*.tar.*
   test:
     name: Test
     needs:
@@ -72,17 +71,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Download `/nix` archives from GitHub
-        id: archives
+      - name: Download `/nix` tarballs from GitHub
+        id: tarballs
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: archives-${{ runner.os }}-${{ runner.arch }}
+          name: tarballs-${{ runner.os }}-${{ runner.arch }}
       - name: Install Lix ${{ matrix.lix-version }}
         uses: ./
         with:
           lix-version: ${{ matrix.lix-version }}
           lix-on-tmpfs: true
-          archives-url: file://${{ steps.archives.outputs.download-path }}
+          tarballs-url: file://${{ steps.tarballs.outputs.download-path }}
       - name: Set up Cachix
         if: ${{ github.repository_owner == 'fabrictest' }}
         uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
@@ -186,21 +185,21 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           token: ${{ steps.bot-token.outputs.token }}
-      - name: Download `/nix` archives
-        id: archives
+      - name: Download `/nix` tarballs
+        id: tarballs
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: archives-${{ runner.os }}-${{ runner.arch }}
-      - name: Attest `/nix` archives
+          name: tarballs-${{ runner.os }}-${{ runner.arch }}
+      - name: Attest `/nix` tarballs
         uses: actions/attest-build-provenance@7668571508540a607bdfd90a87a560489fe372eb # v2.1.0
         with:
           github-token: ${{ steps.bot-token.outputs.token }}
-          subject-path: ${{ steps.archives.outputs.download-path }}/lix-*.tar.zstd
-      - name: Attach `/nix` archives to the GitHub release
+          subject-path: ${{ steps.tarballs.outputs.download-path }}/lix-*.tar.*
+      - name: Attach `/nix` tarballs to the GitHub release
         shell: bash
         run: |
-          gh release upload "$tag" "$archives"/lix-*.tar.zstd
+          gh release upload "$tag" "$tarballs"/lix-*.tar.*
         env:
           GH_TOKEN: ${{ steps.bot-token.outputs.token }}
           tag: ${{ needs.release.outputs.tag }}
-          archives: ${{ steps.archives.outputs.download-path }}
+          tarballs: ${{ steps.tarballs.outputs.download-path }}

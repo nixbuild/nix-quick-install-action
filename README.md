@@ -3,19 +3,19 @@
 This GitHub Action installs [Lix](https://lix.systems/) in single-user mode,
 and adds almost no time at all to your workflow's running time.
 
-The Lix installation is deterministic &ndash; for a given
+The Lix installation is deterministic – for a given
 release of this action the resulting Lix setup will always be identical, no
 matter when you run the action.
 
-* Supports all Linux and MacOS runners
+- Supports all Linux and MacOS runners
 
-* Single-user installation (no `nix-daemon`)
+- Single-user installation (no `nix-daemon`)
 
-* Installs in &asymp; 1 second on Linux, &asymp; 5 seconds on MacOS
+- Installs in ≈ 1 second on Linux, ≈ 5 seconds on MacOS
 
-* Allows selecting Lix version via the `lix_version` input
+- Allows selecting Lix version via the `lix_version` input
 
-* Allows specifying `nix.conf` contents via the `nix_conf` input
+- Allows specifying `nix.conf` contents via the `nix_conf` input
 
 ## Details
 

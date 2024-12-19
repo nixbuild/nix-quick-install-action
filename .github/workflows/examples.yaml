@@ -19,15 +19,12 @@ jobs:
       - name: Install Lix
         uses: fabrictest/lix-quick-install-action@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
       - name: Print Lix version
-        run: |
-          nix-build -v --version
+        run: nix-build -v --version
       - name: Set up Nix binary cache
         uses: DeterminateSystems/magic-nix-cache-action@v8
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Build flake
-        run: |
-          nix build ./examples/flakes
+        run: nix build ./examples/flakes
       - name: Print `hello, world` message
-        run: |
-          ./result/bin/hello
+        run: ./result/bin/hello
