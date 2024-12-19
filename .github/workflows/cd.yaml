@@ -1,0 +1,110 @@
+---
+name: CD
+on:
+  workflow_run:
+    workflows:
+      - Test
+    types:
+      - completed
+    branches:
+      - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  vars:
+    name: Resolve variables
+    runs-on: ubuntu-latest
+    steps:
+      - name: Supported runners
+        id: runner-os
+        shell: bash
+        run: |
+          printf 'json=["macos-%s", "macos-13", "ubuntu-%s"]' "$RUNNER_MACOS_VERSION" "$RUNNER_UBUNTU_VERSION" >>"$GITHUB_OUTPUT"
+        env:
+          # renovate: datasource=github-runners depName=macos
+          RUNNER_MACOS_VERSION: "15"
+          # renovate: datasource=github-runners depName=ubuntu
+          RUNNER_UBUNTU_VERSION: "24.04"
+    outputs:
+      runner-os: ${{ steps.runner-os.outputs.json }}
+  release:
+    name: Release
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate bot token
+        id: bot-token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
+        with:
+          app-id: ${{ vars.CICD_APP_ID }}
+          private-key: ${{ secrets.CICD_PRIVATE_KEY }}
+      - name: Cut release
+        id: release
+        uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
+        with:
+          token: ${{ steps.bot-token.outputs.token }}
+          target-branch: ${{ github.ref_name }}
+    outputs:
+      created: ${{ steps.release.outputs.release_created || '' }}
+      tag: ${{ steps.release.outputs.tag_name }}
+  publish:
+    name: Publish
+    needs:
+      - vars
+      - release
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
+    if: ${{ needs.release.outputs.created }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Generate bot token
+        id: bot-token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
+        with:
+          app-id: ${{ vars.CICD_APP_ID }}
+          private-key: ${{ secrets.CICD_PRIVATE_KEY }}
+      - name: Fetch bot ID
+        id: bot-id
+        shell: bash
+        run: |
+          gh api "/users/$bot_name" --jq .id | xargs printf user-id=%s\\n >>"$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+          bot_name: ${{ steps.bot-token.outputs.app-slug }}[bot]
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          token: ${{ steps.bot-token.outputs.token }}
+      - name: Download `/nix` tarballs
+        uses: dawidd6/action-download-artifact@v7
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+      - name: Attach `/nix` tarballs to the GitHub release
+        shell: bash
+        run: |
+          gh release upload "$tag" result/lix-*.tar.*
+        env:
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+          tag: ${{ needs.release.outputs.tag }}
+      - name: Tag major and minor versions
+        if: ${{ steps.release.outputs.release_created }}
+        shell: bash
+        run: |
+          for tag in "$tag_major" "$tag_minor"; do
+            git tag -d "$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
+            git tag -a "$tag" -m "Release $tag"
+            git push origin :"$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
+            git push origin "$tag"
+          done
+        env:
+          GIT_AUTHOR_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_AUTHOR_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          GIT_COMMITTER_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_COMMITTER_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          tag_major: v${{ steps.release.outputs.major }}
+          tag_minor: v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}

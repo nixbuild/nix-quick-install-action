@@ -1,0 +1,115 @@
+---
+name: CI
+on:
+  merge_group:
+  push:
+    branches-ignore:
+      - gh-readonly-queue/**
+    tags-ignore:
+      - "**"
+  schedule:
+    - cron: "33 01 * * *"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  vars:
+    name: Resolve variables
+    runs-on: ubuntu-latest
+    steps:
+      - name: Supported runners
+        id: runner-os
+        shell: bash
+        run: |
+          printf 'json=["macos-%s", "macos-13", "ubuntu-%s"]' "$RUNNER_MACOS_VERSION" "$RUNNER_UBUNTU_VERSION" >>"$GITHUB_OUTPUT"
+        env:
+          # renovate: datasource=github-runners depName=macos
+          RUNNER_MACOS_VERSION: "15"
+          # renovate: datasource=github-runners depName=ubuntu
+          RUNNER_UBUNTU_VERSION: "24.04"
+    outputs:
+      runner-os: ${{ steps.runner-os.outputs.json }}
+  build:
+    name: Build
+    needs:
+      - vars
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      attestations: write
+      id-token: write
+    steps:
+      - name: Bootstrap Lix
+        uses: fabrictest/lix-quick-install-action@ddc18dc9605383cd5c31573cb758324c881aa2fc # v7.0.4
+      - name: Set up Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build `/nix` tarballs
+        shell: bash
+        run: |
+          nix build .#lix-tarballs
+      - name: Attest `/nix` tarballs
+        uses: actions/attest-build-provenance@7668571508540a607bdfd90a87a560489fe372eb # v2.1.0
+        with:
+          subject-path: result/lix-*.tar.*
+      - name: Upload `/nix` tarballs to GitHub
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: tarballs-${{ runner.os }}-${{ runner.arch }}
+          path: result/lix-*.tar.*
+  test:
+    name: Test
+    needs:
+      - vars
+      - build
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ${{ fromJSON(needs.vars.outputs.runner-os) }}
+        lix-version:
+          - 2.91.1
+          - 2.90.0
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download `/nix` tarballs from GitHub
+        id: tarballs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: tarballs-${{ runner.os }}-${{ runner.arch }}
+      - name: Install Lix ${{ matrix.lix-version }}
+        uses: ./
+        with:
+          lix-version: ${{ matrix.lix-version }}
+          lix-on-tmpfs: true
+          tarballs-url: file://${{ steps.tarballs.outputs.download-path }}
+      - name: Set up Cachix
+        if: ${{ github.repository_owner == 'fabrictest' }}
+        uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
+        with:
+          name: ${{ vars.CACHIX_CACHE }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skipPush: true
+      - name: Verify that Lix was installed
+        shell: bash
+        run: |
+          nix-build -v --version
+      - name: Verify that one can add a file to the Lix store
+        id: lix-store-add
+        shell: bash
+        run: |
+          dd if=/dev/urandom of=probe bs=1024 count=1
+          nix-store --add probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
+      - name: Verify that one can push such file to Cachix
+        if: ${{ github.repository_owner == 'fabrictest' }}
+        shell: bash
+        run: |
+          cachix push "$cache" "$probe"
+        env:
+          cache: ${{ vars.CACHIX_CACHE }}
+          probe: ${{ steps.lix-store-add.outputs.probe }}
