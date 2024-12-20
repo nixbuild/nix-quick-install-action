@@ -19,7 +19,7 @@ jobs:
       json: ${{ steps.vars.outputs.json }}
     steps:
       - name: Download variables file
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@80620a5d27ce0ae443b965134db88467fc607b43 # v7
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: vars
@@ -100,7 +100,7 @@ jobs:
           tag_major: ${{ needs.release.outputs.tag-major }}
           tag_minor: ${{ needs.release.outputs.tag-minor }}
       - name: Download `/nix` tarballs
-        uses: dawidd6/action-download-artifact@v7
+        uses: dawidd6/action-download-artifact@80620a5d27ce0ae443b965134db88467fc607b43 # v7
         with:
           run_id: ${{ github.event.workflow_run.id }}
           name: tarballs-${{ runner.os }}-${{ runner.arch }}
