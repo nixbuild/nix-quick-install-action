@@ -107,7 +107,7 @@ jobs:
       - name: Attach `/nix` tarballs to the GitHub release
         shell: bash
         run: |
-          gh release upload "$tag" result/lix-*.tar.*
+          gh release upload "$tag" lix-*.tar.*
         env:
           GH_TOKEN: ${{ steps.bot-token.outputs.token }}
           tag: ${{ needs.release.outputs.tag }}
