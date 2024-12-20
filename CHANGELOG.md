@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.1.1](https://github.com/fabrictest/action-lix-quick-install/compare/v7.1.0...v7.1.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* Derive tag from version when fetching tarballs ([51bf218](https://github.com/fabrictest/action-lix-quick-install/commit/51bf218dfffb2c46b838c32871eee02398885acc))
+
 ## [7.1.0](https://github.com/fabrictest/action-lix-quick-install/compare/v7.0.4...v7.1.0) (2024-12-19)
 
 
