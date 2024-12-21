@@ -26,12 +26,12 @@ jobs:
     outputs:
       json: ${{ steps.vars.outputs.json }}
     steps:
-      - name: Resolve variables
+      - name: Resolve and generate variables file
         id: vars
         shell: bash
         run: |
           {
-            echo 'json<<JSON'
+            printf json=
             printenv | awk -F= '
               function len(a) { for (i in a) return length(a); return 0; }
               function push(a, s) { a[len(a)] = s; }
@@ -57,7 +57,6 @@ jobs:
                 print json_o(vars);
               }
             ' | tee vars.json
-            echo JSON
           } >>"$GITHUB_OUTPUT"
       - name: Upload variables file to GitHub
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
@@ -139,9 +138,8 @@ jobs:
         id: lix-store-add
         shell: bash
         run: |
-          probe=$(git rev-parse HEAD)
-          printf %s $probe >$probe
-          nix-store --add $probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
+          git rev-parse HEAD >probe
+          nix-store --add probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
       - name: Verify that one can push such file to Cachix
         if: ${{ github.repository_owner == 'fabrictest' }}
         shell: bash

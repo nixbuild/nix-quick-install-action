@@ -12,22 +12,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref_name == github.event.repository.default_branch }}
 jobs:
-  vars:
-    name: Resolve variables
-    runs-on: ubuntu-latest
-    outputs:
-      json: ${{ steps.vars.outputs.json }}
-    steps:
-      - name: Download variables file
-        uses: dawidd6/action-download-artifact@80620a5d27ce0ae443b965134db88467fc607b43 # v7
-        with:
-          run_id: ${{ github.event.workflow_run.id }}
-          name: vars
-      - name: Load variables file
-        id: vars
-        shell: bash
-        run: |
-          printf 'json<<JSON\n%s\nJSON\n' "$(cat vars.json)" >>"$GITHUB_OUTPUT"
   release:
     name: Release
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -50,6 +34,25 @@ jobs:
       tag: ${{ steps.release.outputs.tag_name }}
       tag-major: v${{ steps.release.output.major }}
       tag-minor: v${{ steps.release.output.major }}.${{ steps.release.outputs.minor }}
+  vars:
+    name: Fetch variables resolved during CI
+    needs:
+      - release
+    runs-on: ubuntu-latest
+    outputs:
+      json: ${{ steps.vars.outputs.json }}
+    steps:
+      - name: Download variables file
+        uses: dawidd6/action-download-artifact@80620a5d27ce0ae443b965134db88467fc607b43 # v7
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: vars
+      - name: Load variables file
+        id: vars
+        shell: bash
+        run: |
+          jq --compact-output . vars.json | xargs printf json=%s\\n >>"$GITHUB_OUTPUT"
+          rm -f vars.json
   publish:
     name: Publish
     needs:
@@ -79,26 +82,10 @@ jobs:
           GH_TOKEN: ${{ steps.bot-token.outputs.token }}
           bot_username: ${{ steps.bot-token.outputs.app-slug }}[bot]
       - name: Check out repository
+        id: checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           token: ${{ steps.bot-token.outputs.token }}
-      - name: Tag major and minor versions
-        if: ${{ steps.release.outputs.created }}
-        shell: bash
-        run: |
-          for tag in "$tag_major" "$tag_minor"; do
-            git tag -d "$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
-            git tag -a "$tag" -m "Release $tag"
-            git push origin :"$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
-            git push origin "$tag"
-          done
-        env:
-          GIT_AUTHOR_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
-          GIT_AUTHOR_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
-          GIT_COMMITTER_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
-          GIT_COMMITTER_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
-          tag_major: ${{ needs.release.outputs.tag-major }}
-          tag_minor: ${{ needs.release.outputs.tag-minor }}
       - name: Download `/nix` tarballs
         uses: dawidd6/action-download-artifact@80620a5d27ce0ae443b965134db88467fc607b43 # v7
         with:
@@ -108,6 +95,33 @@ jobs:
         shell: bash
         run: |
           gh release upload "$tag" lix-*.tar.*
+          rm -f lix-*.tar.*
         env:
           GH_TOKEN: ${{ steps.bot-token.outputs.token }}
           tag: ${{ needs.release.outputs.tag }}
+      - name: Tag major and minor versions
+        if: ${{ steps.release.outputs.created }}
+        shell: bash
+        run: |
+          for tag in "$tag_major" "$tag_minor"; do
+            git tag -d "$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
+            git tag -a "$tag" -m "Release $tag → $tag_full"
+            git push origin :"$tag" ${{ runner.debug && '' || '>/dev/null 2>&1' }} || :
+            git push origin "$tag"
+          done
+        env:
+          GIT_AUTHOR_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_AUTHOR_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          GIT_COMMITTER_NAME: ${{ steps.bot-token.outputs.app-slug }}[bot]
+          GIT_COMMITTER_EMAIL: ${{ steps.bot-id.outputs.user-id }}+${{ steps.bot-token.outputs.app-slug }}[bot]@noreply.users.github.com
+          tag_full: ${{ needs.release.outputs.tag }}
+          tag_major: ${{ needs.release.outputs.tag-major }}
+          tag_minor: ${{ needs.release.outputs.tag-minor }}
+      - name: Mark release PR as published
+        shell: bash
+        run: |
+           gh pr list --search "$head_sha"' is:merged label:"autorelease: tagged" sort:created-desc' --limit 1 --json number --jq '.[0].number' |
+              xargs -I {} -- gh pr edit {} --add-label 'autorelease: published' --remove-label 'autorelease: tagged'
+        env:
+          GH_TOKEN: ${{ steps.bot-token.outputs.token }}
+          head_sha: ${{ steps.checkout.outputs.commit }}
