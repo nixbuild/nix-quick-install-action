@@ -13,5 +13,6 @@
   "plugins": [
     "sentence-case"
   ],
-  "pull-request-header": ":robot: I have created a release *beep* *boop*\n"
+  "pull-request-header": ":robot: I have created a release *beep* *boop*\n",
+  "version-file": "VERSION.txt"
 }
