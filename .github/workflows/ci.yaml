@@ -11,7 +11,7 @@ on:
     - cron: "33 01 * * *"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_name == github.event.repository.default_branch }}
 env:
   # renovate: datasource=github-runners depName=macos
   RUNNER_MACOS_VERSION: "15"
