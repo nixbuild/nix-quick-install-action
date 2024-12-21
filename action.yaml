@@ -80,6 +80,7 @@ runs:
       shell: bash
       run: |
         #
+        root_disk=$(stat -f %Sd /)
         sudo tee -a /etc/synthetic.conf ${{ runner.debug && '' || '>/dev/null' }} <<"EOF"
         nix
         run	private/var/run
@@ -89,8 +90,7 @@ runs:
           printf "::error::failed to set up Lix: apfs.util couldn't symlink /run\n"
           exit 1
         }
-        sudo diskutil apfs addVolume disk1 APFS nix -mountpoint /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }} ||
-            sudo diskutil apfs addVolume disk3 APFS nix -mountpoint /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
+        sudo diskutil apfs addVolume "${root_disk%s[0-9]*}" APFS nix -mountpoint /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
         sudo mdutil -i off /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
         sudo chown "$USER" /nix ${{ runner.debug && '' || '>/dev/null 2>&1' }}
     - name: Fetch `/nix` archive
