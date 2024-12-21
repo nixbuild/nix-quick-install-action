@@ -138,8 +138,9 @@ jobs:
         id: lix-store-add
         shell: bash
         run: |
-          git rev-parse HEAD >probe
-          nix-store --add probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
+          probe=$(git rev-parse HEAD)
+          printf %s $probe >$probe
+          nix-store --add $probe | xargs printf probe=%s\\n >>"$GITHUB_OUTPUT"
       - name: Verify that one can push such file to Cachix
         if: ${{ github.repository_owner == 'fabrictest' }}
         shell: bash
