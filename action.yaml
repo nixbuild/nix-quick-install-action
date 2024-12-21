@@ -57,7 +57,7 @@ runs:
         test -n "$LIX_VERSION" || unset LIX_VERSION
         {
           test -e /nix || printf install-nix-dir=1\\n
-          xargs printf our-version=%s\\n <"$GITHUB_ACTION_PATH"/version.txt
+          xargs printf our-version=%s\\n <"$GITHUB_ACTION_PATH"/VERSION.txt
           xargs printf lix-version=%s\\n <<<"${LIX_VERSION:-$LIX_DEFAULT_VERSION}"
         } >>"$GITHUB_OUTPUT"
       env:
