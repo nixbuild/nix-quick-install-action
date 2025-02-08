@@ -45,6 +45,11 @@ inputs:
     description: |
       Don't use. For bootstrapping purposes only.
 
+  enable_kvm:
+    description: 'Enable KVM for hardware-accelerated virtualization on Linux, if available.'
+    required: false
+    default: true
+
 
 runs:
   using: "composite"
@@ -59,6 +64,7 @@ runs:
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
         GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
+        ENABLE_KVM: ${{ inputs.enable_kvm }}
 
 branding:
   icon: zap
