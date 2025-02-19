@@ -47,13 +47,9 @@ jobs:
           - macos-14
           - macos-13
         nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
+          - 2.26.1
+          - 2.25.5
+          - 2.24.12
           - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
@@ -85,13 +81,9 @@ jobs:
           - macos-14
           - macos-13
         nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
+          - 2.26.1
+          - 2.25.5
+          - 2.24.12
           - 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
@@ -146,7 +138,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.24.9
+          nix_version: 2.24.12
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
