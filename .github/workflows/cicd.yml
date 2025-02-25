@@ -15,14 +15,15 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-22.04, macos-13, macos-14]
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-13
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: ./
-        with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v29
-          nix_version: 2.24.9
+      - uses: cachix/install-nix-action@v30
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
@@ -44,17 +45,13 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
-          - macos-14
+          - ubuntu-24.04-arm
+          - macos-15
           - macos-13
         nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
-          - 2.3.18
+          - 2.26.1
+          - 2.25.5
+          - 2.24.12
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -82,17 +79,13 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
-          - macos-14
+          - ubuntu-24.04-arm
+          - macos-15
           - macos-13
         nix_version:
-          - 2.24.9
-          - 2.23.3
-          - 2.22.3
-          - 2.21.4
-          - 2.20.8
-          - 2.19.6
-          - 2.18.8
-          - 2.3.18
+          - 2.26.1
+          - 2.25.5
+          - 2.24.12
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -137,6 +130,10 @@ jobs:
           path: /tmp/archives
       - uses: actions/download-artifact@v4
         with:
+          name: nix-archives-Linux-ARM64
+          path: /tmp/archives
+      - uses: actions/download-artifact@v4
+        with:
           name: nix-archives-macOS-X64
           path: /tmp/archives
       - uses: actions/download-artifact@v4
@@ -146,7 +143,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.24.9
+          nix_version: 2.24.12
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild

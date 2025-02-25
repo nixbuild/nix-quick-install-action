@@ -55,7 +55,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v29
+      - uses: nixbuild/nix-quick-install-action@v30
       - run: nix build --version
       - run: nix build ./examples/flakes-simple
       - name: hello
@@ -112,17 +112,17 @@ Build a specific version of Nix like this (requires you to use a version of Nix
 that supports flakes):
 
 ```
-$ nix build github:nixbuild/nix-quick-install-action#nix-2_3_16
+$ nix build github:nixbuild/nix-quick-install-action#nix-2_26_1
 
 $ ./result/bin/nix --version
-nix (Nix) 2.3.16
+nix (Nix) 2.26.1
 ```
 
 With `nix shell -c` you can also directly run Nix like this:
 
 ```
-$ nix shell github:nixbuild/nix-quick-install-action#nix-2_2_2 -c nix --version
-nix (Nix) 2.2.2
+$ nix shell github:nixbuild/nix-quick-install-action#nix-2_26_1 -c nix --version
+nix (Nix) 2.26.1
 ```
 
 List all available Nix versions like this:
@@ -186,7 +186,7 @@ been removed in the latest revision of `nix-quick-install-action`, you can
 specify a specific release of `nix-quick-install-action` like this:
 
 ```
-$ nix build github:nixbuild/nix-quick-install-action/v12#nix-2_3_7
+$ nix build github:nixbuild/nix-quick-install-action/v29#nix-2_24_9
 ```
 
 Note that we've added `/v12` to the flake url above.

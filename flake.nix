@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "nixpkgs/ccc0c2126893dd20963580b6478d1a10a4512185";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/632f04521e847173c54fa72973ec6c39a371211c";
   };
 
   nixConfig = {
@@ -17,7 +17,7 @@
     flake-utils,
     nixpkgs-unstable,
   }:
-  let allSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
+  let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
@@ -53,14 +53,9 @@
         nix.version nix
       ) (
         [
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.latest
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_23
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_22
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_21
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_20
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_19
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_18
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
         ]
       ));
 
