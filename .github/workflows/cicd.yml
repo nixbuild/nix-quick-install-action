@@ -49,6 +49,7 @@ jobs:
           - macos-15
           - macos-13
         nix_version:
+          - 2.3.18
           - 2.26.1
           - 2.25.5
           - 2.24.12
@@ -83,6 +84,7 @@ jobs:
           - macos-15
           - macos-13
         nix_version:
+          - 2.3.18
           - 2.26.1
           - 2.25.5
           - 2.24.12

@@ -56,6 +56,7 @@
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
       ));
 
