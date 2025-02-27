@@ -54,8 +54,8 @@ jobs:
           - 2.25.5
           - 2.24.12
         exclude:
-          - ubuntu-24.04-arm
-          - nix_version: 2.3.18
+          - os: ubuntu-24.04-arm
+            nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -92,8 +92,8 @@ jobs:
           - 2.25.5
           - 2.24.12
         exclude:
-          - ubuntu-24.04-arm
-          - nix_version: 2.3.18
+          - os: ubuntu-24.04-arm
+            nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
