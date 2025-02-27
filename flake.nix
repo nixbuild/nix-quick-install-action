@@ -56,6 +56,10 @@
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
+        ] ++
+        lib.optionals (system != "aarch64-linux")
+        [
+          nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
       ));
 
@@ -110,21 +114,20 @@
             release_notes="$(mktemp)"
             tail -n+2 "$release_file" > "$release_notes"
 
-            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" ''
-              ## Supported Nix Versions on Linux Runners
-              ${lib.concatStringsSep "\n" (
-                map (v: "* ${v}") (
-                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-linux")))
-                )
-              )}
-
-              ## Supported Nix Versions on MacOS Runners
-              ${lib.concatStringsSep "\n" (
-                map (v: "* ${v}") (
-                  lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives "x86_64-darwin")))
-                )
-              )}
-            ''}"
+            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" (
+              lib.concatMapStringsSep "\n" (sys: ''
+                ## Supported Nix Versions on ${sys} runners
+                ${lib.concatStringsSep "\n" (
+                  map (v: "* ${v}") (
+                    lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives sys)))
+                  )
+                )}
+              '') [
+                 "x86_64-linux"
+                 "aarch64-linux"
+                 "x86_64-darwin"
+              ]
+            )}"
 
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
