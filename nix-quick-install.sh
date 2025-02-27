@@ -32,6 +32,16 @@ case "$OSTYPE" in
     exit 1
 esac
 
+# Enable KVM on Linux so NixOS tests can run quickly.
+# Do this early in the process so nix installation detects the KVM feature.
+enable_kvm() {
+  echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-install-nix-action-kvm.rules
+  sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+}
+if [[ ("$sys" =~ .*-linux) && ("$ENABLE_KVM" == 'true') ]]; then
+  enable_kvm && echo 'Enabled KVM' || echo 'KVM is not available'
+fi
+
 # Make sure /nix exists and is writeable
 if [ -a /nix ]; then
   if ! [ -w /nix ]; then
