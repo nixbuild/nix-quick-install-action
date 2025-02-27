@@ -73,24 +73,6 @@ experimental-features = nix-command flakes
 accept-flake-config = true
 ```
 
-This variant will also automatically set up the environment to bridge the
-configuration from the `nixConfig` flake attribute for old-style (`nix-build`,
-`nix-store` etc) Nix commands.
-
-To disable that convenience bridge, you can specify:
-
-```yaml
-name: Examples
-on: push
-jobs:
-  flakes-simple:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: nixbuild/nix-quick-install-action@v29
-        with: {load_nixConfig: false}
-```
-
 ![action-minimal](examples/action-flakes-simple.png)
 
 You can see the flake definition for the above example in
