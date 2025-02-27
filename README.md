@@ -110,10 +110,12 @@ nix (Nix) 2.26.1
 List all available Nix versions like this:
 
 ```
-$ nix flake show --all-systems github:nixbuild/nix-quick-install-action/v29
-github:nixbuild/nix-quick-install-action/25aff27c252e0c8cdda3264805f7b6bcd92c8718?narHash=sha256-th0CV5CoVJm1GYjr7dk%2BebG/3pQp//vqndKWeo/yreY%3D
+$ nix flake show --all-systems github:nixbuild/nix-quick-install-action/v30
+github:nixbuild/nix-quick-install-action/5bb6a3b3abe66fd09bbf250dce8ada94f856a703?narHash=sha256-7YaZJ5oxsrtMXXrpaqm5pz2Vr3UxdG/Cy2zPIuEuM%2Bc%3D
 ├───apps
 │   ├───aarch64-darwin
+│   │   └───release: app
+│   ├───aarch64-linux
 │   │   └───release: app
 │   ├───x86_64-darwin
 │   │   └───release: app
@@ -121,43 +123,39 @@ github:nixbuild/nix-quick-install-action/25aff27c252e0c8cdda3264805f7b6bcd92c871
 │       └───release: app
 ├───defaultApp
 │   ├───aarch64-darwin: app
+│   ├───aarch64-linux: app
 │   ├───x86_64-darwin: app
 │   └───x86_64-linux: app
 ├───overlays
 │   ├───aarch64-darwin: Nixpkgs overlay
+│   ├───aarch64-linux: Nixpkgs overlay
 │   ├───x86_64-darwin: Nixpkgs overlay
 │   └───x86_64-linux: Nixpkgs overlay
 └───packages
     ├───aarch64-darwin
-    │   ├───nix-2_18_8: package 'nix-2.18.8'
-    │   ├───nix-2_19_6: package 'nix-2.19.6'
-    │   ├───nix-2_20_8: package 'nix-2.20.8'
-    │   ├───nix-2_21_4: package 'nix-2.21.4'
-    │   ├───nix-2_22_3: package 'nix-2.22.3'
-    │   ├───nix-2_23_3: package 'nix-2.23.3'
-    │   ├───nix-2_24_9: package 'nix-2.24.9'
+    │   ├───nix-2_24_12: package 'nix-2.24.12'
+    │   ├───nix-2_25_5: package 'nix-2.25.5'
+    │   ├───nix-2_26_1: package 'nix-2.26.1'
     │   ├───nix-2_3_18: package 'nix-2.3.18'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
+    ├───aarch64-linux
+    │   ├───nix-2_24_12: package 'nix-2.24.12'
+    │   ├───nix-2_25_5: package 'nix-2.25.5'
+    │   ├───nix-2_26_1: package 'nix-2.26.1'
+    │   ├───nix-archives: package 'nix-archives'
+    │   └───release: package 'release'
     ├───x86_64-darwin
-    │   ├───nix-2_18_8: package 'nix-2.18.8'
-    │   ├───nix-2_19_6: package 'nix-2.19.6'
-    │   ├───nix-2_20_8: package 'nix-2.20.8'
-    │   ├───nix-2_21_4: package 'nix-2.21.4'
-    │   ├───nix-2_22_3: package 'nix-2.22.3'
-    │   ├───nix-2_23_3: package 'nix-2.23.3'
-    │   ├───nix-2_24_9: package 'nix-2.24.9'
+    │   ├───nix-2_24_12: package 'nix-2.24.12'
+    │   ├───nix-2_25_5: package 'nix-2.25.5'
+    │   ├───nix-2_26_1: package 'nix-2.26.1'
     │   ├───nix-2_3_18: package 'nix-2.3.18'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
-        ├───nix-2_18_8: package 'nix-2.18.8'
-        ├───nix-2_19_6: package 'nix-2.19.6'
-        ├───nix-2_20_8: package 'nix-2.20.8'
-        ├───nix-2_21_4: package 'nix-2.21.4'
-        ├───nix-2_22_3: package 'nix-2.22.3'
-        ├───nix-2_23_3: package 'nix-2.23.3'
-        ├───nix-2_24_9: package 'nix-2.24.9'
+        ├───nix-2_24_12: package 'nix-2.24.12'
+        ├───nix-2_25_5: package 'nix-2.25.5'
+        ├───nix-2_26_1: package 'nix-2.26.1'
         ├───nix-2_3_18: package 'nix-2.3.18'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
@@ -171,4 +169,4 @@ specify a specific release of `nix-quick-install-action` like this:
 $ nix build github:nixbuild/nix-quick-install-action/v29#nix-2_24_9
 ```
 
-Note that we've added `/v12` to the flake url above.
+Note that we've added `/v29` to the flake url above.
