@@ -87,12 +87,16 @@
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
       );
-      lixVersions = mkVersions
+      lixVersions = mkVersions (
         [
           lix-2_92.packages.${system}.nix
           lix-2_91.packages.${system}.nix
+        ] ++
+        lib.optionals (system != "aarch64-darwin")
+        [
           lix-2_90.packages.${system}.nix
-        ];
+        ]
+      );
 
       nixPackages = mkPackages "nix" nixVersions;
       lixPackages = mkPackages "lix" lixVersions;
