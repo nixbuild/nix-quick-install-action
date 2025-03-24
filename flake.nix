@@ -58,7 +58,7 @@
 
       mkVersions = packages: system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
-      ) packages);
+      ) (packages system));
 
       mkPackages = name: versions: lib.mapAttrs'
         (v: p: lib.nameValuePair "${name}-${lib.replaceStrings ["."] ["_"] v}" p)
@@ -66,7 +66,7 @@
 
       mkArchives = name: versions: system: lib.mapAttrs (_: makeNixArchive name) (versions system);
 
-      nixVersions = mkVersions (
+      nixVersions = mkVersions (system:
         [
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
@@ -77,12 +77,13 @@
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
       );
-      lixVersions = mkVersions
+      lixVersions = mkVersions (system:
         [
           lix-2_92.packages.${system}.nix
           nixpkgs-unstable.legacyPackages.${system}.lixVersions.lix_2_91
           nixpkgs-unstable.legacyPackages.${system}.lixVersions.lix_2_90
-        ];
+        ]
+      );
 
       nixPackages = mkPackages "nix" nixVersions;
       lixPackages = mkPackages "lix" lixVersions;
