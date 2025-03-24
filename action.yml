@@ -16,6 +16,16 @@ inputs:
       supported by the version of nix-quick-install-action you're using by
       going to https://github.com/nixbuild/nix-quick-install-action/releases
 
+  nix_implementation:
+    required: false
+    default: "nix"
+    description: |
+      The implementation of Nix to be used.
+
+      Supported implementations:
+      - nix (default): https://nixos.org/
+      - lix: https://lix.systems/
+
   nix_conf:
     required: false
     description: |
@@ -59,6 +69,7 @@ runs:
       shell: bash
       env:
         RELEASE_FILE: ${{ github.action_path }}/RELEASE
+        NIX_IMPLEMENTATION: ${{ inputs.nix_implementation }}
         NIX_VERSION: ${{ inputs.nix_version }}
         NIX_CONF: ${{ inputs.nix_conf }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
