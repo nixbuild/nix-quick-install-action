@@ -78,7 +78,7 @@ else
   tar=tar
 fi
 rel="$(head -n1 "$RELEASE_FILE")"
-url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/nix-$NIX_VERSION-$sys.tar.zstd"
+url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/$NIX_IMPLEMENTATION-$NIX_VERSION-$sys.tar.zstd"
 
 echo >&2 "Fetching nix archives from $url"
 case "$url" in
