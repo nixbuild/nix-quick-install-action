@@ -6,7 +6,7 @@ inputs:
 
   nix_version:
     required: true
-    default: "2.24.12"
+    default: "2.92.0"
     description: |
       The version of Nix that should be installed
 
@@ -18,13 +18,13 @@ inputs:
 
   nix_implementation:
     required: false
-    default: "nix"
+    default: "lix"
     description: |
       The implementation of Nix to be used.
 
       Supported implementations:
-      - nix (default): https://nixos.org/
-      - lix: https://lix.systems/
+      - lix (default): https://lix.systems/
+      - nix: https://nixos.org/
 
   nix_conf:
     required: false
