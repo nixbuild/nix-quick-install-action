@@ -31,6 +31,11 @@ jobs:
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+      - name: Fix Lix tests
+        if: matrix.os == 'ubuntu-24.04-arm'
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
       - name: Build nix archives
         id: build-nix-archives
         run: |
