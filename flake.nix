@@ -53,11 +53,11 @@
         ];
       };
 
-      makeNixArchive = nix:
-        pkgs.runCommand "nix-archive" {
+      makeNixArchive = name: nix:
+        pkgs.runCommand "${name}-archive" {
           buildInputs = [ nix pkgs.gnutar pkgs.zstd ];
           closureInfo = pkgs.closureInfo { rootPaths =  [ nix ]; };
-          fileName = "nix-${nix.version}-${system}.tar.zstd";
+          fileName = "${name}-${nix.version}-${system}.tar.zstd";
           inherit nix;
         } ''
           mkdir -p "$out" root/nix/var/{nix,nix-quick-install-action}
@@ -66,36 +66,48 @@
           tar -cvT $closureInfo/store-paths -C root nix | zstd -o "$out/$fileName"
         '';
 
-      nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
+      mkVersions = packages: system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
-      ) (
+      ) packages);
+
+      mkPackages = name: versions: lib.mapAttrs'
+        (v: p: lib.nameValuePair "${name}-${lib.replaceStrings ["."] ["_"] v}" p)
+        (versions system);
+
+      mkArchives = name: versions: system: lib.mapAttrs (_: makeNixArchive name) (versions system);
+
+      nixVersions = mkVersions (
         [
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
-          lix-2_92.packages.${system}.nix
-          lix-2_91.packages.${system}.nix
-          lix-2_90.packages.${system}.nix
         ] ++
         lib.optionals (system != "aarch64-linux")
         [
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
-      ));
+      );
+      lixVersions = mkVersions
+        [
+          lix-2_92.packages.${system}.nix
+          lix-2_91.packages.${system}.nix
+          lix-2_90.packages.${system}.nix
+        ];
 
-      nixPackages = lib.mapAttrs'
-        (v: p: lib.nameValuePair "nix-${lib.replaceStrings ["."] ["_"] v}" p)
-        (nixVersions system);
+      nixPackages = mkPackages "nix" nixVersions;
+      lixPackages = mkPackages "lix" lixVersions;
 
-      nixArchives = system: lib.mapAttrs (_: makeNixArchive) (nixVersions system);
+      nixArchives = mkArchives "nix" nixVersions;
+      lixArchives = mkArchives "lix" lixVersions;
 
-      allNixArchives = lib.concatMap (system:
+      mkAllArchives = name: archives: lib.concatMap (system:
         map (version: {
           inherit system version;
-          fileName = "nix-${version}-${system}.tar.zstd";
-        }) (lib.attrNames (nixArchives system))
+          fileName = "${name}-${version}-${system}.tar.zstd";
+        }) (lib.attrNames (archives system))
       ) allSystems;
 
+      allArchives = (mkAllArchives "nix" nixArchives) ++ (mkAllArchives "lix" lixArchives);
     in rec {
       defaultApp = apps.release;
 
@@ -103,10 +115,10 @@
 
       overlays = final: prev: nixPackages;
 
-      packages = nixPackages // {
+      packages = nixPackages // lixPackages // {
         nix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "nix-archives";
-          paths = lib.attrValues (nixArchives system);
+          paths = lib.attrValues ((nixArchives system) // (lixArchives system));
         });
         release = preferRemoteBuild (pkgs.writeScriptBin "release" ''
           #!${pkgs.stdenv.shell}
@@ -153,7 +165,7 @@
             gh release create "$release" ${
               lib.concatMapStringsSep " " ({ system, version, fileName }:
                 ''"$nix_archives/${fileName}#nix-${version}-${system}"''
-              ) allNixArchives
+              ) allArchives
             } \
               --title "$GITHUB_REPOSITORY@$release" \
               --notes-file "$release_notes"
