@@ -4,6 +4,19 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/632f04521e847173c54fa72973ec6c39a371211c";
+
+    lix-2_92 = {
+      url = "https://git.lix.systems/lix-project/lix/archive/2.92.0.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    lix-2_91 = {
+      url = "https://git.lix.systems/lix-project/lix/archive/2.91.1.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    lix-2_90 = {
+      url = "https://git.lix.systems/lix-project/lix/archive/2.90.0.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   nixConfig = {
@@ -16,6 +29,10 @@
     self,
     flake-utils,
     nixpkgs-unstable,
+
+    lix-2_92,
+    lix-2_91,
+    lix-2_90,
   }:
   let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
@@ -56,6 +73,9 @@
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
+          lix-2_92.packages.${system}.nix
+          lix-2_91.packages.${system}.nix
+          lix-2_90.packages.${system}.nix
         ] ++
         lib.optionals (system != "aarch64-linux")
         [
