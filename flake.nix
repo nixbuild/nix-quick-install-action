@@ -94,6 +94,7 @@
       mkAllArchives = name: archives: lib.concatMap (system:
         map (version: {
           inherit system version;
+          impl = name;
           fileName = "${name}-${version}-${system}.tar.zstd";
         }) (lib.attrNames (archives system))
       ) allSystems;
@@ -154,8 +155,8 @@
 
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
-              lib.concatMapStringsSep " " ({ system, version, fileName }:
-                ''"$nix_archives/${fileName}#nix-${version}-${system}"''
+              lib.concatMapStringsSep " " ({ system, version, impl, fileName }:
+                ''"$nix_archives/${fileName}#${impl}-${version}-${system}"''
               ) allArchives
             } \
               --title "$GITHUB_REPOSITORY@$release" \
