@@ -33,7 +33,7 @@ case "$OSTYPE" in
 esac
 
 # Enable KVM on Linux so NixOS tests can run quickly.
-# Do this early in the process so nix installation detects the KVM feature.
+# Do this early in the process so lix installation detects the KVM feature.
 enable_kvm() {
   echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-install-nix-action-kvm.rules
   sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
@@ -45,7 +45,7 @@ fi
 # Make sure /nix exists and is writeable
 if [ -a /nix ]; then
   if ! [ -w /nix ]; then
-    echo >&2 "/nix exists but is not writeable, can't set up nix-quick-install-action"
+    echo >&2 "/nix exists but is not writeable, can't set up lix-quick-install-action"
     exit 1
   else
     rm -rf /nix/var/nix-quick-install-action
@@ -70,7 +70,7 @@ else
   fi
 fi
 
-# Fetch and unpack nix archive
+# Fetch and unpack lix archive
 if [[ "$sys" =~ .*-darwin ]]; then
   # MacOS tar doesn't have the --skip-old-files, so we use gtar
   tar=gtar
@@ -78,9 +78,9 @@ else
   tar=tar
 fi
 rel="$(head -n1 "$RELEASE_FILE")"
-url="${NIX_ARCHIVES_URL:-https://github.com/nixbuild/nix-quick-install-action/releases/download/$rel}/$NIX_IMPLEMENTATION-$NIX_VERSION-$sys.tar.zstd"
+url="${NIX_ARCHIVES_URL:-https://github.com/canidae-solutions/lix-quick-install-action/releases/download/$rel}/$NIX_IMPLEMENTATION-$NIX_VERSION-$sys.tar.zstd"
 
-echo >&2 "Fetching nix archives from $url"
+echo >&2 "Fetching lix archives from $url"
 case "$url" in
   file://)
     "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
@@ -126,7 +126,7 @@ while true; do
 done
 
 
-# Install nix in profile
+# Install lix in profile
 MANPATH= . "$nix/etc/profile.d/nix.sh"
 "$nix/bin/nix-env" -i "$nix"
 
