@@ -4,6 +4,11 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/632f04521e847173c54fa72973ec6c39a371211c";
+
+    lix-2_92 = {
+      url = "https://git.lix.systems/lix-project/lix/archive/2.92.0.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   nixConfig = {
@@ -16,6 +21,8 @@
     self,
     flake-utils,
     nixpkgs-unstable,
+
+    lix-2_92,
   }:
   let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
@@ -36,11 +43,11 @@
         ];
       };
 
-      makeNixArchive = nix:
-        pkgs.runCommand "nix-archive" {
+      makeNixArchive = name: nix:
+        pkgs.runCommand "${name}-archive" {
           buildInputs = [ nix pkgs.gnutar pkgs.zstd ];
           closureInfo = pkgs.closureInfo { rootPaths =  [ nix ]; };
-          fileName = "nix-${nix.version}-${system}.tar.zstd";
+          fileName = "${name}-${nix.version}-${system}.tar.zstd";
           inherit nix;
         } ''
           mkdir -p "$out" root/nix/var/{nix,nix-quick-install-action}
@@ -49,9 +56,17 @@
           tar -cvT $closureInfo/store-paths -C root nix | zstd -o "$out/$fileName"
         '';
 
-      nixVersions = system: lib.listToAttrs (map (nix: lib.nameValuePair
+      mkVersions = packages: system: lib.listToAttrs (map (nix: lib.nameValuePair
         nix.version nix
-      ) (
+      ) (packages system));
+
+      mkPackages = name: versions: lib.mapAttrs'
+        (v: p: lib.nameValuePair "${name}-${lib.replaceStrings ["."] ["_"] v}" p)
+        (versions system);
+
+      mkArchives = name: versions: system: lib.mapAttrs (_: makeNixArchive name) (versions system);
+
+      nixVersions = mkVersions (system:
         [
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_25
@@ -61,21 +76,30 @@
         [
           nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
         ]
-      ));
+      );
+      lixVersions = mkVersions (system:
+        [
+          lix-2_92.packages.${system}.nix
+          nixpkgs-unstable.legacyPackages.${system}.lixVersions.lix_2_91
+          nixpkgs-unstable.legacyPackages.${system}.lixVersions.lix_2_90
+        ]
+      );
 
-      nixPackages = lib.mapAttrs'
-        (v: p: lib.nameValuePair "nix-${lib.replaceStrings ["."] ["_"] v}" p)
-        (nixVersions system);
+      nixPackages = mkPackages "nix" nixVersions;
+      lixPackages = mkPackages "lix" lixVersions;
 
-      nixArchives = system: lib.mapAttrs (_: makeNixArchive) (nixVersions system);
+      nixArchives = mkArchives "nix" nixVersions;
+      lixArchives = mkArchives "lix" lixVersions;
 
-      allNixArchives = lib.concatMap (system:
+      mkAllArchives = name: archives: lib.concatMap (system:
         map (version: {
           inherit system version;
-          fileName = "nix-${version}-${system}.tar.zstd";
-        }) (lib.attrNames (nixArchives system))
+          impl = name;
+          fileName = "${name}-${version}-${system}.tar.zstd";
+        }) (lib.attrNames (archives system))
       ) allSystems;
 
+      allArchives = (mkAllArchives "nix" nixArchives) ++ (mkAllArchives "lix" lixArchives);
     in rec {
       defaultApp = apps.release;
 
@@ -83,10 +107,10 @@
 
       overlays = final: prev: nixPackages;
 
-      packages = nixPackages // {
+      packages = nixPackages // lixPackages // {
         nix-archives = preferRemoteBuild (pkgs.buildEnv {
           name = "nix-archives";
-          paths = lib.attrValues (nixArchives system);
+          paths = lib.attrValues ((nixArchives system) // (lixArchives system));
         });
         release = preferRemoteBuild (pkgs.writeScriptBin "release" ''
           #!${pkgs.stdenv.shell}
@@ -114,26 +138,30 @@
             release_notes="$(mktemp)"
             tail -n+2 "$release_file" > "$release_notes"
 
-            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" (
-              lib.concatMapStringsSep "\n" (sys: ''
-                ## Supported Nix Versions on ${sys} runners
+            echo "" | cat >>"$release_notes" - "${let
+              mkSupported = name: archives: lib.concatMapStringsSep "\n" (sys: ''
+                ## Supported ${name} Versions on ${sys} runners
                 ${lib.concatStringsSep "\n" (
                   map (v: "* ${v}") (
-                    lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives sys)))
+                    lib.reverseList (lib.naturalSort (lib.attrNames (archives sys)))
                   )
                 )}
               '') [
                  "x86_64-linux"
                  "aarch64-linux"
                  "x86_64-darwin"
-              ]
-            )}"
+                 "aarch64-darwin"
+              ];
+            in pkgs.writeText "notes" ''
+              ${mkSupported "Nix" nixArchives}
+              ${mkSupported "Lix" lixArchives}
+            ''}"
 
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
-              lib.concatMapStringsSep " " ({ system, version, fileName }:
-                ''"$nix_archives/${fileName}#nix-${version}-${system}"''
-              ) allNixArchives
+              lib.concatMapStringsSep " " ({ system, version, impl, fileName }:
+                ''"$nix_archives/${fileName}#${impl}-${version}-${system}"''
+              ) allArchives
             } \
               --title "$GITHUB_REPOSITORY@$release" \
               --notes-file "$release_notes"

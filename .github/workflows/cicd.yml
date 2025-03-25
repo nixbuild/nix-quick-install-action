@@ -31,6 +31,11 @@ jobs:
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+      - name: Fix Lix tests
+        if: matrix.os == 'ubuntu-24.04-arm'
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
       - name: Build nix archives
         id: build-nix-archives
         run: |
@@ -51,14 +56,26 @@ jobs:
           - ubuntu-24.04-arm
           - macos-15
           - macos-13
-        nix_version:
-          - 2.3.18
-          - 2.26.1
-          - 2.25.5
-          - 2.24.12
+        nix:
+          - version : 2.92.0
+            impl: lix
+          - version : 2.91.1
+            impl: lix
+          - version : 2.90.0
+            impl: lix
+          - version: 2.3.18
+            impl: nix
+          - version: 2.26.1
+            impl: nix
+          - version: 2.25.5
+            impl: nix
+          - version: 2.24.12
+            impl: nix
         exclude:
           - os: ubuntu-24.04-arm
-            nix_version: 2.3.18
+            nix:
+              version: 2.3.18
+              impl: nix
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +86,8 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
-          nix_version: ${{ matrix.nix_version }}
+          nix_version: ${{ matrix.nix.version }}
+          nix_implementation: ${{ matrix.nix.impl }}
           nix_on_tmpfs: true
       - name: Test nix
         run: nix-build -v --version
@@ -89,14 +107,26 @@ jobs:
           - ubuntu-24.04-arm
           - macos-15
           - macos-13
-        nix_version:
-          - 2.3.18
-          - 2.26.1
-          - 2.25.5
-          - 2.24.12
+        nix:
+          - version : 2.92.0
+            impl: lix
+          - version : 2.91.1
+            impl: lix
+          - version : 2.90.0
+            impl: lix
+          - version: 2.3.18
+            impl: nix
+          - version: 2.26.1
+            impl: nix
+          - version: 2.25.5
+            impl: nix
+          - version: 2.24.12
+            impl: nix
         exclude:
           - os: ubuntu-24.04-arm
-            nix_version: 2.3.18
+            nix:
+              version: 2.3.18
+              impl: nix
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +137,8 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
-          nix_version: ${{ matrix.nix_version }}
+          nix_version: ${{ matrix.nix.version }}
+          nix_implementation: ${{ matrix.nix.impl }}
           nix_conf: ${{ matrix.nix_conf }}
       - uses: cachix/cachix-action@v15
         with:
