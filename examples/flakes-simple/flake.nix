@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/release-20.03";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
   };
 
   outputs = { self, nixpkgs }: {
@@ -16,5 +16,5 @@
   nixConfig = {
     allow-import-from-derivation = "true";
   };
- 
+
 }
