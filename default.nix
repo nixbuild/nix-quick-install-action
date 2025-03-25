@@ -8,8 +8,12 @@ in
   pkgs ? nixpkgs,
 }:
 
-{
+rec {
   inherit pkgs;
+
+  makeStoreArchive = (pkgs.callPackage ./nix/make-store-archive.nix { }) builtins.currentSystem;
+
+  lixArchive = makeStoreArchive "lix" pkgs.lixVersions.lix_2_91;
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake
