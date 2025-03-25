@@ -29,8 +29,8 @@ jobs:
           nix_version: 2.92.0
       - uses: cachix/cachix-action@v15
         with:
-          name: lix-quick-install-action
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          name: canidae-solutions
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Fix Lix tests
         if: matrix.os == 'ubuntu-24.04-arm'
         run: |
@@ -142,12 +142,12 @@ jobs:
           nix_conf: ${{ matrix.nix_conf }}
       - uses: cachix/cachix-action@v15
         with:
-          name: lix-quick-install-action
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          name: canidae-solutions
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
           skipPush: true
       - name: Verify nix config
         run: |
-          if ! egrep -q "^substituters = https://cache.nixos.org https://lix-quick-install-action.cachix.org$" "$HOME/.config/nix/nix.conf"; then
+          if ! egrep -q "^substituters = https://cache.nixos.org https://canidae-solutions.cachix.org$" "$HOME/.config/nix/nix.conf"; then
             echo "Invalid substituters config"
             exit 1
           fi
@@ -155,7 +155,7 @@ jobs:
         if: github.event_name == 'push' && github.repository_owner == 'canidae-solutions'
         run: |
           dd if=/dev/urandom of=random count=1
-          cachix push lix-quick-install-action "$(nix add-to-store random)"
+          cachix push canidae-solutions "$(nix add-to-store random)"
 
   release:
     runs-on: ubuntu-latest
@@ -190,8 +190,8 @@ jobs:
           nix_version: 2.92.0
       - uses: cachix/cachix-action@v15
         with:
-          name: lix-quick-install-action
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          name: canidae-solutions
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Build release script
         run: nix build .#release
       - name: Release if needed
