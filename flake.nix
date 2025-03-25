@@ -138,20 +138,24 @@
             release_notes="$(mktemp)"
             tail -n+2 "$release_file" > "$release_notes"
 
-            echo "" | cat >>"$release_notes" - "${pkgs.writeText "notes" (
-              lib.concatMapStringsSep "\n" (sys: ''
-                ## Supported Nix Versions on ${sys} runners
+            echo "" | cat >>"$release_notes" - "${let
+              mkSupported = name: archives: lib.concatMapStringsSep "\n" (sys: ''
+                ## Supported ${name} Versions on ${sys} runners
                 ${lib.concatStringsSep "\n" (
                   map (v: "* ${v}") (
-                    lib.reverseList (lib.naturalSort (lib.attrNames (nixArchives sys)))
+                    lib.reverseList (lib.naturalSort (lib.attrNames (archives sys)))
                   )
                 )}
               '') [
                  "x86_64-linux"
                  "aarch64-linux"
                  "x86_64-darwin"
-              ]
-            )}"
+                 "aarch64-darwin"
+              ];
+            in pkgs.writeText "notes" ''
+              ${mkSupported "Nix" nixArchives}
+              ${mkSupported "Lix" lixArchives}
+            ''}"
 
             echo >&2 "New release: $prev_release -> $release"
             gh release create "$release" ${
