@@ -1,17 +1,11 @@
-v30
+v1
+
+This is a fork of [nixbuild/nix-quick-install-action@v30](https://github.com/nixbuild/nix-quick-install-action/tree/v30).
+Changes listed here are relative to that release.
 
 ## Changes
-
-* Remove Nix versions: 2.18.8, 2.19.6, 2.20.8, 2.21.4, 2.23.3
-
-* Bump minor Nix versions: 2.24.9 -> 2.24.12
-  2.21.0 -> 2.21.4.
-
-* Add Nix versions: 2.25.5, 2.26.1
-
-* Bump default Nix version: 2.24.9 -> 2.24.12
-
-* Add support for `ubuntu-24.04-arm` (aarch64-linux) runners.
-
-* Enable support for KVM in builds. Can be turned off with the new `enable_kvm`
-  configuration option.
+- Add support for Lix
+  - Supported versions: 2.92.0, 2.91.1, 2.90.0
+- Add `nix-implementation` option to allow selecting which Nix implementation to install
+  - Supported implementations: nix, lix
+- Change default version and implementation to Lix 2.92.0
