@@ -12,14 +12,13 @@ rec {
   inherit pkgs;
 
   makeStoreArchive = (pkgs.callPackage ./nix/make-store-archive.nix { }) builtins.currentSystem;
-  makeVersionSet =
-    versions: system:
-    pkgs.lib.listToAttrs (map (v: pkgs.lib.nameValuePair v.version v) (versions system));
-  makeArchiveSet =
-    versions: system:
-    pkgs.lib.listToAttrs (
-      map (v: pkgs.lib.nameValuePair v.version (makeStoreArchive "lix" v)) (versions system)
-    );
+
+  mkLixSet =
+    f: lixen: system:
+    pkgs.lib.listToAttrs (map (lix: pkgs.lib.nameValuePair lix.version (f lix)) (lixen system));
+
+  makeVersionSet = mkLixSet (lix: lix);
+  makeArchiveSet = mkLixSet (makeStoreArchive "lix");
 
   lixVersionsForSystem = system: [
     #lix-2_92.packages.${system}.nix
