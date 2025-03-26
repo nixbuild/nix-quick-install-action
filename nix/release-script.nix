@@ -7,49 +7,40 @@
   gitMinimal,
   github-cli,
 
-  lixArchives,
-  nixArchives,
-  allArchives,
+  lixArchivesFor,
 }:
 
 let
-  makeSupportedVersions =
-    name: archives:
-    lib.concatMapStringsSep "\n"
-      (
-        system:
-        let
-          inherit (lib) attrNames naturalSort reverseList;
+  supportedSystems = [
+    "x86_64-linux"
+    "aarch64-linux"
+    "x86_64-darwin"
+    "aarch64-darwin"
+  ];
 
-          mkMarkdownList = map (s: "- ${s}");
-          sortedVersions = reverseList (naturalSort (attrNames (archives system)));
-        in
-        ''
-          ## Supported ${name} versions on ${system}:
-          ${lib.concatStringsSep "\n" (mkMarkdownList sortedVersions)}
-        ''
-      )
-      [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+  supportedVersions = writeText "supportedVersions" (
+    lib.concatMapStringsSep "\n" (
+      system:
+      let
+        inherit (lib) attrNames naturalSort reverseList;
 
-  supportedVersions = writeText "supportedVersions" ''
-    ${makeSupportedVersions "Lix" lixArchives}
-    ${makeSupportedVersions "Nix" nixArchives}
-  '';
+        mkMarkdownList = map (s: "- ${s}");
+        sortedVersions = reverseList (naturalSort (attrNames (lixArchivesFor system)));
+      in
+      ''
+        ## Supported Lix versions on ${system}:
+        ${lib.concatStringsSep "\n" (mkMarkdownList sortedVersions)}
+      ''
+    ) supportedSystems
+  );
 
-  releaseAssets = lib.concatMapStringsSep " " (
-    {
-      system,
-      version,
-      impl,
-      fileName,
-    }:
-    "\"$nix_archives/${fileName}#${impl}-${version}-${system}\""
-  ) allArchives;
+  releaseAssets =
+    let
+      allSystemsArchives = lib.concatMap (
+        system: lib.attrValues (lixArchivesFor system)
+      ) supportedSystems;
+    in
+    lib.concatMapStringsSep " " (archive: "\"$lix_archives/${archive.fileName}\"") allSystemsArchives;
 in
 
 writeShellApplication {
@@ -67,7 +58,7 @@ writeShellApplication {
       exit 1
     fi
 
-    nix_archives="$1"
+    lix_archives="$1"
     release_file="$2"
     release="$(head -n1 "$release_file")"
     prev_release="$(gh release list -L 1 | cut -f 3)"
