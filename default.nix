@@ -8,14 +8,18 @@ in
   pkgs ? nixpkgs,
 }:
 
-rec {
-  inherit pkgs;
+let
+  inherit (pkgs.lib) listToAttrs nameValuePair replaceStrings;
 
   makeStoreArchive = pkgs.callPackage ./nix/make-store-archive.nix { };
 
   mkLixSet =
     f: lixen: system:
-    pkgs.lib.listToAttrs (map (lix: pkgs.lib.nameValuePair lix.version (f system lix)) (lixen system));
+    listToAttrs (
+      map (lix: nameValuePair "v${replaceStrings [ "." ] [ "_" ] lix.version}" (f system lix)) (
+        lixen system
+      )
+    );
 
   makeVersionSet = mkLixSet (_: lix: lix);
   makeArchiveSet = mkLixSet makeStoreArchive;
@@ -25,6 +29,9 @@ rec {
     pkgs.lixVersions.lix_2_91
     pkgs.lixVersions.lix_2_90
   ];
+in
+rec {
+  inherit pkgs;
 
   lixVersions = makeVersionSet lixVersionsForSystem builtins.currentSystem;
   lixArchives = makeArchiveSet lixVersionsForSystem builtins.currentSystem;
