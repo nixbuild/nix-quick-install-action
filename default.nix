@@ -24,11 +24,26 @@ let
   makeVersionSet = mkLixSet (_: lix: lix);
   makeArchiveSet = mkLixSet makeStoreArchive;
 
-  lixVersionsForSystem = system: [
-    #lix-2_92.packages.${system}.nix
-    pkgs.lixVersions.lix_2_91
-    pkgs.lixVersions.lix_2_90
-  ];
+  lixVersionsForSystem =
+    system:
+    let
+      # The Lix repo doesn't give us a good way to override nixpkgs when consuming it from outside a flake, so we can
+      # do some hacks with the overlay instead.
+      lix_2_92 = ((import pins.lix-2_92).overlays.default pkgs pkgs).nix.override {
+        # From <https://git.lix.systems/lix-project/nixos-module/pulls/59>:
+        # Do not override editline-lix
+        # according to the upstream packaging.
+        # This was fixed in nixpkgs directly.
+        editline-lix = pkgs.editline.overrideAttrs (old: {
+          propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ [ pkgs.ncurses ];
+        });
+      };
+    in
+    [
+      lix_2_92
+      pkgs.lixVersions.lix_2_91
+      pkgs.lixVersions.lix_2_90
+    ];
 in
 rec {
   inherit pkgs;
