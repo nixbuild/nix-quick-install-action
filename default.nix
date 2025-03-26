@@ -11,14 +11,20 @@ in
 rec {
   inherit pkgs;
 
-  makeStoreArchive = (pkgs.callPackage ./nix/make-store-archive.nix { }) builtins.currentSystem;
+  makeStoreArchive = pkgs.callPackage ./nix/make-store-archive.nix { };
 
   mkLixSet =
     f: lixen: system:
-    pkgs.lib.listToAttrs (map (lix: pkgs.lib.nameValuePair lix.version (f lix)) (lixen system));
+    pkgs.lib.listToAttrs (map (lix: pkgs.lib.nameValuePair lix.version (f system lix)) (lixen system));
 
-  makeVersionSet = mkLixSet (lix: lix);
+  makeVersionSet = mkLixSet (_: lix: lix);
   makeArchiveSet = name: mkLixSet (makeStoreArchive name);
+  makeCombinedArchives =
+    name: archives:
+    pkgs.symlinkJoin {
+      name = "${name}-archives";
+      paths = builtins.attrValues archives;
+    };
 
   lixVersionsForSystem = system: [
     #lix-2_92.packages.${system}.nix
@@ -42,6 +48,9 @@ rec {
 
   nixVersions = makeVersionSet nixVersionsForSystem builtins.currentSystem;
   nixArchives = makeArchiveSet "nix" nixVersionsForSystem builtins.currentSystem;
+
+  combinedLixVersions = makeCombinedArchives "lix" lixArchives;
+  combinedNixVersions = makeCombinedArchives "nix" nixArchives;
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake

@@ -6,7 +6,7 @@
   zstd,
 }:
 
-system: name: lix:
+name: system: lix:
 
 runCommand "${name}-archive"
   {
