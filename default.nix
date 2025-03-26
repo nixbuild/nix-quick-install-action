@@ -15,15 +15,20 @@ rec {
   makeVersionSet =
     versions: system:
     pkgs.lib.listToAttrs (map (v: pkgs.lib.nameValuePair v.version v) (versions system));
+  makeArchiveSet =
+    versions: system:
+    pkgs.lib.listToAttrs (
+      map (v: pkgs.lib.nameValuePair v.version (makeStoreArchive "lix" v)) (versions system)
+    );
 
-  lixArchive = makeStoreArchive "lix" pkgs.lixVersions.lix_2_91;
   lixVersionsForSystem = system: [
     #lix-2_92.packages.${system}.nix
     pkgs.lixVersions.lix_2_91
     pkgs.lixVersions.lix_2_90
   ];
 
-  lixVersionSet = makeVersionSet lixVersionsForSystem builtins.currentSystem;
+  lixVersions = makeVersionSet lixVersionsForSystem builtins.currentSystem;
+  lixArchives = makeArchiveSet lixVersionsForSystem builtins.currentSystem;
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake
