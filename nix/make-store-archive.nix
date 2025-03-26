@@ -8,7 +8,7 @@
 
 system: lix:
 
-runCommand "lix-archive"
+runCommand "lix-${lix.version}-archive"
   {
     buildInputs = [
       lix
