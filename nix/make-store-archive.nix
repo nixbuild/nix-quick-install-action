@@ -6,9 +6,9 @@
   zstd,
 }:
 
-name: system: lix:
+system: lix:
 
-runCommand "${name}-archive"
+runCommand "lix-archive"
   {
     buildInputs = [
       lix
@@ -17,7 +17,7 @@ runCommand "${name}-archive"
     ];
 
     closureInfo = closureInfo { rootPaths = [ lix ]; };
-    fileName = "${name}-${lix.version}-${system}.tar.zstd";
+    fileName = "lix-${lix.version}-${system}.tar.zstd";
   }
   ''
     mkdir -p $out root/nix/var/{nix,lix-quick-install-action}
