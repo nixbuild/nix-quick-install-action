@@ -19,12 +19,6 @@ rec {
 
   makeVersionSet = mkLixSet (_: lix: lix);
   makeArchiveSet = name: mkLixSet (makeStoreArchive name);
-  makeCombinedArchives =
-    name: archives:
-    pkgs.symlinkJoin {
-      name = "${name}-archives";
-      paths = builtins.attrValues archives;
-    };
 
   lixVersionsForSystem = system: [
     #lix-2_92.packages.${system}.nix
@@ -49,8 +43,13 @@ rec {
   nixVersions = makeVersionSet nixVersionsForSystem builtins.currentSystem;
   nixArchives = makeArchiveSet "nix" nixVersionsForSystem builtins.currentSystem;
 
-  combinedLixVersions = makeCombinedArchives "lix" lixArchives;
-  combinedNixVersions = makeCombinedArchives "nix" nixArchives;
+  combinedArchives = pkgs.symlinkJoin {
+    name = "lix-archives";
+    paths = pkgs.lib.concatMap builtins.attrValues [
+      lixArchives
+      nixArchives
+    ];
+  };
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake
