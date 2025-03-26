@@ -36,15 +36,15 @@ jobs:
         run: |
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
-      - name: Build nix archives
-        id: build-nix-archives
+      - name: Build Lix archives
+        id: build-lix-archives
         run: |
-          nix build -L .#nix-archives
+          nix build -L -f default.nix combinedArchives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
-          name: nix-archives-${{ runner.os }}-${{ runner.arch }}
-          path: ${{ steps.build-nix-archives.outputs.result }}/
+          name: lix-archives-${{ runner.os }}-${{ runner.arch }}
+          path: ${{ steps.build-lix-archives.outputs.result }}/
 
   test:
     needs: build
@@ -193,7 +193,7 @@ jobs:
           name: canidae-solutions
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Build release script
-        run: nix build .#release
+        run: nix build -f default.nix releaseScript
       - name: Release if needed
         run: ./result/bin/release /tmp/archives ./RELEASE
         env:
