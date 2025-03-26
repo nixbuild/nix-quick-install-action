@@ -48,11 +48,13 @@ let
     ];
 in
 rec {
-  lixVersions = makeVersionSet lixVersionsForSystem builtins.currentSystem;
-  lixArchives = makeArchiveSet lixVersionsForSystem builtins.currentSystem;
+  lixVersionsFor = makeVersionSet lixVersionsForSystem;
+  lixArchivesFor = makeArchiveSet lixVersionsForSystem;
 
-  combinedArchives = pkgs.symlinkJoin {
-    name = "lix-archives";
-    paths = builtins.attrValues lixArchives;
-  };
+  combinedArchivesFor =
+    system:
+    pkgs.symlinkJoin {
+      name = "lix-archives";
+      paths = builtins.attrValues (lixArchivesFor system);
+    };
 }

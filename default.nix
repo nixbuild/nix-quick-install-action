@@ -14,7 +14,10 @@ in
 rec {
   inherit pkgs;
 
-  inherit (archives) lixVersions lixArchives combinedArchives;
+  lixVersions = archives.lixVersionsFor pkgs.system;
+  lixArchives = archives.lixArchivesFor pkgs.system;
+
+  combinedArchives = archives.combinedArchivesFor pkgs.system;
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake
