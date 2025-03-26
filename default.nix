@@ -18,16 +18,30 @@ rec {
     pkgs.lib.listToAttrs (map (lix: pkgs.lib.nameValuePair lix.version (f lix)) (lixen system));
 
   makeVersionSet = mkLixSet (lix: lix);
-  makeArchiveSet = mkLixSet (makeStoreArchive "lix");
+  makeArchiveSet = name: mkLixSet (makeStoreArchive name);
 
   lixVersionsForSystem = system: [
     #lix-2_92.packages.${system}.nix
     pkgs.lixVersions.lix_2_91
     pkgs.lixVersions.lix_2_90
   ];
+  nixVersionsForSystem = (
+    system:
+    [
+      pkgs.nixVersions.nix_2_26
+      pkgs.nixVersions.nix_2_25
+      pkgs.nixVersions.nix_2_24
+    ]
+    ++ pkgs.lib.optionals (system != "aarch64-linux") [
+      pkgs.nixVersions.minimum
+    ]
+  );
 
   lixVersions = makeVersionSet lixVersionsForSystem builtins.currentSystem;
-  lixArchives = makeArchiveSet lixVersionsForSystem builtins.currentSystem;
+  lixArchives = makeArchiveSet "lix" lixVersionsForSystem builtins.currentSystem;
+
+  nixVersions = makeVersionSet nixVersionsForSystem builtins.currentSystem;
+  nixArchives = makeArchiveSet "nix" nixVersionsForSystem builtins.currentSystem;
 
   releaseScript = pkgs.callPackage ./nix/release-script.nix rec {
     # TODO: move definitions out of flake
