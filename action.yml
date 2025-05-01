@@ -24,6 +24,12 @@ inputs:
       See https://nixos.org/manual/nix/stable/command-ref/conf-file.html for
       information on what settings that are available. Make sure the settings
       you define are supported by the Nix version you're using.
+  
+  extra_experimental_features:
+    required: false
+    default: ''
+    description: |
+      A space-separated list of experimental features to enable in Nix.
 
   github_access_token:
     default: ${{ github.token }}
@@ -61,6 +67,7 @@ runs:
         RELEASE_FILE: ${{ github.action_path }}/RELEASE
         NIX_VERSION: ${{ inputs.nix_version }}
         NIX_CONF: ${{ inputs.nix_conf }}
+        EXTRA_EXPERIMENTAL_FEATURES: ${{ inputs.extra_experimental_features }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}
         NIX_ON_TMPFS: ${{ inputs.nix_on_tmpfs }}
         GITHUB_ACCESS_TOKEN: ${{ inputs.github_access_token }}
