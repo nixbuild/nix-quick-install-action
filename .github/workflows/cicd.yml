@@ -156,7 +156,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.24.12
+          nix_version: 2.29.0
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
