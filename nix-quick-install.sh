@@ -108,7 +108,7 @@ fi
 # Setup Flakes
 if vergt "$NIX_VERSION" "2.13"; then
   echo >>"$NIX_CONF_FILE" \
-    "experimental-features = nix-command flakes"
+    "extra-experimental-features = nix-command flakes"
   echo >>"$NIX_CONF_FILE" \
     "accept-flake-config = true"
 fi
