@@ -1,17 +1,14 @@
-v30
+v31
 
 ## Changes
 
-* Remove Nix versions: 2.18.8, 2.19.6, 2.20.8, 2.21.4, 2.23.3
+* Remove Nix versions: 2.25.5
 
-* Bump minor Nix versions: 2.24.9 -> 2.24.12
+* Bump minor Nix versions: 2.24.12 -> 2.24.14, 2.26.1 -> 2.26.3
   2.21.0 -> 2.21.4.
 
-* Add Nix versions: 2.25.5, 2.26.1
+* Add Nix versions: 2.28.3, 2.29.0
 
-* Bump default Nix version: 2.24.9 -> 2.24.12
+* Bump default Nix version: 2.24.12 -> 2.29.0
 
-* Add support for `ubuntu-24.04-arm` (aarch64-linux) runners.
-
-* Enable support for KVM in builds. Can be turned off with the new `enable_kvm`
-  configuration option.
+* Fix issue with 'experimental-features' setting getting overwritten (#66).
