@@ -9,6 +9,8 @@ matter when you run the action.
 
 * Supports all Linux and MacOS runners
 
+* Currently no support for self-hosted runners
+
 * Single-user installation (no `nix-daemon`)
 
 * Installs in &asymp; 1 second on Linux, &asymp; 5 seconds on MacOS
