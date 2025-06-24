@@ -3,7 +3,11 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/355ef82e889bbab280cbcc7ddff4e8479174a9ca";
+    nixpkgs.url = "github:nixos/nixpkgs/master";
+    nix_2_24.url = "github:nixos/nix/2.24.15";
+    nix_2_26.url = "github:nixos/nix/2.26.4";
+    nix_2_28.url = "github:nixos/nix/2.28.4";
+    nix_2_29.url = "github:nixos/nix/2.29.1";
   };
 
   nixConfig = {
@@ -15,21 +19,25 @@
   outputs = {
     self,
     flake-utils,
-    nixpkgs-unstable,
+    nixpkgs,
+    nix_2_24,
+    nix_2_26,
+    nix_2_28,
+    nix_2_29,
   }:
   let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
 
     let
 
-      inherit (nixpkgs-unstable) lib;
+      inherit (nixpkgs) lib;
 
       preferRemoteBuild = drv: drv.overrideAttrs (_: {
         preferLocalBuild = false;
         allowSubstitutes = true;
       });
 
-      pkgs = import nixpkgs-unstable {
+      pkgs = import nixpkgs {
         inherit system;
         overlays = [
           (self: super: super.prefer-remote-fetch self super)
@@ -53,14 +61,14 @@
         nix.version nix
       ) (
         [
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_29
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_28
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_26
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.nix_2_24
+          nix_2_29.packages.${system}.nix
+          nix_2_28.packages.${system}.nix
+          nix_2_26.packages.${system}.nix
+          nix_2_24.packages.${system}.nix
         ] ++
         lib.optionals (system != "aarch64-linux")
         [
-          nixpkgs-unstable.legacyPackages.${system}.nixVersions.minimum
+          nixpkgs.legacyPackages.${system}.nixVersions.minimum
         ]
       ));
 
