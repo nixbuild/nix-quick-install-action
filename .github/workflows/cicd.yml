@@ -26,6 +26,7 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v31
+          nix_version: 2.29.0
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
@@ -155,7 +156,6 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-          nix_version: 2.29.1
       - uses: cachix/cachix-action@v15
         with:
           name: nixbuild
