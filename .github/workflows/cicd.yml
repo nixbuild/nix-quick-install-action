@@ -57,6 +57,8 @@ jobs:
           - 2.26.4
           - 2.28.4
           - 2.29.1
+          - 2.30.2
+          - 2.31.0
         exclude:
           - os: ubuntu-24.04-arm
             nix_version: 2.3.18
@@ -96,6 +98,8 @@ jobs:
           - 2.26.4
           - 2.28.4
           - 2.29.1
+          - 2.30.2
+          - 2.31.0
         exclude:
           - os: ubuntu-24.04-arm
             nix_version: 2.3.18

@@ -4,6 +4,8 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:nixos/nixpkgs/master";
+    nix_2_31.url = "github:nixos/nix/2.31.0";
+    nix_2_30.url = "github:nixos/nix/2.30.2";
     nix_2_24.url = "github:nixos/nix/2.24.15";
     nix_2_26.url = "github:nixos/nix/2.26.4";
     nix_2_28.url = "github:nixos/nix/2.28.4";
@@ -24,6 +26,8 @@
     nix_2_26,
     nix_2_28,
     nix_2_29,
+    nix_2_30,
+    nix_2_31
   }:
   let allSystems = [ "aarch64-linux" "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
   in flake-utils.lib.eachSystem allSystems (system:
@@ -61,6 +65,8 @@
         nix.version nix
       ) (
         [
+          nix_2_31.packages.${system}.nix
+          nix_2_30.packages.${system}.nix
           nix_2_29.packages.${system}.nix
           nix_2_28.packages.${system}.nix
           nix_2_26.packages.${system}.nix
