@@ -1,9 +1,5 @@
-v32
+v33
 
 ## Changes
 
-* Bump minor Nix versions: 2.24.14 -> 2.24.15, 2.26.3 -> 2.26.4,
-  2.28.3 -> 2.28.4, 2.29.1 -> 2.29.1. This fixes the security vulnerabilities
-  reported in https://discourse.nixos.org/t/security-advisory-privilege-escalations-in-nix-lix-and-guix/.
-
-* Bump default Nix version: 2.29.0 -> 2.29.1
+* Add new Nix versions: 2.30.2 and 2.31.0.
