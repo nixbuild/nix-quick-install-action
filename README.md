@@ -57,7 +57,7 @@ jobs:
   minimal:
     runs-on: ubuntu-latest
     steps:
-      - uses: nixbuild/nix-quick-install-action@v31
+      - uses: nixbuild/nix-quick-install-action@v33
       - run: nix build --version
       - run: nix build ./examples/flakes-simple
       - name: hello
@@ -112,8 +112,8 @@ nix (Nix) 2.26.1
 List all available Nix versions like this:
 
 ```
-$ nix flake show --all-systems github:nixbuild/nix-quick-install-action/v31
-github:nixbuild/nix-quick-install-action/889f3180bb5f064ee9e3201428d04ae9e41d54ad?narHash=sha256-sgm6s9%2BQurBB9MSl1sB14dx/LWzcd/pwdb6ZWGP7a%2BY%3D
+$ nix flake show --all-systems github:nixbuild/nix-quick-install-action/v33
+github:nixbuild/nix-quick-install-action/1f095fee853b33114486cfdeae62fa099cda35a9?narHash=sha256-tQNNl6tUU2Rg6gSL6a0BLbeMDXSWJoAAtK7z3tdMLq0%3D
 ├───apps
 │   ├───aarch64-darwin
 │   │   └───release: app: no description
@@ -135,33 +135,41 @@ github:nixbuild/nix-quick-install-action/889f3180bb5f064ee9e3201428d04ae9e41d54a
 │   └───x86_64-linux: Nixpkgs overlay
 └───packages
     ├───aarch64-darwin
-    │   ├───nix-2_24_14: package 'nix-2.24.14'
-    │   ├───nix-2_26_3: package 'nix-2.26.3'
-    │   ├───nix-2_28_3: package 'nix-2.28.3'
-    │   ├───nix-2_29_0: package 'nix-2.29.0'
+    │   ├───nix-2_24_15: package 'nix-2.24.15'
+    │   ├───nix-2_26_4: package 'nix-2.26.4'
+    │   ├───nix-2_28_4: package 'nix-2.28.4'
+    │   ├───nix-2_29_1: package 'nix-2.29.1'
+    │   ├───nix-2_30_2: package 'nix-2.30.2'
+    │   ├───nix-2_31_0: package 'nix-2.31.0'
     │   ├───nix-2_3_18: package 'nix-2.3.18'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     ├───aarch64-linux
-    │   ├───nix-2_24_14: package 'nix-2.24.14'
-    │   ├───nix-2_26_3: package 'nix-2.26.3'
-    │   ├───nix-2_28_3: package 'nix-2.28.3'
-    │   ├───nix-2_29_0: package 'nix-2.29.0'
+    │   ├───nix-2_24_15: package 'nix-2.24.15'
+    │   ├───nix-2_26_4: package 'nix-2.26.4'
+    │   ├───nix-2_28_4: package 'nix-2.28.4'
+    │   ├───nix-2_29_1: package 'nix-2.29.1'
+    │   ├───nix-2_30_2: package 'nix-2.30.2'
+    │   ├───nix-2_31_0: package 'nix-2.31.0'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     ├───x86_64-darwin
-    │   ├───nix-2_24_14: package 'nix-2.24.14'
-    │   ├───nix-2_26_3: package 'nix-2.26.3'
-    │   ├───nix-2_28_3: package 'nix-2.28.3'
-    │   ├───nix-2_29_0: package 'nix-2.29.0'
+    │   ├───nix-2_24_15: package 'nix-2.24.15'
+    │   ├───nix-2_26_4: package 'nix-2.26.4'
+    │   ├───nix-2_28_4: package 'nix-2.28.4'
+    │   ├───nix-2_29_1: package 'nix-2.29.1'
+    │   ├───nix-2_30_2: package 'nix-2.30.2'
+    │   ├───nix-2_31_0: package 'nix-2.31.0'
     │   ├───nix-2_3_18: package 'nix-2.3.18'
     │   ├───nix-archives: package 'nix-archives'
     │   └───release: package 'release'
     └───x86_64-linux
-        ├───nix-2_24_14: package 'nix-2.24.14'
-        ├───nix-2_26_3: package 'nix-2.26.3'
-        ├───nix-2_28_3: package 'nix-2.28.3'
-        ├───nix-2_29_0: package 'nix-2.29.0'
+        ├───nix-2_24_15: package 'nix-2.24.15'
+        ├───nix-2_26_4: package 'nix-2.26.4'
+        ├───nix-2_28_4: package 'nix-2.28.4'
+        ├───nix-2_29_1: package 'nix-2.29.1'
+        ├───nix-2_30_2: package 'nix-2.30.2'
+        ├───nix-2_31_0: package 'nix-2.31.0'
         ├───nix-2_3_18: package 'nix-2.3.18'
         ├───nix-archives: package 'nix-archives'
         └───release: package 'release'
