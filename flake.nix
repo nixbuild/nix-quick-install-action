@@ -4,12 +4,12 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:nixos/nixpkgs/master";
-    nix_2_31.url = "github:nixos/nix/2.31.0";
-    nix_2_30.url = "github:nixos/nix/2.30.2";
+    nix_2_31.url = "github:nixos/nix/2.31.2";
+    nix_2_30.url = "github:nixos/nix/2.30.3";
     nix_2_24.url = "github:nixos/nix/2.24.15";
     nix_2_26.url = "github:nixos/nix/2.26.4";
-    nix_2_28.url = "github:nixos/nix/2.28.4";
-    nix_2_29.url = "github:nixos/nix/2.29.1";
+    nix_2_28.url = "github:nixos/nix/2.28.5";
+    nix_2_29.url = "github:nixos/nix/2.29.2";
   };
 
   nixConfig = {
