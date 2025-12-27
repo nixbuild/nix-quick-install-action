@@ -115,13 +115,25 @@ fi
 
 
 # Populate the nix db
+echo "Populate the Nix database"
+
 nix="$(readlink /nix/var/nix-quick-install-action/nix)"
-retries=2
-while true; do
+
+attempts=5
+
+for ((i = 0; i < attempts; ++i)); do
+  echo "Attempt #$((i + 1))"
+    
   "$nix/bin/nix-store" \
     --load-db < /nix/var/nix-quick-install-action/registration && break || true
-  ((retries--))
+    
+  if (( i == attempts - 1 )); then
+    echo "No attempts remain. Exiting."
+    exit 1;
+  fi
+    
   echo >&2 "Retrying Nix DB registration"
+  
   sleep 2
 done
 

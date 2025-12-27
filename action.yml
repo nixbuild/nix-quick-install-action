@@ -6,7 +6,7 @@ inputs:
 
   nix_version:
     required: true
-    default: "2.29.2"
+    default: "2.33.0"
     description: |
       The version of Nix that should be installed
 
@@ -32,7 +32,7 @@ inputs:
 
   nix_on_tmpfs:
     required: true
-    default: false
+    default: 'false'
     description: |
       Installs /nix on a tmpfs mount. This can make Nix operations faster, but
       you risk running out of memory if your Nix store grows to big. Only
@@ -48,7 +48,7 @@ inputs:
   enable_kvm:
     description: 'Enable KVM for hardware-accelerated virtualization on Linux, if available.'
     required: false
-    default: true
+    default: 'true'
 
 
 runs:
@@ -58,7 +58,7 @@ runs:
       run: ${{ github.action_path }}/nix-quick-install.sh
       shell: bash
       env:
-        RELEASE_FILE: ${{ github.action_path }}/RELEASE
+        RELEASE_FILE: ${{ github.action_path }}/RELEASE.md
         NIX_VERSION: ${{ inputs.nix_version }}
         NIX_CONF: ${{ inputs.nix_conf }}
         NIX_ARCHIVES_URL: ${{ inputs.nix_archives_url }}

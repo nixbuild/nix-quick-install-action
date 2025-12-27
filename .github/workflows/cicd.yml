@@ -16,18 +16,18 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-22.04
+          - ubuntu-24.04
           - ubuntu-24.04-arm
+          - macos-15-intel
           - macos-15
-          - macos-13
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v34
           nix_version: 2.29.2
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v16
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -36,7 +36,7 @@ jobs:
         run: |
           nix build .#nix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6.0.0
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
           path: ${{ steps.build-nix-archives.outputs.result }}/
@@ -44,28 +44,24 @@ jobs:
   test:
     needs: build
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os:
-          - ubuntu-22.04
+          - ubuntu-24.04
           - ubuntu-24.04-arm
+          - macos-15-intel
           - macos-15
-          - macos-13
         nix_version:
-          - 2.3.18
-          - 2.24.15
-          - 2.26.4
           - 2.28.5
           - 2.29.2
           - 2.30.3
           - 2.31.2
-        exclude:
-          - os: ubuntu-24.04-arm
-            nix_version: 2.3.18
+          - 2.32.4
+          - 2.33.0
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7.0.0
         id: nix-archives
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
@@ -85,28 +81,24 @@ jobs:
   test-cachix:
     needs: build
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os:
-          - ubuntu-22.04
+          - ubuntu-24.04
           - ubuntu-24.04-arm
+          - macos-15-intel
           - macos-15
-          - macos-13
         nix_version:
-          - 2.3.18
-          - 2.24.15
-          - 2.26.4
           - 2.28.5
           - 2.29.2
           - 2.30.3
           - 2.31.2
-        exclude:
-          - os: ubuntu-24.04-arm
-            nix_version: 2.3.18
+          - 2.32.4
+          - 2.33.0
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7.0.0
         id: nix-archives
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
@@ -115,7 +107,7 @@ jobs:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
           nix_conf: ${{ matrix.nix_conf }}
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v16
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -133,40 +125,40 @@ jobs:
           cachix push nixbuild "$(nix add-to-store random)"
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build
       - test
       - test-cachix
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7.0.0
         with:
           name: nix-archives-Linux-X64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7.0.0
         with:
           name: nix-archives-Linux-ARM64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7.0.0
         with:
           name: nix-archives-macOS-X64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7.0.0
         with:
           name: nix-archives-macOS-ARM64
           path: /tmp/archives
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v16
         with:
           name: nixbuild
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
       - name: Build release script
         run: nix build .#release
       - name: Release if needed
-        run: ./result/bin/release /tmp/archives ./RELEASE
+        run: ./result/bin/release /tmp/archives ./RELEASE.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
