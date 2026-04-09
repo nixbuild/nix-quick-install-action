@@ -103,6 +103,12 @@ fi
 if [[ -n "${GITHUB_ACCESS_TOKEN:-}" ]]; then
   echo >>"$NIX_CONF_FILE" \
     "access-tokens = github.com=$GITHUB_ACCESS_TOKEN"
+
+  # Also write github token to .netrc so builtins.fetchGit (use git and git auth)
+  # can authenticate against private GitHub repos over HTTPS.
+  NETRC_FILE="$HOME/.netrc"
+  echo -e "machine github.com\nlogin github-token\npassword $GITHUB_ACCESS_TOKEN" >> "$NETRC_FILE"
+  chmod 600 "$NETRC_FILE"
 fi
 
 # Setup Flakes
