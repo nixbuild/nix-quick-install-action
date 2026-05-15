@@ -6,10 +6,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/master";
     nix_2_31.url = "github:nixos/nix/2.31.5";
     nix_2_30.url = "github:nixos/nix/2.30.5";
-    nix_2_24.url = "github:nixos/nix/2.24.15";
-    nix_2_26.url = "github:nixos/nix/2.26.4";
-    nix_2_28.url = "github:nixos/nix/2.28.7";
     nix_2_29.url = "github:nixos/nix/2.29.4";
+    nix_2_28.url = "github:nixos/nix/2.28.7";
   };
 
   nixConfig = {
@@ -22,8 +20,6 @@
     self,
     flake-utils,
     nixpkgs,
-    nix_2_24,
-    nix_2_26,
     nix_2_28,
     nix_2_29,
     nix_2_30,
@@ -69,8 +65,6 @@
           nix_2_30.packages.${system}.nix
           nix_2_29.packages.${system}.nix
           nix_2_28.packages.${system}.nix
-          nix_2_26.packages.${system}.nix
-          nix_2_24.packages.${system}.nix
         ] ++
         lib.optionals (system != "aarch64-linux")
         [
