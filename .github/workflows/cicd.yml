@@ -27,10 +27,10 @@ jobs:
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v34
           nix_version: 2.29.2
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v17
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          name: nixos-quick-install-action
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Build nix archives
         id: build-nix-archives
         run: |
@@ -115,10 +115,10 @@ jobs:
           nix_archives_url: file://${{steps.nix-archives.outputs.download-path}}
           nix_version: ${{ matrix.nix_version }}
           nix_conf: ${{ matrix.nix_conf }}
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v17
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          name: nixos-quick-install-action
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
           skipPush: true
       - name: Verify nix config
         run: |
@@ -160,10 +160,10 @@ jobs:
       - uses: ./
         with:
           nix_archives_url: file:///tmp/archives
-      - uses: cachix/cachix-action@v15
+      - uses: cachix/cachix-action@v17
         with:
-          name: nixbuild
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          name: nixos-quick-install-action
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Build release script
         run: nix build .#release
       - name: Release if needed
