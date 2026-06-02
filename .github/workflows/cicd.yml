@@ -115,7 +115,7 @@ jobs:
           skipPush: true
       - name: Verify nix config
         run: |
-          if ! egrep -q "^substituters = https://cache.nixos.org https://nixbuild.cachix.org$" "$HOME/.config/nix/nix.conf"; then
+          if ! egrep -q "^substituters = https://cache.nixos.org https://nixos-quick-install-action.cachix.org$" "$HOME/.config/nix/nix.conf"; then
             echo "Invalid substituters config"
             exit 1
           fi
