@@ -21,7 +21,7 @@ jobs:
           - macos-15
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v34
@@ -35,7 +35,7 @@ jobs:
         run: |
           nix build .#nix-archives
           echo "result=$(readlink result)" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
           path: ${{ steps.build-nix-archives.outputs.result }}/
@@ -60,8 +60,8 @@ jobs:
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         id: nix-archives
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
@@ -98,8 +98,8 @@ jobs:
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         id: nix-archives
         with:
           name: nix-archives-${{ runner.os }}-${{ runner.arch }}
@@ -133,20 +133,20 @@ jobs:
       - test-cachix
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           name: nix-archives-Linux-X64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: nix-archives-Linux-ARM64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: nix-archives-macOS-X64
           path: /tmp/archives
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: nix-archives-macOS-ARM64
           path: /tmp/archives
