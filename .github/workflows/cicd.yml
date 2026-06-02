@@ -123,7 +123,7 @@ jobs:
         if: github.event_name == 'push' && github.repository_owner == 'nixbuild'
         run: |
           dd if=/dev/urandom of=random count=1
-          cachix push nixbuild "$(nix add-to-store random)"
+          cachix push nixos-quick-install-action "$(nix add-to-store random)"
 
   release:
     runs-on: ubuntu-latest
