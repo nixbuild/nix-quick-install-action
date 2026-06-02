@@ -19,6 +19,7 @@ jobs:
           - ubuntu-22.04
           - ubuntu-24.04-arm
           - macos-15
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -49,6 +50,7 @@ jobs:
           - ubuntu-22.04
           - ubuntu-24.04-arm
           - macos-15
+          - macos-15-intel
         nix_version:
           - 2.3.18
           - 2.28.7
@@ -87,6 +89,7 @@ jobs:
           - ubuntu-22.04
           - ubuntu-24.04-arm
           - macos-15
+          - macos-15-intel
         nix_version:
           - 2.3.18
           - 2.28.7
