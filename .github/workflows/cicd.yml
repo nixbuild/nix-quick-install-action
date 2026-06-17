@@ -25,8 +25,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./
         with:
-          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v34
-          nix_version: 2.29.2
+          nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v35
+          nix_version: 2.34.7
       - uses: cachix/cachix-action@v17
         with:
           name: nixos-quick-install-action
