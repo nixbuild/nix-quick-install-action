@@ -1,7 +1,13 @@
-v34
+v35
 
 ## Changes
 
-* Update Nix versions: 2.31.0 -> 2.31.2, 2.30.0 -> 2.30.3, 2.29.1 -> 2.29.2, 2.28.4 -> 2.28.5.
+* https://github.com/nixbuild/nix-quick-install-action/pull/74
 
-* Bump default Nix version: 2.29.1 -> 2.29.2
+* Add Nix versions 2.34.7, 2.33.6, 2.32.8
+
+* Remove Nix version 2.26.4
+
+* Update Nix versions: 2.31.2 -> 2.31.5, 2.30.3 -> 2.30.5, 2.29.2 -> 2.29.4, 2.28.5 -> 2.28.7
+
+* Bump default Nix version: 2.29.2 -> 2.34.7
