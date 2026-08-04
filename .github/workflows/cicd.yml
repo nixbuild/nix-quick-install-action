@@ -22,7 +22,7 @@ jobs:
           - macos-15-intel
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./
         with:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v35
@@ -65,7 +65,7 @@ jobs:
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         id: nix-archives
         with:
@@ -107,7 +107,7 @@ jobs:
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         id: nix-archives
         with:
@@ -142,7 +142,7 @@ jobs:
       - test-cachix
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           name: nix-archives-Linux-X64
