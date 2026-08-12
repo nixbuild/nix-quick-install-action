@@ -86,7 +86,7 @@ case "$url" in
     "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
     ;;
   *)
-    curl -sL --retry 3 --retry-connrefused "$url" \
+    curl -sL --fail --retry 3 --retry-connrefused "$url" \
       | "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix
     ;;
 esac
