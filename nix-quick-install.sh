@@ -86,8 +86,14 @@ case "$url" in
     "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
     ;;
   *)
-    curl -sL --retry 3 --retry-connrefused "$url" \
-      | "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix
+    # Download to a file rather than piping into tar: curl cannot restart a
+    # retried transfer that it has already written to a pipe, so a truncated
+    # response reaches tar as a corrupt archive instead of being retried.
+    archive="$(mktemp)"
+    trap 'rm -f "$archive"' EXIT
+    curl -sSL --fail --retry 3 --retry-connrefused --retry-all-errors \
+      --output "$archive" "$url"
+    "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix -f "$archive"
     ;;
 esac
 
