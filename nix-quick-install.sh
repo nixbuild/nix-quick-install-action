@@ -86,8 +86,10 @@ case "$url" in
     "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix "${url#file://}"
     ;;
   *)
-    curl -sL --retry 3 --retry-connrefused "$url" \
-      | "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix
+    archive="$(mktemp "${RUNNER_TEMP:-/tmp}/nix-archive.XXXXXX")"
+    curl -sSL --fail --retry 5 --retry-all-errors -o "$archive" "$url"
+    "$tar" --skip-old-files --strip-components 1 -x -I unzstd -C /nix -f "$archive"
+    rm -f "$archive"
     ;;
 esac
 
