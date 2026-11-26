@@ -18,6 +18,8 @@ inputs:
 
   nix_conf:
     required: false
+    default: |
+      max-jobs = auto
     description: |
       If set, this configuration is written to XDG_CONFIG_HOME/nix/nix.conf,
       which is read by Nix.
