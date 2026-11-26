@@ -28,6 +28,8 @@ jobs:
           nix_archives_url: https://github.com/nixbuild/nix-quick-install-action/releases/download/v35
           nix_version: 2.34.7
       - uses: cachix/cachix-action@v17
+        # The default Cachix installer uses Nixpkgs 26.11, which dropped Intel macOS.
+        if: matrix.os != 'macos-15-intel'
         with:
           name: nixos-quick-install-action
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
@@ -102,7 +104,6 @@ jobs:
           - ubuntu-22.04
           - ubuntu-24.04-arm
           - macos-15
-          - macos-15-intel
         nix_version:
           - 2.3.18
           - 2.28.8
@@ -115,8 +116,6 @@ jobs:
           - 2.35.6
           - 2.36.0
         exclude:
-          - os: macos-15-intel
-            nix_version: 2.36.0
           - os: ubuntu-24.04-arm
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
