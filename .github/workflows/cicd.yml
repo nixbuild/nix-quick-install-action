@@ -83,7 +83,7 @@ jobs:
           nix_on_tmpfs: true
       - name: Verify default Nix configuration
         run: |
-          if ! rg -qx "max-jobs = auto" "$HOME/.config/nix/nix.conf"; then
+          if ! grep -qx "max-jobs = auto" "$HOME/.config/nix/nix.conf"; then
             echo "Invalid default max-jobs configuration"
             exit 1
           fi
