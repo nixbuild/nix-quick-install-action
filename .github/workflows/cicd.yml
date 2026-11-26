@@ -60,7 +60,11 @@ jobs:
           - 2.32.8
           - 2.33.6
           - 2.34.9
+          - 2.35.6
+          - 2.36.0
         exclude:
+          - os: macos-15-intel
+            nix_version: 2.36.0
           - os: ubuntu-24.04-arm
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
@@ -102,7 +106,11 @@ jobs:
           - 2.32.8
           - 2.33.6
           - 2.34.9
+          - 2.35.6
+          - 2.36.0
         exclude:
+          - os: macos-15-intel
+            nix_version: 2.36.0
           - os: ubuntu-24.04-arm
             nix_version: 2.3.18
     runs-on: ${{ matrix.os }}
