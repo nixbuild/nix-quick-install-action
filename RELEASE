@@ -1,13 +1,13 @@
-v35
+v36
 
 ## Changes
 
-* https://github.com/nixbuild/nix-quick-install-action/pull/74
+* Bump default Nix version: 2.34.7 -> 2.34.9
 
-* Add Nix versions 2.34.7, 2.33.6, 2.32.8
+* Add Nix versions 2.35.6 and 2.36.0. Nix 2.36.0 is not available on Intel macOS.
 
-* Remove Nix version 2.26.4
+* Update Nix versions: 2.34.7 -> 2.34.9, 2.31.5 -> 2.31.6, 2.30.5 -> 2.30.6, 2.28.7 -> 2.28.8
 
-* Update Nix versions: 2.31.2 -> 2.31.5, 2.30.3 -> 2.30.5, 2.29.2 -> 2.29.4, 2.28.5 -> 2.28.7
+* Default to `max-jobs = auto` so local Nix builds can use all available CPU cores when `nix_conf` is not supplied ([#78](https://github.com/nixbuild/nix-quick-install-action/pull/78)).
 
-* Bump default Nix version: 2.29.2 -> 2.34.7
+* Download Nix archives to a temporary file before unpacking, so interrupted transfers can be retried and HTTP errors are reported as download failures rather than decompression errors ([#79](https://github.com/nixbuild/nix-quick-install-action/pull/79)).
